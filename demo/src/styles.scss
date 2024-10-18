@@ -1,0 +1,25 @@
+body {
+    width: 100%;
+    box-sizing: border-box;
+    margin: 0;
+    min-height: 100vh;
+}
+
+main {
+    padding: 0 10px;
+    display: grid;
+    column-gap: 1rem;
+    grid-template-columns: max(60%, 768px) min(40%, 500px);
+
+    .rightPanel {
+        background-color: rgb(39, 39, 39);
+        padding: 0.5rem;
+        color: white;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+}
+
+h1 {
+    text-align: center;
+}
