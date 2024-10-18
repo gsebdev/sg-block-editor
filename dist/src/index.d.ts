@@ -1,2 +1,2 @@
-import { useEditor } from "./context";
-export default useEditor;
+import BlockEditor from "./BlockEditor";
+export { BlockEditor };

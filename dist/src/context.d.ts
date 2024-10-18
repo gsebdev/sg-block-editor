@@ -1,6 +1,7 @@
 import { Dispatch } from "react";
-import { BlockType, EditorParsedBlock } from "./definitions";
+import { BlockType, EditorBlock, EditorParsedBlock, EditorProviderProps, EditorRefObject } from "./definitions";
 import { SetStateAction } from "react";
+export declare const BlocksEditorContextProvider: import("react").ForwardRefExoticComponent<EditorProviderProps & import("react").RefAttributes<EditorRefObject>>;
 export declare const useEditor: () => {
     blocks: Map<string, EditorParsedBlock>;
     setBlocks: Dispatch<SetStateAction<Map<string, EditorParsedBlock>>>;
@@ -15,4 +16,7 @@ export declare const useEditor: () => {
     setIsDirty: Dispatch<SetStateAction<boolean>>;
     activeBlock: string | null;
     setActiveBlock: Dispatch<SetStateAction<string | null>>;
+    availableBlocks: {
+        [key: string]: EditorBlock;
+    };
 };

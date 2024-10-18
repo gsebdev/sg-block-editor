@@ -32,6 +32,19 @@ module.exports = {
     react: 'react',
     'react-dom': 'react-dom',
   },
+  optimization: {
+    splitChunks: {
+      chunks: 'all', 
+      cacheGroups: {
+        vendor: {
+          test: /[\\/]node_modules[\\/]/,
+          name: 'vendors',
+          chunks: 'all',
+        },
+      },
+    },
+    runtimeChunk: 'single',
+  },
 };
 
 module.exports = {

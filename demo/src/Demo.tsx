@@ -2,7 +2,6 @@ import { useState } from "react";
 import { BlockType } from "../../src/definitions";
 import { BlockEditor } from "../../src";
 import "../../src/sg-block-editor-default-theme";
-import { CodeBlock } from 'react-code-blocks';
 
 const Demo: React.FC = () => {
 
@@ -16,11 +15,8 @@ const Demo: React.FC = () => {
             </div>
 
             <div className="rightPanel">
-                <CodeBlock
-                    text={JSON.stringify(content).replace(/,/g, ',\n ').replace(/{/g, '{\n ').replace(/}/g, '\n }')}
-                    language={'javascript'}
-                    showLineNumbers={true}
-                />
+                {JSON.stringify(content).replace(/,/g, ',\n ').replace(/{/g, '{\n ').replace(/}/g, '\n }')}
+                    
             </div>
         </main>
     </div>
