@@ -2,7 +2,7 @@ import clsx from "clsx";
 import { useCallback } from "react";
 import { BlockType, EditorParsedBlock } from "../definitions";
 import { useEditor } from "../context";
-import { TextIgniter } from "../lib/rich-text/dist";
+import { TextIgniter } from "../lib/rich-text-module/dist";
 
 type TextBlockType = BlockType<{
     htmlContent: string;
