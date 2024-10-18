@@ -1,9 +1,8 @@
 import clsx from "clsx";
-import { useEffect } from "react";
-import { useQuill } from "react-quilljs";
-import 'quill/dist/quill.snow.css';
+import { useCallback } from "react";
 import { BlockType, EditorParsedBlock } from "../definitions";
 import { useEditor } from "../context";
+import { TextIgniter } from "../lib/rich-text/dist";
 
 type TextBlockType = BlockType<{
     htmlContent: string;
@@ -11,61 +10,48 @@ type TextBlockType = BlockType<{
 
 const TextBlock: React.FC<{ block: EditorParsedBlock<TextBlockType>, isActive?: boolean }> = ({ block, isActive }) => {
 
+    // define text editor features
+    const features = [
+        "heading",
+        "bold",
+        "italic",
+        "underline",
+        "unorderedList",
+        "justifyLeft",
+        "justifyCenter",
+        "justifyRight",
+        "createLink",
+    ];
+
     const { updateBlock } = useEditor();
 
     const { blockID, value } = block;
 
     const { htmlContent } = value;
 
-    const { quill, quillRef } = useQuill({
-        theme: 'snow',
-        modules: {
-            toolbar: [
-                [{ header: [2, 3, 4, false] }],
-                ["bold", "italic", "underline"],
-                [
-                    { list: "bullet" },
-                    { indent: "-1" },
-                    { indent: "+1" },
-                ],
-                ["link"],
-                [{ align: [] }],
-                ["clean"],
-            ],
-        },
-        formats: ['header', 'bold', 'italic', 'underline', 'link', 'align', 'list', 'indent'],
-    });
-
-    useEffect(() => {
-        if (quill) {
-            if (htmlContent !== quill.root.innerHTML && typeof htmlContent === 'string') quill.clipboard.dangerouslyPasteHTML(htmlContent);
-            quill.on(
-                'text-change',
-                () => {
-                    if (htmlContent !== quill.root.innerHTML) {
-                        updateBlock(blockID, {
-                            value: {
-                                htmlContent: quill.root.innerHTML
-                            }
-                        })
-                    }
-                }
-            )
-
-        }
-        return () => {
-            if (quill) quill.off('text-change');
-        };
-    }, [quill, htmlContent, updateBlock, blockID]);
-
+    const handleChange = useCallback((val) => {
+        updateBlock(blockID, {
+            value: {
+                htmlContent: val
+            }
+        })
+    }, [blockID, updateBlock]);
 
     return (
-        <div className={clsx(
-            "sg-block__blockText",
-            isActive && "sg-block__blockText--active"
-        )}>
-            <div ref={quillRef} />
-        </div>);
+        <>
+            <div className={clsx(
+                "sg-block__blockText",
+                isActive && "sg-block__blockText--active"
+            )}>
+                <TextIgniter
+                    onChange={handleChange}
+                    defaultContent={htmlContent}
+                    features={features}
+                    height={"100%"}
+                />
+            </div>
+        </>
+    );
 }
 
 export default TextBlock;
