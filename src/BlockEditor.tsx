@@ -8,7 +8,7 @@ import clsx from "clsx";
 
 const BlockEditorContent: React.FC = () => {
 
-    const { blocks, setActiveBlock } = useEditor();
+    const { blocks, setActiveBlock, availableBlocks } = useEditor();
     const editorRef = useRef<HTMLDivElement>(null);
 
     const handleClickOutside = useCallback((e: MouseEvent) => {

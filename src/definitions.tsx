@@ -19,7 +19,10 @@ export type EditorBlock = {
     render?: ComponentType,
     editor?: ComponentType<EditorBlockComponentProps>,
     defaultValue?: BlockType<any>['value'],
-    acceptChildren?: boolean
+    acceptChildren?: boolean,
+    autoChildrenSizing?: boolean,
+    isResizable?: boolean,
+    hasSpacingOptions?: boolean
 }
 
 export interface EditorProviderProps {
@@ -40,8 +43,13 @@ export type BlockType<V = {}> = {
     type: string;
     value?: V & { 
         width?: number|string,
-        height?: number|string
-        
+        height?: number|string,
+        spacings?: {
+            top?: string,
+            right?: string,
+            bottom?: string,
+            left?: string
+        }
     };
     children?: BlockType<any>[];
 };

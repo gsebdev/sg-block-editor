@@ -2,7 +2,6 @@ import { createContext, Dispatch, forwardRef, useCallback, useContext, useEffect
 import { BlockType, EditorBlock, EditorParsedBlock, EditorProviderProps, EditorRefObject } from "./definitions";
 import { SetStateAction } from "react";
 import { genBlockID } from "./helpers";
-import defaultBlocks from "./default-blocks";
 
 const initialContext: {
     blocks: Map<string, EditorParsedBlock>,
@@ -122,8 +121,8 @@ export const BlocksEditorContextProvider = forwardRef<EditorRefObject, EditorPro
                 ...value
             });
 
-             //if the parent block has to resie its children when a change occurs
-             if (value?.value?.flow && defaultBlocks[blockToUpdate.type].autoChildrenSizing) {
+             //if the parent block has to resize its children when a change occurs
+             if (value?.value?.flow && availableBlocks[blockToUpdate.type].autoChildrenSizing) {
                 blockToUpdate.children.forEach(child => {
                     const childBlock = newBlocks.get(child);
                     if (childBlock) {
@@ -199,8 +198,8 @@ export const BlocksEditorContextProvider = forwardRef<EditorRefObject, EditorPro
                         }
                         parentBlock.children.splice(childrenInsertIndex, 0, blockID);
 
-                        //if the parent block has to resie its children when a change occurs
-                        if (defaultBlocks[parentBlock.type].autoChildrenSizing) {
+                        //if the parent block has to resize its children when a change occurs
+                        if (availableBlocks[parentBlock.type].autoChildrenSizing) {
                             parentBlock.children.forEach(child => {
                                 const childBlock = newBlocksArray.find(([id, _]) => id === child)?.[1];
                                 if (childBlock) {
@@ -266,7 +265,7 @@ export const BlocksEditorContextProvider = forwardRef<EditorRefObject, EditorPro
 
             //if the parent block has to resie its children when a change occurs
             const parentBlock = newBlocks.get(newSelectedBlock);
-            if (newSelectedBlock && defaultBlocks[parentBlock?.type]?.autoChildrenSizing) {
+            if (newSelectedBlock && availableBlocks[parentBlock?.type]?.autoChildrenSizing) {
                 parentBlock.children.forEach(child => {
                     const childBlock = newBlocks.get(child);
                     if (childBlock) {

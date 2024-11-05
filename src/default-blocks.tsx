@@ -14,14 +14,18 @@ export default {
         editor: TextBlock,
         defaultValue: {
             htmlContent: '<p>Nouveau Bloc de Texte</p>'
-        }
+        },
+        isResizable: true,
+        hasSpacingOptions: true
     },
     image: {
         name: 'Image',
         type: 'image',
         icon: FaRegImage,
         render: undefined,
-        editor: ImageBlock
+        editor: ImageBlock,
+        isResizable: true,
+        hasSpacingOptions: true
     },
     group: {
         name: 'Group',
@@ -31,13 +35,11 @@ export default {
         editor: RowBlock,
         acceptChildren: true,
         autoChildrenSizing: true,
-    },
-    space: {
-        name: 'Space',
-        type: 'space',
-        icon: RxGroup,
-        render: undefined,
-        editor: undefined
+        isResizable: true,
+        defaultValue: {
+            flow: 'horizontal',
+            height: '280px'
+        },
+        hasSpacingOptions: true
     }
-
 }

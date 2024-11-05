@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { BlockType } from "../../src/definitions";
 import { BlockEditor } from "../../src";
-import "../../src/sg-block-editor-default-theme";
+import "../../src/sg-block-editor-default-theme.scss";
 
 const Demo: React.FC = () => {
 

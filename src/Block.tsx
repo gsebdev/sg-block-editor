@@ -2,10 +2,11 @@ import clsx from "clsx";
 import React, { createContext, Dispatch, MouseEventHandler, PropsWithChildren, ReactNode, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { FaPlus } from "react-icons/fa6";
 import { RiDeleteBin5Line } from "react-icons/ri";
-import { addBlockMenuProps, EditorParsedBlock } from "./definitions";
+import { addBlockMenuProps, BlockType, EditorParsedBlock } from "./definitions";
 import { useEditor } from "./context";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { Resizable, ResizableProps } from "re-resizable";
+import SpacingTool from "./components/SpacingTool";
 
 const alignStyles = {
     alignSelf: {
@@ -82,14 +83,27 @@ const BlockToolbarProvider: React.FC<PropsWithChildren> = ({ children }) => {
     )
 }
 
-const BlockToolbarRenderer: React.FC<{ position: 'top' | 'bottom' }> = ({ position }) => {
+const BlockToolbarRenderer: React.FC<{ position: 'top' | 'bottom', hasSpacingOptions?: boolean, block: EditorParsedBlock }> = ({ position, hasSpacingOptions, block }) => {
     const [toolbar] = useContext(toolbarContext);
+    
+    const { updateBlock } = useEditor();
 
-    if (!toolbar) return null;
+    const handleChangeSpacings = useCallback((spacingsValue: Record<string, string>) => {
+        updateBlock(blockID, { 
+            value: {
+                spacings: spacingsValue
+            }
+        });
+    }, [updateBlock, block.blockID]);
+    
+    const { value, blockID } = block;
+    const  { spacings } = value ?? {};
 
+    
     return (
         <div className={`sg-block__block__toolbar${position === 'top' ? ' sg-block__block__toolbar--top' : ''}`}>
-            {toolbar}
+            {toolbar ?? null}
+            {hasSpacingOptions && <SpacingTool value={spacings} onChange={handleChangeSpacings}/>}
         </div>
     )
 }
@@ -159,7 +173,7 @@ export const BlockToolbarColumn: React.FC<PropsWithChildren> = ({ children }) =>
     )
 }
 
-const Block: React.FC<{ block: EditorParsedBlock | undefined, className?: string, horizontalFlow?: boolean, isResizable?: boolean }> = ({ block, className, horizontalFlow, isResizable = true }) => {
+const Block: React.FC<{ block: EditorParsedBlock | undefined, className?: string, horizontalFlow?: boolean }> = ({ block, className, horizontalFlow }) => {
     const [toolbarPosition, setToolbarPosition] = useState<'bottom' | 'top'>('bottom');
 
     const { blocks, activeBlock, setActiveBlock, deleteBlock, availableBlocks, updateBlock } = useEditor();
@@ -168,6 +182,8 @@ const Block: React.FC<{ block: EditorParsedBlock | undefined, className?: string
 
     const { blockID, hasFocusWithin, parentID, type, value } = block ?? {};
     const isActive = activeBlock === blockID;
+    const isResizable = !!availableBlocks[type]?.isResizable || parentID;
+    const hasSpacingOptions = !!availableBlocks[type]?.hasSpacingOptions;
 
     const scrollHandler = useCallback(() => {
         const { top, bottom } = blockRef.current?.getBoundingClientRect();
@@ -175,11 +191,11 @@ const Block: React.FC<{ block: EditorParsedBlock | undefined, className?: string
     }, [blockRef, setToolbarPosition])
 
     useEffect(() => {
-
         if (blockRef.current) {
             if (isActive) {
                 scrollHandler();
                 window.addEventListener('scroll', scrollHandler, true);
+                blockRef.current.focus();
             } else {
                 window.removeEventListener('scroll', scrollHandler, true);
             }
@@ -251,23 +267,93 @@ const Block: React.FC<{ block: EditorParsedBlock | undefined, className?: string
                         const newHeight = ref.offsetHeight;
 
                         // handle flex width when current block is a child block
-                        if (parentID && horizontalFlow) {
-                            updateBlock(blockID, {
-                                value: {
-                                    width: d.width !== 0 ? ref.style.width : value?.width,
-                                    height: value?.height,
+                        if (parentID) {
+                            const parentBlock = blocks.get(parentID);
+
+                            const updateAdjacentChildrenDimensions = (parentDimension: number) => {
+                                const childrenCoeffList = {};
+                                let coeffSum = 0;
+                                const currentChildDimension = horizontalFlow ? newWidth : newHeight;
+
+                                const availableSpacePercentage = (parentDimension - currentChildDimension) / parentDimension * 100;
+
+                                const newValue = {}
+
+                                if (horizontalFlow) {
+                                    newValue['width'] = Math.round( currentChildDimension / parentDimension * 100 ) + '%';
+                                } else {
+                                    newValue['height'] = Math.round( currentChildDimension / parentDimension * 100 ) + '%';
                                 }
-                            });
-                        } else if (parentID && !horizontalFlow) {
-  
-                            const containerHeight = ref.parentElement.parentElement.clientHeight
-                            updateBlock(blockID, {
-                                value: {
-                                    width: value?.width,
-                                    height: d.height !== 0 ? (newHeight / containerHeight * 100) + '%' : value?.height
+
+                                updateBlock(blockID, {
+                                    value: newValue
+                                });
+
+                                // check dimension values of adjacent children
+                                parentBlock.children.forEach(child => {
+                                    if (child !== blockID) {
+                                        const childBlock = blocks.get(child);
+                                        childrenCoeffList[child] = horizontalFlow ? parseInt(childBlock.value?.width) : parseInt(childBlock.value?.height);
+                                        coeffSum += childrenCoeffList[child];
+                                    }
+                                });
+
+                                // calculate new dimension of adjacent children
+                                parentBlock.children.forEach(child => {
+                                    if (child !== blockID) {
+                                        const recalculatedDimension = Math.round((childrenCoeffList[child] / coeffSum) * availableSpacePercentage);
+
+                                        const newchildValue = {};
+                                        if (horizontalFlow) {
+                                            newchildValue['width'] = recalculatedDimension + '%';
+                                        } else {
+                                            newchildValue['height'] = recalculatedDimension + '%';
+                                        }
+
+                                        updateBlock(child, {
+                                            value: newchildValue
+                                        })
+                                    }
+                                });
+
+                            }
+
+                            if (horizontalFlow) {
+                                if (d.width !== 0) {
+                                    updateAdjacentChildrenDimensions(containerWidth);
                                 }
-                            });
-                        } else {
+                            } else {
+
+                                const containerHeight = ref.parentElement.parentElement.clientHeight;
+                                const parentHeight = parentBlock?.value?.height;
+                                const fixedHeight = typeof parentHeight === 'number' || parentHeight?.indexOf('px') !== -1;
+
+                                if (d.height !== 0) {
+                                    if (d.height !== 0) {
+                                        if (fixedHeight) {
+                                            updateAdjacentChildrenDimensions(containerHeight)
+                                        } else {
+                                            updateBlock(blockID, {
+                                                value: {
+                                                    width: value?.width,
+                                                    height: newHeight + 'px'
+                                                }
+                                            });
+                                        }
+                                    }
+
+                                } else {
+                                    updateBlock(blockID, {
+                                        value: {
+                                            width: value?.width,
+                                            height: value?.height,
+                                        }
+                                    });
+                                }
+
+                            }
+                        }
+                        else {
                             updateBlock(blockID, {
                                 value: {
                                     width: newWidth === containerWidth ? '100%' : d.width !== 0 ? newWidth + 'px' : value?.width,
@@ -275,12 +361,11 @@ const Block: React.FC<{ block: EditorParsedBlock | undefined, className?: string
                                 }
                             });
                         }
-                        
 
-                        if(!!block.children) {
 
+                        if (!!block.children) {
                             // case resizing height of a parent element
-                            if(value?.flow !== 'vertical' && d.height) {
+                            if (value?.flow !== 'vertical' && d.height) {
                                 block.children.forEach((childID) => {
                                     const child = blocks.get(childID)
                                     updateBlock(child.blockID, {
@@ -299,6 +384,10 @@ const Block: React.FC<{ block: EditorParsedBlock | undefined, className?: string
                         alignSelf: value?.align && alignStyles.alignSelf[value.align],
                         margin: value?.align && alignStyles.margin[value.align],
                         flexShrink: 1,
+                        paddingTop: value?.spacings?.top,
+                        paddingBottom: value?.spacings?.bottom,
+                        paddingLeft: value?.spacings?.left,
+                        paddingRight: value?.spacings?.right
                     }}
                     className={clsx(
                         'sg-block__block',
@@ -330,7 +419,7 @@ const Block: React.FC<{ block: EditorParsedBlock | undefined, className?: string
                     }
 
                     <BlockEditorElement block={block} isActive={isActive} />
-                    {!!isActive && <BlockToolbarRenderer position={toolbarPosition} />}
+                    {!!isActive && <BlockToolbarRenderer position={toolbarPosition} hasSpacingOptions={hasSpacingOptions} block={block}/>}
 
                     {!!isActive &&
                         <>

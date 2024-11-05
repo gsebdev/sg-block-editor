@@ -1,99 +1,65 @@
-const path = require('path');
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+const path = require("path");
+const BundleAnalyzerPlugin =
+  require("webpack-bundle-analyzer").BundleAnalyzerPlugin;
+const HtmlWebpackPlugin = require("html-webpack-plugin");
 
+module.exports = (env, args) => {
+  const isProd = args.mode === "production";
 
-
-module.exports = {
-  mode: 'production',
-  entry: './src/index.ts',
-  output: {
-    path: path.resolve(__dirname, 'dist'),
-    filename: 'index.js',
-    library: 'sg-block-editor',
-    libraryTarget: 'umd',
-    globalObject: 'this', 
-  },
-  resolve: {
-    extensions: ['.js', '.jsx', '.ts', '.tsx'],
-  },
-  module: {
-    rules: [
-      {
-        test: /\.(ts|tsx)$/,
-        use: {
-          loader: 'ts-loader',
-          options: {
-            configFile: 'tsconfig.build.json'
-          }
+  return {
+    entry: "./demo/src/index.tsx",
+    output: {
+      filename: "[name].[contenthash].js",
+      path: path.resolve(__dirname, "demo"),
+    },
+    resolve: {
+      extensions: [".js", ".jsx", ".ts", ".tsx", ".scss", ".css", ".json"],
+    },
+    module: {
+      rules: [
+        {
+          test: /\.(ts|tsx|js|jsx)$/,
+          use: {
+            loader: "babel-loader",
+            options: {
+              presets: [
+                ["@babel/preset-env"],
+                ["@babel/preset-react", { runtime: "automatic" }],
+                "@babel/preset-typescript",
+              ],
+              plugins: ["@babel/plugin-transform-runtime"],
+            },
+          },
+          exclude: /node_modules/,
         },
-        exclude: /node_modules/,
-
-      },
-    ],
-  },
-  externals: {
-    react: 'react',
-    'react-dom': 'react-dom',
-  },
-  optimization: {
-    splitChunks: {
-      chunks: 'all', 
-      cacheGroups: {
-        vendor: {
-          test: /[\\/]node_modules[\\/]/,
-          name: 'vendors',
-          chunks: 'all',
+        {
+          test: /\.css$/,
+          use: ["style-loader", "css-loader"],
         },
+        {
+          test: /\.s[ac]ss$/i,
+          use: ["style-loader", "css-loader", "sass-loader"],
+        },
+      ],
+    },
+    devServer: {
+      static: "./demo",
+      hot: true,
+      open: true,
+    },
+    optimization: {
+      minimize: true,
+      splitChunks: {
+        chunks: "all",
       },
     },
-    runtimeChunk: 'single',
-  },
-  plugins: [new BundleAnalyzerPlugin()],
-};
-
-module.exports = {
-  mode: 'development',
-  entry: './demo/src/index.tsx',
-  output: {
-    path: path.resolve(__dirname, 'demo'),
-    filename: 'demo.js',
-  },
-  devServer: {
-    static: './demo',
-    hot: true,
-    open: true
-  },
-  resolve: {
-    extensions: ['.js', '.jsx', '.ts', '.tsx', '.scss', '.css', '.json'],
-  },
-  module: {
-    rules: [
-      {
-        test: /\.(ts|tsx)$/,
-        use: {
-          loader: 'ts-loader',
-          options: {
-            configFile: 'tsconfig.build.json'
-          }
-        },
-        exclude: /node_modules/,
-
-      },
-      {
-        test: /\.css$/,
-        use: [
-          'style-loader', 
-          'css-loader',
-        ],
-      },
-      {
-        test: /\.s[ac]ss$/i,
-        use: [
-          'style-loader', 
-          'css-loader',   
-          'sass-loader',
-        ],
-      },
+    plugins: [
+      new HtmlWebpackPlugin({
+        template: "./demo/index.html",
+        inject: true,
+        minify: isProd,
+      }),
+      ...(isProd ? [new BundleAnalyzerPlugin()] : []),
     ],
-  },
-}
+  };
+};

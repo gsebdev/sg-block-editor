@@ -1,8 +1,8 @@
 import clsx from "clsx";
-import { useCallback } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { BlockType, EditorParsedBlock } from "../definitions";
 import { useEditor } from "../context";
-import { TextIgniter } from "../lib/rich-text-module/dist";
+import TextIgniter from "../lib/rich-text-module/component/src/components/TextIgniter";
 
 type TextBlockType = BlockType<{
     htmlContent: string;
@@ -29,7 +29,15 @@ const TextBlock: React.FC<{ block: EditorParsedBlock<TextBlockType>, isActive?: 
 
     const { htmlContent } = value;
 
-    const handleChange = useCallback((val) => {
+    const editorRef = useRef(null);
+
+    useEffect(() => {
+        if(editorRef.current?.editorRef?.current && isActive) {
+            editorRef.current.editorRef.current.focus();        
+        }
+    }, [isActive])
+
+    const handleChange = useCallback((val: string) => {
         updateBlock(blockID, {
             value: {
                 htmlContent: val
@@ -44,6 +52,7 @@ const TextBlock: React.FC<{ block: EditorParsedBlock<TextBlockType>, isActive?: 
                 isActive && "sg-block__blockText--active"
             )}>
                 <TextIgniter
+                    ref={editorRef}
                     onChange={handleChange}
                     defaultContent={htmlContent}
                     features={features}

@@ -16,7 +16,7 @@ const RowBlock: React.FC<{ block: EditorParsedBlock<GroupBlockType>, isActive?: 
 
     const { blockID, hasFocusWithin, value, children } = block;
 
-    const { flow } = value ?? {};
+    const { flow, height } = value ?? {};
 
     return (
         <>
@@ -52,6 +52,7 @@ const RowBlock: React.FC<{ block: EditorParsedBlock<GroupBlockType>, isActive?: 
                 "sg-block__blockGroup",
                 block.hasFocusWithin && 'sg-block__blockGroup--focusWithin',
                 flow === "vertical" ? 'sg-block__blockGroup--vertical' : 'sg-block__blockGroup--horizontal',
+                height && (typeof height === 'number' || height.indexOf('px') !== -1) ? 'sg-block__blockGroup--fixedHeight' : ''
             )}>
                 {!!children &&
                     block.children.map(childID => (
