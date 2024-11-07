@@ -1,4 +1,4 @@
-import { KeyboardEvent, KeyboardEventHandler, useEffect, useRef, useState } from "react";
+import React, { KeyboardEvent, useRef, useState } from "react";
 
 type SpacingToolState = {
     left?: string,

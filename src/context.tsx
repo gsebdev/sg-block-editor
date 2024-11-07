@@ -36,6 +36,7 @@ export const BlocksEditorContextProvider = forwardRef<EditorRefObject, EditorPro
     const [isDirty, setIsDirty] = useState<boolean>(false);
     const [activeBlock, setActiveBlock] = useState<string | null>(null);
 
+    
     useImperativeHandle(ref, () => ({
         getRenderedValue: () => renderedBlocks ?? []
     }))
@@ -68,7 +69,7 @@ export const BlocksEditorContextProvider = forwardRef<EditorRefObject, EditorPro
             setTimeout(() => {
                 const rendered = Array.from(blocks.values()).filter(block => !block.parentID).map(editorBlock => renderBlocks(editorBlock));
                 setRenderedBlocks(rendered);
-                onChange && onChange(rendered);
+                onChange?.(rendered);
                 setIsDirty(false);
             })
 
@@ -105,31 +106,34 @@ export const BlocksEditorContextProvider = forwardRef<EditorRefObject, EditorPro
         }
     }, [data]);
 
-    const updateBlock = useCallback((blockID: string, value: Partial<EditorParsedBlock>, shouldNotDirty?: boolean) => {
+    const updateBlock = useCallback((blockID: string, updatedData: Partial<EditorParsedBlock>, shouldNotDirty?: boolean) => {
         setBlocks(prevBlocks => {
-            const newBlocks = new Map(prevBlocks);
+            const newBlocks = new Map<string, EditorParsedBlock>(prevBlocks);
             const blockToUpdate = newBlocks.get(blockID);
 
             if (!blockToUpdate) return prevBlocks;
 
-            if (value?.value) {
-                value.value = { ...(blockToUpdate?.value || {}), ...value.value };
+
+            const newBlock = {
+                ...blockToUpdate,
+                ...updatedData,
+                value: {
+                    ...blockToUpdate.value ?? {},
+                    ...updatedData.value ?? {}
+                }
             }
 
-            newBlocks.set(blockID, {
-                ...blockToUpdate,
-                ...value
-            });
+            newBlocks.set(blockID, newBlock);
 
              //if the parent block has to resize its children when a change occurs
-             if (value?.value?.flow && availableBlocks[blockToUpdate.type].autoChildrenSizing) {
+             if (updatedData.value?.flow && availableBlocks[blockToUpdate.type].autoChildrenSizing) {
                 blockToUpdate.children.forEach(child => {
                     const childBlock = newBlocks.get(child);
                     if (childBlock) {
                         childBlock.value = {
                             ...(childBlock.value || {}),
-                            width: value.value?.flow !== 'vertical' ? (100 / blockToUpdate.children.length) + '%' : '100%',
-                            height: value.value?.flow === 'vertical' ? (100 / blockToUpdate.children.length) + '%' : blockToUpdate.value?.height,
+                            width: updatedData.value.flow !== 'vertical' ? (100 / blockToUpdate.children.length) + '%' : '100%',
+                            height: updatedData.value.flow === 'vertical' ? (100 / blockToUpdate.children.length) + '%' : blockToUpdate.value?.height,
                         }
                     }
                 });
@@ -144,6 +148,7 @@ export const BlocksEditorContextProvider = forwardRef<EditorRefObject, EditorPro
         const blocksThatShouldHaveFocusWithin: string[] = [];
 
         if (activeBlock) {
+            
             // find all blocks that should have focus within
             const activeBlockParent = blocks.get(activeBlock)?.parentID;
             let nParentBlock: EditorParsedBlock | undefined = activeBlockParent ? blocks.get(activeBlockParent) : undefined;
@@ -161,7 +166,7 @@ export const BlocksEditorContextProvider = forwardRef<EditorRefObject, EditorPro
                 if (block.hasFocusWithin) updateBlock(block.blockID, { hasFocusWithin: false }, true)
             }
         });
-    }, [activeBlock, updateBlock, blocks]);
+    }, [blocks, activeBlock, updateBlock]);
 
     const addBlock = useCallback((type: BlockType['type'], args?: { parentID?: string, position?: 'after' | 'before', reference?: string }) => {
         const blockID = genBlockID();
@@ -172,7 +177,7 @@ export const BlocksEditorContextProvider = forwardRef<EditorRefObject, EditorPro
 
             let insertIndex = newBlocksArray.length;
             if (reference) {
-                insertIndex = newBlocksArray.findIndex(([id, _]) => id === reference);
+                insertIndex = newBlocksArray.findIndex(([id]) => id === reference);
                 if (position === 'after') insertIndex += 1;
             }
 
@@ -187,7 +192,7 @@ export const BlocksEditorContextProvider = forwardRef<EditorRefObject, EditorPro
 
             // When parentID is provided, we insert the new block as a child of that parent
             if (parentID) {
-                const parentBlock = newBlocksArray.find(([id, _]) => id === parentID)?.[1];
+                const parentBlock = newBlocksArray.find(([id]) => id === parentID)?.[1];
                 if (parentBlock && Array.isArray(parentBlock.children)) {
 
                     if (!parentBlock.children.includes(blockID)) {
@@ -201,7 +206,7 @@ export const BlocksEditorContextProvider = forwardRef<EditorRefObject, EditorPro
                         //if the parent block has to resize its children when a change occurs
                         if (availableBlocks[parentBlock.type].autoChildrenSizing) {
                             parentBlock.children.forEach(child => {
-                                const childBlock = newBlocksArray.find(([id, _]) => id === child)?.[1];
+                                const childBlock = newBlocksArray.find(([id]) => id === child)?.[1];
                                 if (childBlock) {
                                     const { value } = childBlock;
                                     childBlock.value = {

@@ -1,3 +1,4 @@
+import React from "react";
 import clsx from "clsx";
 import { useCallback, useEffect, useRef } from "react";
 import { BlockType, EditorParsedBlock } from "../definitions";

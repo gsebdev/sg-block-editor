@@ -1,3 +1,4 @@
+import React from "react";
 import { ChangeEvent, ComponentType, PropsWithChildren, useEffect, useRef, useState } from "react";
 import { useEditor } from "../context";
 import { BlockType, EditorParsedBlock } from "../definitions";
@@ -34,7 +35,7 @@ type ImageSelectorWrapperProps = PropsWithChildren<{
     className?: string
 }>;
 
-const DefaultImageSelector: React.FC<ImageSelectorProps> = ({ children, value, onSelect, className }) => {
+const DefaultImageSelector: React.FC<PropsWithChildren<ImageSelectorProps>> = ({ children, value, onSelect, className }) => {
 
     const [currentImage, setCurrentImage] = useState<ImageType>(value);
 
@@ -102,6 +103,28 @@ const ImageSelectorWrapper: React.FC<ImageSelectorWrapperProps> = ({
     )
 }
 
+const ImagePreview: React.FC<{ src?: string, aspect?: number, align?: "left"|"right"|"center"}> = ({ src, aspect, align }) => {
+
+    return (
+        <>
+         { src ?
+            <img
+                className="sg-block__blockImage__img"
+                src={src}
+                style={{
+                    aspectRatio: aspect,
+                    textAlign: align
+                }}
+                alt="Selected Image"
+            /> :
+            <div className="sg-block__blockImage__placeholder">
+                <FaImage />
+            </div>
+        }
+        </>
+       
+    )
+}
 
 /**
  * 
@@ -156,7 +179,6 @@ const ImageBlock: React.FC<{ block: EditorParsedBlock<ImageBlockType>, isActive?
         <MdAlignHorizontalRight key={"alignRight"} />
     ];
 
-
     return (
         <>
             <BlockToolbar>
@@ -197,20 +219,7 @@ const ImageBlock: React.FC<{ block: EditorParsedBlock<ImageBlockType>, isActive?
                 ImageSelector={ImageSelector}
             >
 
-                {imagePreview ?
-                    <img
-                        className="sg-block__blockImage__img"
-                        src={imagePreview}
-                        style={{
-                            aspectRatio: aspect,
-                            textAlign: align
-                        }}
-                        alt="Selected Image"
-                    /> :
-                    <div className="sg-block__blockImage__placeholder">
-                        <FaImage />
-                    </div>
-                }
+            <ImagePreview src={imagePreview} align={align} aspect={aspect} />
             </ImageSelectorWrapper>
         </>
 

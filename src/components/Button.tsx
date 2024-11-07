@@ -1,4 +1,4 @@
-import { MouseEventHandler, PropsWithChildren } from "react"
+import React, { MouseEventHandler, PropsWithChildren } from "react"
 
 type ButtonProps = PropsWithChildren<{
     className?: string,

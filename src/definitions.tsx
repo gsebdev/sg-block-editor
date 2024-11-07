@@ -18,7 +18,7 @@ export type EditorBlock = {
     icon?: IconType|ComponentType,
     render?: ComponentType,
     editor?: ComponentType<EditorBlockComponentProps>,
-    defaultValue?: BlockType<any>['value'],
+    defaultValue?: BlockType<Record<string, string|number|object>>['value'],
     acceptChildren?: boolean,
     autoChildrenSizing?: boolean,
     isResizable?: boolean,
@@ -32,14 +32,15 @@ export interface EditorProviderProps {
     availableBlocks: Record<string, EditorBlock>
 }
 
-export type EditorParsedBlock<T extends BlockType = BlockType<any>> = Omit<T, 'children'> & {
+export type EditorParsedBlock<T extends BlockType = BlockType<Record<string, string|number|object>>> = Omit<T, 'children'> & {
     blockID: string,
     parentID?: string,
     children?: string[],
-    hasFocusWithin?: boolean
+    hasFocusWithin?: boolean,
+    isActive?: boolean,
 }
 
-export type BlockType<V = {}> = {
+export type BlockType<V = Record<string, string|number|object>> = {
     type: string;
     value?: V & { 
         width?: number|string,
@@ -51,7 +52,7 @@ export type BlockType<V = {}> = {
             left?: string
         }
     };
-    children?: BlockType<any>[];
+    children?: BlockType<Record<string, string|number|object>>[];
 };
 
 export type EditorRefObject = {

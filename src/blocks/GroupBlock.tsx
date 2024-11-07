@@ -1,6 +1,7 @@
+import React from "react";
 import clsx from "clsx";
 import Block, { AddBlockContextMenu, BlockToolbar, BlockToolbarColumn } from "../Block";
-import { BsArrowsExpand, BsArrowsExpandVertical, BsPlus } from "react-icons/bs";
+import { BsArrowsExpand, BsArrowsExpandVertical } from "react-icons/bs";
 import { BlockType, EditorParsedBlock } from "../definitions";
 import { useEditor } from "../context";
 import Button from "../components/Button";
@@ -8,10 +9,14 @@ import { MdCenterFocusStrong } from "react-icons/md";
 import { FaPlus } from "react-icons/fa6";
 
 type GroupBlockType = BlockType<{
-    flow: 'horizontal'|'vertical'
+    flow: 'horizontal' | 'vertical'
 }>
+interface RowBlockProps { 
+    block: EditorParsedBlock<GroupBlockType>, 
+    isActive?: boolean 
+}
 
-const RowBlock: React.FC<{ block: EditorParsedBlock<GroupBlockType>, isActive?: boolean }> = ({ block, isActive }) => {
+const RowBlock: React.FC<RowBlockProps> = ({ block, isActive }) => {
     const { blocks, setActiveBlock, updateBlock } = useEditor();
 
     const { blockID, hasFocusWithin, value, children } = block;
@@ -24,10 +29,10 @@ const RowBlock: React.FC<{ block: EditorParsedBlock<GroupBlockType>, isActive?: 
                 <BlockToolbarColumn>
                     <Button
                         variant={flow === "vertical" ? undefined : "selected"}
-                        onClick={() => updateBlock(blockID, { 
-                            value: { 
-                                flow: "horizontal" 
-                            } 
+                        onClick={() => updateBlock(blockID, {
+                            value: {
+                                flow: "horizontal"
+                            }
                         })}
                         title="Empiler les blocs horizontalement"
                         ariaLabel="Empiler les blocs horizontalement"
@@ -36,10 +41,10 @@ const RowBlock: React.FC<{ block: EditorParsedBlock<GroupBlockType>, isActive?: 
                     </Button>
                     <Button
                         variant={flow !== "vertical" ? undefined : "selected"}
-                        onClick={() => updateBlock(blockID, { 
-                            value: { 
+                        onClick={() => updateBlock(blockID, {
+                            value: {
                                 flow: "vertical"
-                            } 
+                            }
                         })}
                         title="Empiler les blocs verticalement"
                         ariaLabel="Empiler les blocs verticalement"
@@ -56,7 +61,11 @@ const RowBlock: React.FC<{ block: EditorParsedBlock<GroupBlockType>, isActive?: 
             )}>
                 {!!children &&
                     block.children.map(childID => (
-                        <Block horizontalFlow={flow !== 'vertical'} key={childID} block={blocks.get(childID)} />
+                        <Block
+                            horizontalFlow={flow !== 'vertical'}
+                            key={childID}
+                            block={blocks.get(childID)}
+                        />
                     ))
                 }
                 {!children?.length &&
