@@ -1,8 +1,8 @@
 import clsx from "clsx";
-import React, { createContext, Dispatch, MouseEventHandler, PropsWithChildren, ReactNode, useCallback, useContext, useEffect, useRef, useState } from "react";
+import React, { createContext, Dispatch, MouseEventHandler, PropsWithChildren, ReactNode, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { FaPlus } from "react-icons/fa6";
 import { RiDeleteBin5Line } from "react-icons/ri";
-import { addBlockMenuProps, BlockType, EditorParsedBlock } from "./definitions";
+import { addBlockMenuProps, EditorParsedBlock } from "./definitions";
 import { useEditor } from "./context";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { Resizable, ResizableProps } from "re-resizable";
@@ -109,23 +109,9 @@ const BlockToolbarRenderer: React.FC<{ position: 'top' | 'bottom', hasSpacingOpt
 }
 
 const ResizableWrapper: React.FC<PropsWithChildren<{ isResizable: boolean } & ResizableProps>> = ({ isResizable, children, ...props }) => {
-
-    if (!isResizable) return (
-        <div
-            className={props.className}
-            style={{
-                width: props.size?.width || '100%',
-                height: props.size?.height || 'auto',
-                maxWidth: '100%',
-                ...props.style,
-            }}
-        >
-            {children}
-        </div>
-    );
-
     return (
         <Resizable
+            enable={props.enable || (isResizable ? undefined : false) }
             className={props.className}
             maxWidth={`100%`}
             handleClasses={{
@@ -143,8 +129,6 @@ const ResizableWrapper: React.FC<PropsWithChildren<{ isResizable: boolean } & Re
             onResizeStop={props.onResizeStop}
             onResize={props.onResize}
             onResizeStart={props.onResizeStart}
-            enable={props.enable}
-
         >
             {children}
         </Resizable>
@@ -181,12 +165,20 @@ const Block: React.FC<{ block: EditorParsedBlock | undefined, className?: string
     const blockRef = useRef<HTMLDivElement | null>(null);
 
     const { blockID, hasFocusWithin, parentID, type, value } = block ?? {};
-    const isActive = activeBlock === blockID;
-    const isResizable = !!availableBlocks[type]?.isResizable || parentID;
-    const hasSpacingOptions = !!availableBlocks[type]?.hasSpacingOptions;
+
+    const isActive = blockID === activeBlock;
+    
+    const { isResizable, hasSpacingOptions, BlockEditorElement } = useMemo(() => {
+        
+        return {
+            isResizable: !!availableBlocks[type]?.isResizable || parentID,
+            hasSpacingOptions: !!availableBlocks[type]?.hasSpacingOptions,
+            BlockEditorElement: availableBlocks[type]?.editor
+        }
+    }, [availableBlocks[type], parentID]);
 
     const scrollHandler = useCallback(() => {
-        const { top, bottom } = blockRef.current?.getBoundingClientRect();
+        const { top, bottom } = blockRef.current?.getBoundingClientRect() ?? {};
         setToolbarPosition(window.innerHeight - bottom > top ? 'bottom' : 'top');
     }, [blockRef, setToolbarPosition])
 
@@ -214,9 +206,7 @@ const Block: React.FC<{ block: EditorParsedBlock | undefined, className?: string
         }
     }, [activeBlock, hasFocusWithin, blockID, setActiveBlock]);
 
-    if (!block) return null;
-
-    const BlockEditorElement = availableBlocks[block.type].editor;
+   if (!block) return null;
 
     if (!BlockEditorElement) return null;
 
@@ -293,7 +283,7 @@ const Block: React.FC<{ block: EditorParsedBlock | undefined, className?: string
                                 parentBlock.children.forEach(child => {
                                     if (child !== blockID) {
                                         const childBlock = blocks.get(child);
-                                        childrenCoeffList[child] = horizontalFlow ? parseInt(childBlock.value?.width) : parseInt(childBlock.value?.height);
+                                        childrenCoeffList[child] = horizontalFlow ? parseInt(String(childBlock.value?.width)) : parseInt(String(childBlock.value?.height));
                                         coeffSum += childrenCoeffList[child];
                                     }
                                 });
@@ -363,7 +353,7 @@ const Block: React.FC<{ block: EditorParsedBlock | undefined, className?: string
                         }
 
 
-                        if (!!block.children) {
+                        if (block.children) {
                             // case resizing height of a parent element
                             if (value?.flow !== 'vertical' && d.height) {
                                 block.children.forEach((childID) => {
@@ -381,8 +371,8 @@ const Block: React.FC<{ block: EditorParsedBlock | undefined, className?: string
                     }}
 
                     style={{
-                        alignSelf: value?.align && alignStyles.alignSelf[value.align],
-                        margin: value?.align && alignStyles.margin[value.align],
+                        alignSelf: value?.align && alignStyles.alignSelf[value.align as string|undefined],
+                        margin: value?.align && alignStyles.margin[value.align as string|undefined],
                         flexShrink: 1,
                         paddingTop: value?.spacings?.top,
                         paddingBottom: value?.spacings?.bottom,
@@ -392,14 +382,14 @@ const Block: React.FC<{ block: EditorParsedBlock | undefined, className?: string
                     className={clsx(
                         'sg-block__block',
                         !hasFocusWithin && !activeBlock && (!parentID || blocks.get(parentID)?.hasFocusWithin) ? 'sg-block__block--hover' : '',
-                        activeBlock === blockID ? 'sg-block__block--active' : '',
+                        isActive ? 'sg-block__block--active' : '',
                         (!hasFocusWithin && !isActive && activeBlock) && 'sg-block__block--inactive',
                         className
                     )}
 
 
                 >
-                    {!!isActive &&
+                    {isActive &&
                         <>
                             <AddBlockContextMenu
                                 args={{ position: 'before', reference: blockID, parentID }}
@@ -419,9 +409,9 @@ const Block: React.FC<{ block: EditorParsedBlock | undefined, className?: string
                     }
 
                     <BlockEditorElement block={block} isActive={isActive} />
-                    {!!isActive && <BlockToolbarRenderer position={toolbarPosition} hasSpacingOptions={hasSpacingOptions} block={block}/>}
+                    {isActive && <BlockToolbarRenderer position={toolbarPosition} hasSpacingOptions={hasSpacingOptions} block={block}/>}
 
-                    {!!isActive &&
+                    {isActive &&
                         <>
                             <button
                                 className="sg-block__btn sg-block__btn--square sg-block__btn__deleteBlock"
