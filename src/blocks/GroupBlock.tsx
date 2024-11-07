@@ -11,7 +11,7 @@ import { FaPlus } from "react-icons/fa6";
 type GroupBlockType = BlockType<{
     flow: 'horizontal' | 'vertical'
 }>
-interface RowBlockProps { 
+export interface RowBlockProps { 
     block: EditorParsedBlock<GroupBlockType>, 
     isActive?: boolean 
 }

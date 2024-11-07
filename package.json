@@ -35,7 +35,7 @@
     "webpack-dev-server": "^5.1.0"
   },
   "scripts": {
-    "build": "del /q dist && webpack --mode production --profile --json > stats.json",
+    "build": "rmdir /s /q dist docs && webpack --mode production && tsc -p tsconfig.build.json",
     "dev": "webpack serve --mode development",
     "lint": "eslint src --fix"
   },

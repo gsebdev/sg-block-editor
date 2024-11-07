@@ -1,15 +1,15 @@
 const path = require("path");
-const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 
 module.exports = (env, args) => {
   const isProd = args.mode === "production";
 
   return {
-    entry: "./demo/src/index.tsx",
+    entry: "./demo/index.tsx",
     output: {
       filename: "[name].[contenthash].js",
-      path: path.resolve(__dirname, "demo"),
+      path: path.resolve(__dirname, "docs"),
+      clean: true
     },
     resolve: {
       extensions: [".js", ".jsx", ".ts", ".tsx", ".scss", ".css", ".json"],
@@ -58,7 +58,6 @@ module.exports = (env, args) => {
         inject: true,
         minify: isProd,
       }),
-      ...(isProd ? [new BundleAnalyzerPlugin()] : []),
     ],
   };
 };
