@@ -12,9 +12,9 @@ main {
     grid-template-columns: max(60%, 768px) min(40%, 500px);
 
     .rightPanel {
-        background-color: rgb(39, 39, 39);
+        background-color: rgb(212, 212, 212);
         padding: 0.5rem;
-        color: white;
+        color: rgb(0, 68, 103);
         overflow: hidden;
         text-overflow: ellipsis;
     }
