@@ -8,33 +8,19 @@ import clsx from "clsx";
 
 const BlockEditorContent: React.FC = () => {
 
-    const { blocks, setActiveBlock, availableBlocks } = useEditor();
+    const { blocks, setActiveBlock } = useEditor();
     const editorRef = useRef<HTMLDivElement>(null);
 
     const handleClickOutside = useCallback((e: MouseEvent) => {
-        if (editorRef.current) {
-            const rect = editorRef.current.getBoundingClientRect();
-            const x = e.clientX;
-            const y = e.clientY;
-            const margin = 100;
-
-            if (
-                !(
-                    x >= rect.left - margin &&
-                    x <= rect.right + margin &&
-                    y >= rect.top - margin &&
-                    y <= rect.bottom + margin
-                )
-            ) {
+        if (editorRef.current && !editorRef.current.contains(e.target as Node)) {
                 setActiveBlock(null);
-            }
         }
     }, [setActiveBlock]);
 
     useEffect(() => {
-        window.addEventListener('click', handleClickOutside);
+        document.body.addEventListener('click', handleClickOutside);
         return () => {
-            window.removeEventListener('click', handleClickOutside);
+            document.body.removeEventListener('click', handleClickOutside);
         };
     }, [handleClickOutside]);
 
