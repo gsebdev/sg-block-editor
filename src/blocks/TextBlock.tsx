@@ -3,7 +3,8 @@ import clsx from "clsx";
 import { useCallback, useEffect, useRef } from "react";
 import { BlockType, EditorParsedBlock } from "../definitions";
 import { useEditor } from "../context";
-// @ts-ignore
+
+//@ts-expect-error this module is not typescript compatible
 import TextIgniter from "../lib/rich-text-module/component/src/components/TextIgniter";
 
 type TextBlockType = BlockType<{

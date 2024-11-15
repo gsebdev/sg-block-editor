@@ -1,6 +1,6 @@
 import { forwardRef, useCallback, useEffect, useRef } from "react";
 import { BlocksEditorContextProvider, useEditor } from "./context";
-import { BlocksEditorProps, EditorBlock, EditorRefObject } from "./definitions";
+import { BlocksEditorProps, EditorRefObject } from "./definitions";
 import defaultBlocks from "./default-blocks";
 import { FaPlus } from "react-icons/fa6";
 import Block, { AddBlockContextMenu } from "./Block";

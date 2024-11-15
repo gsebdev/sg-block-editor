@@ -32,12 +32,14 @@ const blockEditorContext = createContext(initialContext);
 export const BlocksEditorContextProvider = forwardRef<EditorRefObject, EditorProviderProps>(({ children, data, onChange, availableBlocks }, ref) => {
 
     const [blocks, setBlocks] = useState<Map<string, EditorParsedBlock>>(new Map());
-    const [renderedBlocks, setRenderedBlocks] = useState<BlockType[] | null | undefined>(data);
+    const [renderedJSON, setRenderedJSON] = useState<BlockType[] | null | undefined>(data);
+    const [renderedHTML, setRenderedHTML] = useState<string>('');
     const [isDirty, setIsDirty] = useState<boolean>(false);
     const [activeBlock, setActiveBlock] = useState<string | null>(null);
 
     useImperativeHandle(ref, () => ({
-        getRenderedValue: () => renderedBlocks ?? []
+        getJSONValue: () => renderedJSON ?? [],
+        getHTMLValue: () => renderedHTML ?? ''
     }))
     useEffect(() => {
         if (isDirty) {
@@ -66,9 +68,25 @@ export const BlocksEditorContextProvider = forwardRef<EditorRefObject, EditorPro
                 };
             }
             setTimeout(() => {
-                const rendered = Array.from(blocks.values()).filter(block => !block.parentID).map(editorBlock => renderBlocks(editorBlock));
-                setRenderedBlocks(rendered);
-                onChange?.(rendered);
+                const blocksValue = Array.from(blocks.values())
+                
+                //Render the HTML if render function is provided
+                const newRenderedHTML = blocksValue.reduce((result: string, b: EditorParsedBlock) => {
+                    const { type, value } = b;
+                    const { render } = availableBlocks[Symbol(type)] ?? {};
+                    if(render) {
+                        return result + render(value);
+                    }
+                    return result + '<p>No render function provided</p>';
+                    
+                }, '');
+
+                // Render the JSON
+                const newRenderedJSON = blocksValue.filter(block => !block.parentID).map(editorBlock => renderBlocks(editorBlock));
+
+                setRenderedJSON(newRenderedJSON);
+                setRenderedHTML(newRenderedHTML)
+                onChange?.(newRenderedJSON);
                 setIsDirty(false);
             })
 
@@ -76,7 +94,7 @@ export const BlocksEditorContextProvider = forwardRef<EditorRefObject, EditorPro
     }, [blocks, isDirty, onChange]);
 
     useEffect(() => {
-        setRenderedBlocks(data);
+        setRenderedJSON(data);
         // parse blocks and set initital state
         if (data) {
             const initialBlocks = new Map<string, EditorParsedBlock>();

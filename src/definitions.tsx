@@ -17,7 +17,7 @@ export type EditorBlock = {
     name: string,
     type: string,
     icon?: IconType|ComponentType,
-    render?: ComponentType,
+    render?: (value: BlockType<BlockValueGeneric>['value']) => string,
     editor?: ComponentType<EditorBlockComponentProps>,
     defaultValue?: BlockType<BlockValueGeneric>['value'],
     acceptChildren?: boolean,
@@ -58,7 +58,8 @@ export type BlockType<V = BlockValueGeneric> = {
 };
 
 export type EditorRefObject = {
-    getRenderedValue: () => BlockType[]
+    getJSONValue: () => BlockType[];
+    getHTMLValue: () => string;
 }
 
 export type addBlockMenuProps = { 

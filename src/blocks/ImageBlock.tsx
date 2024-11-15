@@ -22,7 +22,7 @@ type ImageBlockType = BlockType<{
     align?: 'left' | 'right' | 'center'
 }>
 
-type ImageSelectorProps = PropsWithChildren<{
+export type ImageSelectorProps = PropsWithChildren<{
     value?: ImageType,
     onSelect?: (image?: ImageType, preview?: string) => void,
     className?: string

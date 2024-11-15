@@ -253,8 +253,8 @@ const Block: React.FC<{ block: EditorParsedBlock | undefined, className?: string
                     }}
 
                     style={{
-                        alignSelf: !!value?.align && (alignStyles.alignSelf as any)[value.align as string],
-                        margin: !!value?.align && (alignStyles.margin as any)[value.align as string],
+                        alignSelf: value?.align ? alignStyles.alignSelf[value.align as 'left'|'right'|'center'] : undefined,
+                        margin: value?.align ? alignStyles.margin[value.align as 'left'|'right'|'center']: undefined,
                         paddingTop: value?.spacings?.top,
                         paddingBottom: value?.spacings?.bottom,
                         paddingLeft: value?.spacings?.left,

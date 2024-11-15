@@ -154,8 +154,8 @@ const Block = ({ block, className, horizontalFlow }) => {
                         }
                     });
                 }, style: {
-                    alignSelf: !!(value === null || value === void 0 ? void 0 : value.align) && alignStyles.alignSelf[value.align],
-                    margin: !!(value === null || value === void 0 ? void 0 : value.align) && alignStyles.margin[value.align],
+                    alignSelf: (value === null || value === void 0 ? void 0 : value.align) ? alignStyles.alignSelf[value.align] : undefined,
+                    margin: (value === null || value === void 0 ? void 0 : value.align) ? alignStyles.margin[value.align] : undefined,
                     paddingTop: (_a = value === null || value === void 0 ? void 0 : value.spacings) === null || _a === void 0 ? void 0 : _a.top,
                     paddingBottom: (_b = value === null || value === void 0 ? void 0 : value.spacings) === null || _b === void 0 ? void 0 : _b.bottom,
                     paddingLeft: (_c = value === null || value === void 0 ? void 0 : value.spacings) === null || _c === void 0 ? void 0 : _c.left,

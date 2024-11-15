@@ -76,19 +76,7 @@ declare const _default: {
                 }>[];
             }>;
             isActive?: boolean;
-            ImageSelector?: import("react").ComponentType<{
-                value?: {
-                    id?: number | string;
-                    src: string;
-                };
-                onSelect?: (image?: {
-                    id?: number | string;
-                    src: string;
-                }, preview?: string) => void;
-                className?: string;
-            } & {
-                children?: import("react").ReactNode | undefined;
-            }>;
+            ImageSelector?: import("react").ComponentType<import("./blocks/ImageBlock").ImageSelectorProps>;
         }>;
         isResizable: boolean;
         hasSpacingOptions: boolean;

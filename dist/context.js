@@ -16,11 +16,13 @@ const initialContext = {
 const blockEditorContext = createContext(initialContext);
 export const BlocksEditorContextProvider = forwardRef(({ children, data, onChange, availableBlocks }, ref) => {
     const [blocks, setBlocks] = useState(new Map());
-    const [renderedBlocks, setRenderedBlocks] = useState(data);
+    const [renderedJSON, setRenderedJSON] = useState(data);
+    const [renderedHTML, setRenderedHTML] = useState('');
     const [isDirty, setIsDirty] = useState(false);
     const [activeBlock, setActiveBlock] = useState(null);
     useImperativeHandle(ref, () => ({
-        getRenderedValue: () => renderedBlocks !== null && renderedBlocks !== void 0 ? renderedBlocks : []
+        getJSONValue: () => renderedJSON !== null && renderedJSON !== void 0 ? renderedJSON : [],
+        getHTMLValue: () => renderedHTML !== null && renderedHTML !== void 0 ? renderedHTML : ''
     }));
     useEffect(() => {
         if (isDirty) {
@@ -49,15 +51,26 @@ export const BlocksEditorContextProvider = forwardRef(({ children, data, onChang
                 };
             };
             setTimeout(() => {
-                const rendered = Array.from(blocks.values()).filter(block => !block.parentID).map(editorBlock => renderBlocks(editorBlock));
-                setRenderedBlocks(rendered);
-                onChange === null || onChange === void 0 ? void 0 : onChange(rendered);
+                const blocksValue = Array.from(blocks.values());
+                const newRenderedHTML = blocksValue.reduce((result, b) => {
+                    var _a;
+                    const { type, value } = b;
+                    const { render } = (_a = availableBlocks[Symbol(type)]) !== null && _a !== void 0 ? _a : {};
+                    if (render) {
+                        return result + render(value);
+                    }
+                    return result + '<p>No render function provided</p>';
+                }, '');
+                const newRenderedJSON = blocksValue.filter(block => !block.parentID).map(editorBlock => renderBlocks(editorBlock));
+                setRenderedJSON(newRenderedJSON);
+                setRenderedHTML(newRenderedHTML);
+                onChange === null || onChange === void 0 ? void 0 : onChange(newRenderedJSON);
                 setIsDirty(false);
             });
         }
     }, [blocks, isDirty, onChange]);
     useEffect(() => {
-        setRenderedBlocks(data);
+        setRenderedJSON(data);
         if (data) {
             const initialBlocks = new Map();
             const parseBlocks = (b, parentID) => {

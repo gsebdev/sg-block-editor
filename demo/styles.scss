@@ -25,16 +25,21 @@ main {
     top: 0;
     right: 20px;
     z-index: 100;
-    font-size: 15px;
-    font-weight: 700;
-    display: grid;
-    place-items: center;
-    padding: 10px 20px;
-    border: 0;
-    outline: 0;
-    background-color: rgb(113, 0, 133);
-    color: white;
-    cursor: pointer;
+    display: flex;
+    gap: 0.5rem;
+
+    button {
+      font-size: 15px;
+      font-weight: 700;
+      display: grid;
+      place-items: center;
+      padding: 10px 20px;
+      border: 0;
+      outline: 0;
+      background-color: rgb(113, 0, 133);
+      color: white;
+      cursor: pointer;
+    }
   }
   .rightPanel {
     position: fixed;
@@ -52,6 +57,10 @@ main {
 
     &--open {
       transform: translateX(0);
+    }
+
+    code {
+      white-space: break-spaces;
     }
   }
 }
