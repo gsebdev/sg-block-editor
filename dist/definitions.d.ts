@@ -1,3 +1,4 @@
+import { Enable } from "re-resizable";
 import { ComponentType, ReactElement } from "react";
 import { IconType } from "react-icons";
 export interface BlocksEditorProps {
@@ -15,26 +16,28 @@ export type EditorBlock = {
     icon?: IconType | ComponentType;
     render?: ComponentType;
     editor?: ComponentType<EditorBlockComponentProps>;
-    defaultValue?: BlockType<Record<string, string | number | object>>['value'];
+    defaultValue?: BlockType<BlockValueGeneric>['value'];
     acceptChildren?: boolean;
-    autoChildrenSizing?: boolean;
-    isResizable?: boolean;
+    isResizable?: boolean | Enable;
     hasSpacingOptions?: boolean;
 };
 export interface EditorProviderProps {
     children: React.ReactNode;
     data?: BlockType[] | null;
     onChange?: (data: BlockType[]) => void;
-    availableBlocks: Record<string, EditorBlock>;
+    availableBlocks: {
+        [key: symbol]: EditorBlock;
+    };
 }
-export type EditorParsedBlock<T extends BlockType = BlockType<Record<string, string | number | object>>> = Omit<T, 'children'> & {
+export type EditorParsedBlock<T extends BlockType = BlockType<BlockValueGeneric>> = Omit<T, 'children'> & {
     blockID: string;
     parentID?: string;
     children?: string[];
     hasFocusWithin?: boolean;
     isActive?: boolean;
 };
-export type BlockType<V = Record<string, string | number | object>> = {
+type BlockValueGeneric = Record<symbol | string, string | number | object | undefined>;
+export type BlockType<V = BlockValueGeneric> = {
     type: string;
     value?: V & {
         width?: number | string;
@@ -46,7 +49,7 @@ export type BlockType<V = Record<string, string | number | object>> = {
             left?: string;
         };
     };
-    children?: BlockType<Record<string, string | number | object>>[];
+    children?: BlockType<BlockValueGeneric>[];
 };
 export type EditorRefObject = {
     getRenderedValue: () => BlockType[];

@@ -1,8 +1,9 @@
-import React from "react";
+import React, { RefObject } from "react";
 import clsx from "clsx";
 import { useCallback, useEffect, useRef } from "react";
 import { BlockType, EditorParsedBlock } from "../definitions";
 import { useEditor } from "../context";
+// @ts-ignore
 import TextIgniter from "../lib/rich-text-module/component/src/components/TextIgniter";
 
 type TextBlockType = BlockType<{
@@ -28,9 +29,9 @@ const TextBlock: React.FC<{ block: EditorParsedBlock<TextBlockType>, isActive?: 
 
     const { blockID, value } = block;
 
-    const { htmlContent } = value;
+    const { htmlContent } = value ?? {};
 
-    const editorRef = useRef(null);
+    const editorRef = useRef<{editorRef: RefObject<HTMLDivElement>|undefined }|null>(null);
 
     useEffect(() => {
         if(editorRef.current?.editorRef?.current && isActive) {
@@ -40,13 +41,13 @@ const TextBlock: React.FC<{ block: EditorParsedBlock<TextBlockType>, isActive?: 
 
     useEffect(() => {
         if(editorRef.current?.editorRef?.current) {
-            const preventDefault = (e) => e.preventDefault();
+            const preventDefault = (e: Event) => e.preventDefault();
             editorRef.current.editorRef.current.addEventListener("dragover", preventDefault);
             editorRef.current.editorRef.current.addEventListener("drop", preventDefault);
 
             return () => {
-                editorRef.current.editorRef.current.removeEventListener("dragover", preventDefault);
-                editorRef.current.editorRef.current.removeEventListener("drop", preventDefault);
+                editorRef.current?.editorRef?.current?.removeEventListener("dragover", preventDefault);
+                editorRef.current?.editorRef?.current?.removeEventListener("drop", preventDefault);
             }
 
         }

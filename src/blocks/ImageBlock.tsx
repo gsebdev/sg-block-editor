@@ -23,13 +23,13 @@ type ImageBlockType = BlockType<{
 }>
 
 type ImageSelectorProps = PropsWithChildren<{
-    value: ImageType,
-    onSelect?: (image: ImageType, preview?: string) => void,
+    value?: ImageType,
+    onSelect?: (image?: ImageType, preview?: string) => void,
     className?: string
 }>;
 
 type ImageSelectorWrapperProps = PropsWithChildren<{
-    ImageSelector: ComponentType<ImageSelectorProps>,
+    ImageSelector?: ComponentType<ImageSelectorProps>,
     value: ImageSelectorProps['value'],
     onSelect: ImageSelectorProps['onSelect'],
     className?: string
@@ -37,12 +37,12 @@ type ImageSelectorWrapperProps = PropsWithChildren<{
 
 const DefaultImageSelector: React.FC<PropsWithChildren<ImageSelectorProps>> = ({ children, value, onSelect, className }) => {
 
-    const [currentImage, setCurrentImage] = useState<ImageType>(value);
+    const [currentImage, setCurrentImage] = useState<ImageType | undefined>(value);
 
     const inputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
-        if (onSelect && currentImage?.src !== value?.src) onSelect(currentImage);
+        if (onSelect && currentImage && currentImage.src !== value?.src) onSelect(currentImage);
     }, [currentImage])
 
     const handleImageclick = () => {
@@ -52,7 +52,7 @@ const DefaultImageSelector: React.FC<PropsWithChildren<ImageSelectorProps>> = ({
     }
 
     const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files[0];
+        const file = e.target.files?.[0];
         if (file) {
             const reader = new FileReader(); // Create a new FileReader object
 
@@ -134,7 +134,7 @@ const ImagePreview: React.FC<{ src?: string, aspect?: number | string, align?: "
  */
 const ImageBlock: React.FC<{ block: EditorParsedBlock<ImageBlockType>, isActive?: boolean, ImageSelector?: ComponentType<ImageSelectorProps> }> = ({ block, ImageSelector }) => {
 
-    const [imagePreview, setImagePreview] = useState<string>(block.value?.image?.src);
+    const [imagePreview, setImagePreview] = useState<string | undefined>(block.value?.image?.src);
 
     const { updateBlock } = useEditor();
 
@@ -151,14 +151,17 @@ const ImageBlock: React.FC<{ block: EditorParsedBlock<ImageBlockType>, isActive?
         })
     };
 
-    const handleImageSelection = (newValue, imagePreviewSrc = undefined) => {
-        updateImageBlock({
-            image: {
-                id: newValue.id,
-                src: newValue.src
-            }
-        });
-        setImagePreview(imagePreviewSrc ?? newValue.src);
+    const handleImageSelection = (newValue?: ImageType, imagePreviewSrc: string|undefined = undefined) => {
+        if (newValue) {
+            updateImageBlock({
+                image: {
+                    id: newValue.id,
+                    src: newValue.src
+                }
+            });
+            setImagePreview(imagePreviewSrc ?? newValue.src);
+        }
+
     }
 
     useEffect(() => {
@@ -205,11 +208,11 @@ const ImageBlock: React.FC<{ block: EditorParsedBlock<ImageBlockType>, isActive?
                     title={'Alignement'}
                 >
                     {
-                        aligns.map((value: 'left' | 'right' | 'center', index) => (
+                        aligns.map((value: string, index) => (
                             <Button
                                 key={value}
                                 variant={align === value ? 'selected' : ""}
-                                onClick={() => updateImageBlock({ align: align === value ? undefined : value })}
+                                onClick={() => updateImageBlock({ align: align === value ? undefined : value as "left"|'right'|'center' })}
                             >
                                 {alignsIcons[index]}
                             </Button>

@@ -19,14 +19,26 @@ declare const _default: {
                         left?: string;
                     };
                 }) | undefined;
-                children?: import("./definitions").BlockType<Record<string, string | number | object>>[];
+                children?: import("./definitions").BlockType<{
+                    [x: string]: string | number | object | undefined;
+                    [x: symbol]: string | number | object | undefined;
+                }>[];
             }>;
             isActive?: boolean;
         }>;
         defaultValue: {
             htmlContent: string;
         };
-        isResizable: boolean;
+        isResizable: {
+            right: boolean;
+            left: boolean;
+            top: boolean;
+            bottom: boolean;
+            bottomLeft: boolean;
+            bottomRight: boolean;
+            topLeft: boolean;
+            topRight: boolean;
+        };
         hasSpacingOptions: boolean;
     };
     image: {
@@ -42,7 +54,7 @@ declare const _default: {
                         id?: number | string;
                         src: string;
                     };
-                    aspect?: number;
+                    aspect?: number | string;
                     size?: {
                         height: string | number;
                         width: string | number;
@@ -58,15 +70,18 @@ declare const _default: {
                         left?: string;
                     };
                 }) | undefined;
-                children?: import("./definitions").BlockType<Record<string, string | number | object>>[];
+                children?: import("./definitions").BlockType<{
+                    [x: string]: string | number | object | undefined;
+                    [x: symbol]: string | number | object | undefined;
+                }>[];
             }>;
             isActive?: boolean;
             ImageSelector?: import("react").ComponentType<{
-                value: {
+                value?: {
                     id?: number | string;
                     src: string;
                 };
-                onSelect?: (image: {
+                onSelect?: (image?: {
                     id?: number | string;
                     src: string;
                 }, preview?: string) => void;
@@ -85,11 +100,9 @@ declare const _default: {
         render: undefined;
         editor: import("react").FC<import("./blocks/GroupBlock").RowBlockProps>;
         acceptChildren: boolean;
-        autoChildrenSizing: boolean;
         isResizable: boolean;
         defaultValue: {
             flow: string;
-            height: string;
         };
         hasSpacingOptions: boolean;
     };

@@ -34,7 +34,7 @@ export const AddBlockContextMenu = ({ className, children, args }) => {
     const { addBlock, availableBlocks } = useEditor();
     return (_jsx("div", { className: clsx(className), children: _jsxs(DropdownMenu.Root, { children: [_jsx(DropdownMenu.Trigger, { asChild: true, children: children }), _jsxs(DropdownMenu.Content, { sideOffset: 0, align: "center", className: "sg-block__addMenu__content", children: [_jsx(DropdownMenu.Label, { className: "sg-block__addMenu__label", children: "Choisir un type" }), Object.values(availableBlocks).map((block) => {
                             const Icon = block.icon;
-                            return (_jsxs(DropdownMenu.Item, { onClick: () => addBlock(block.type, args), className: "sg-block__addMenu__item", children: [_jsx(Icon, { style: { marginRight: '4px' } }), block.name] }, block.type));
+                            return (_jsxs(DropdownMenu.Item, { onClick: () => addBlock(block.type, args), className: "sg-block__addMenu__item", children: [!!Icon && _jsx(Icon, { style: { marginRight: '4px' } }), block.name] }, block.type));
                         })] })] }) }));
 };
 const toolbarContext = createContext([
@@ -84,8 +84,8 @@ export const BlockToolbar = ({ children }) => {
     }, [children]);
     return null;
 };
-export const BlockToolbarColumn = ({ children }) => {
-    return (_jsx("div", { className: "sg-block__block__toolbar__column", children: children }));
+export const BlockToolbarColumn = ({ children, title }) => {
+    return (_jsxs("div", { children: [_jsx("p", { className: "sg-block__block__toolbar__column__title", children: _jsx("b", { children: title }) }), _jsx("div", { className: "sg-block__block__toolbar__column", children: children })] }));
 };
 const Block = ({ block, className, horizontalFlow }) => {
     var _a, _b, _c, _d, _e;
@@ -96,16 +96,20 @@ const Block = ({ block, className, horizontalFlow }) => {
     const isActive = blockID === activeBlock;
     const { isResizable, hasSpacingOptions, BlockEditorElement } = useMemo(() => {
         var _a, _b, _c;
+        if (!type)
+            return {};
         return {
-            isResizable: !!((_a = availableBlocks[type]) === null || _a === void 0 ? void 0 : _a.isResizable) || parentID,
+            isResizable: ((_a = availableBlocks[type]) === null || _a === void 0 ? void 0 : _a.isResizable) || false,
             hasSpacingOptions: !!((_b = availableBlocks[type]) === null || _b === void 0 ? void 0 : _b.hasSpacingOptions),
             BlockEditorElement: (_c = availableBlocks[type]) === null || _c === void 0 ? void 0 : _c.editor
         };
-    }, [availableBlocks[type], parentID]);
+    }, [availableBlocks, parentID]);
     const scrollHandler = useCallback(() => {
         var _a, _b;
         const { top, bottom } = (_b = (_a = blockRef.current) === null || _a === void 0 ? void 0 : _a.getBoundingClientRect()) !== null && _b !== void 0 ? _b : {};
-        setToolbarPosition(window.innerHeight - bottom > top ? 'bottom' : 'top');
+        if (bottom !== undefined && top !== undefined) {
+            setToolbarPosition(window.innerHeight - bottom > top ? 'bottom' : 'top');
+        }
     }, [blockRef, setToolbarPosition]);
     useEffect(() => {
         if (blockRef.current) {
@@ -129,135 +133,29 @@ const Block = ({ block, className, horizontalFlow }) => {
     }, [activeBlock, hasFocusWithin, blockID, setActiveBlock]);
     if (!block)
         return null;
+    if (!blockID)
+        return null;
     if (!BlockEditorElement)
         return null;
     return (_jsx(BlockToolbarProvider, { children: _jsx("div", { ref: blockRef, style: {
                 display: 'contents'
-            }, onClickCapture: handleClickCapture, children: _jsxs(ResizableWrapper, { isResizable: isResizable && isActive, size: {
-                    width: (value === null || value === void 0 ? void 0 : value.width) || '100%',
-                    height: (block.children && (value === null || value === void 0 ? void 0 : value.flow) !== 'vertical') ? 'auto' : value === null || value === void 0 ? void 0 : value.height,
-                }, enable: !!parentID && horizontalFlow ? {
-                    top: false,
-                    right: true,
-                    bottom: false,
-                    left: true,
-                    topRight: false,
-                    bottomRight: false,
-                    bottomLeft: false,
-                    topLeft: false
-                } : !!parentID && !horizontalFlow ? {
-                    top: true,
-                    right: false,
-                    bottom: true,
-                    left: false,
-                    topRight: false,
-                    bottomRight: false,
-                    bottomLeft: false,
-                    topLeft: false
-                } : undefined, onResizeStop: (e, dir, ref, d) => {
-                    var _a;
-                    const containerWidth = ref.parentElement.parentElement.clientWidth;
+            }, onClickCapture: handleClickCapture, children: _jsxs(ResizableWrapper, { isResizable: !!isResizable && isActive, size: {
+                    width: isResizable && (value === null || value === void 0 ? void 0 : value.width) ? value === null || value === void 0 ? void 0 : value.width : '100%',
+                    height: isResizable && (value === null || value === void 0 ? void 0 : value.height) ? value === null || value === void 0 ? void 0 : value.height : 'auto',
+                }, enable: isActive && typeof isResizable === 'object' ? isResizable : undefined, onResizeStop: (e, dir, ref, d) => {
+                    var _a, _b;
+                    const containerWidth = (_b = (_a = ref.parentElement) === null || _a === void 0 ? void 0 : _a.parentElement) === null || _b === void 0 ? void 0 : _b.clientWidth;
                     const newWidth = ref.offsetWidth;
                     const newHeight = ref.offsetHeight;
-                    if (parentID) {
-                        const parentBlock = blocks.get(parentID);
-                        const updateAdjacentChildrenDimensions = (parentDimension) => {
-                            const childrenCoeffList = {};
-                            let coeffSum = 0;
-                            const currentChildDimension = horizontalFlow ? newWidth : newHeight;
-                            const availableSpacePercentage = (parentDimension - currentChildDimension) / parentDimension * 100;
-                            const newValue = {};
-                            if (horizontalFlow) {
-                                newValue['width'] = Math.round(currentChildDimension / parentDimension * 100) + '%';
-                            }
-                            else {
-                                newValue['height'] = Math.round(currentChildDimension / parentDimension * 100) + '%';
-                            }
-                            updateBlock(blockID, {
-                                value: newValue
-                            });
-                            parentBlock.children.forEach(child => {
-                                var _a, _b;
-                                if (child !== blockID) {
-                                    const childBlock = blocks.get(child);
-                                    childrenCoeffList[child] = horizontalFlow ? parseInt(String((_a = childBlock.value) === null || _a === void 0 ? void 0 : _a.width)) : parseInt(String((_b = childBlock.value) === null || _b === void 0 ? void 0 : _b.height));
-                                    coeffSum += childrenCoeffList[child];
-                                }
-                            });
-                            parentBlock.children.forEach(child => {
-                                if (child !== blockID) {
-                                    const recalculatedDimension = Math.round((childrenCoeffList[child] / coeffSum) * availableSpacePercentage);
-                                    const newchildValue = {};
-                                    if (horizontalFlow) {
-                                        newchildValue['width'] = recalculatedDimension + '%';
-                                    }
-                                    else {
-                                        newchildValue['height'] = recalculatedDimension + '%';
-                                    }
-                                    updateBlock(child, {
-                                        value: newchildValue
-                                    });
-                                }
-                            });
-                        };
-                        if (horizontalFlow) {
-                            if (d.width !== 0) {
-                                updateAdjacentChildrenDimensions(containerWidth);
-                            }
+                    updateBlock(blockID, {
+                        value: {
+                            width: newWidth === containerWidth ? '100%' : d.width !== 0 ? newWidth + 'px' : value === null || value === void 0 ? void 0 : value.width,
+                            height: d.height !== 0 ? newHeight + 'px' : value === null || value === void 0 ? void 0 : value.height,
                         }
-                        else {
-                            const containerHeight = ref.parentElement.parentElement.clientHeight;
-                            const parentHeight = (_a = parentBlock === null || parentBlock === void 0 ? void 0 : parentBlock.value) === null || _a === void 0 ? void 0 : _a.height;
-                            const fixedHeight = typeof parentHeight === 'number' || (parentHeight === null || parentHeight === void 0 ? void 0 : parentHeight.indexOf('px')) !== -1;
-                            if (d.height !== 0) {
-                                if (d.height !== 0) {
-                                    if (fixedHeight) {
-                                        updateAdjacentChildrenDimensions(containerHeight);
-                                    }
-                                    else {
-                                        updateBlock(blockID, {
-                                            value: {
-                                                width: value === null || value === void 0 ? void 0 : value.width,
-                                                height: newHeight + 'px'
-                                            }
-                                        });
-                                    }
-                                }
-                            }
-                            else {
-                                updateBlock(blockID, {
-                                    value: {
-                                        width: value === null || value === void 0 ? void 0 : value.width,
-                                        height: value === null || value === void 0 ? void 0 : value.height,
-                                    }
-                                });
-                            }
-                        }
-                    }
-                    else {
-                        updateBlock(blockID, {
-                            value: {
-                                width: newWidth === containerWidth ? '100%' : d.width !== 0 ? newWidth + 'px' : value === null || value === void 0 ? void 0 : value.width,
-                                height: d.height !== 0 ? newHeight + 'px' : value === null || value === void 0 ? void 0 : value.height,
-                            }
-                        });
-                    }
-                    if (block.children) {
-                        if ((value === null || value === void 0 ? void 0 : value.flow) !== 'vertical' && d.height) {
-                            block.children.forEach((childID) => {
-                                const child = blocks.get(childID);
-                                updateBlock(child.blockID, {
-                                    value: {
-                                        height: ref.clientHeight + 'px',
-                                    }
-                                });
-                            });
-                        }
-                    }
+                    });
                 }, style: {
-                    alignSelf: (value === null || value === void 0 ? void 0 : value.align) && alignStyles.alignSelf[value.align],
-                    margin: (value === null || value === void 0 ? void 0 : value.align) && alignStyles.margin[value.align],
-                    flexShrink: 1,
+                    alignSelf: !!(value === null || value === void 0 ? void 0 : value.align) && alignStyles.alignSelf[value.align],
+                    margin: !!(value === null || value === void 0 ? void 0 : value.align) && alignStyles.margin[value.align],
                     paddingTop: (_a = value === null || value === void 0 ? void 0 : value.spacings) === null || _a === void 0 ? void 0 : _a.top,
                     paddingBottom: (_b = value === null || value === void 0 ? void 0 : value.spacings) === null || _b === void 0 ? void 0 : _b.bottom,
                     paddingLeft: (_c = value === null || value === void 0 ? void 0 : value.spacings) === null || _c === void 0 ? void 0 : _c.left,

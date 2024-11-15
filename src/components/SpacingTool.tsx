@@ -1,10 +1,11 @@
 import React, { KeyboardEvent, useRef, useState } from "react";
 
 type SpacingToolState = {
-    left?: string,
-    right?: string
-    bottom?: string
-    top?: string
+    [key: string]: any;
+    left?: string;
+    right?: string;
+    bottom?: string;
+    top?: string;
 }
 
 type SpacingToolProps = {

@@ -35,7 +35,7 @@ export const BlocksEditorContextProvider = forwardRef<EditorRefObject, EditorPro
     const [renderedBlocks, setRenderedBlocks] = useState<BlockType[] | null | undefined>(data);
     const [isDirty, setIsDirty] = useState<boolean>(false);
     const [activeBlock, setActiveBlock] = useState<string | null>(null);
-    
+
     useImperativeHandle(ref, () => ({
         getRenderedValue: () => renderedBlocks ?? []
     }))
@@ -169,10 +169,10 @@ export const BlocksEditorContextProvider = forwardRef<EditorRefObject, EditorPro
             newBlocksArray.splice(insertIndex, 0, [
                 blockID, {
                     type,
-                    value: availableBlocks[type]?.defaultValue,
+                    value: type in availableBlocks ? availableBlocks[Symbol(type)]?.defaultValue : undefined,
                     blockID,
                     parentID,
-                    children: availableBlocks[type]?.acceptChildren ? [] : undefined
+                    children: availableBlocks[Symbol(type)]?.acceptChildren ? [] : undefined
                 }]);
 
             // When parentID is provided, we insert the new block as a child of that parent

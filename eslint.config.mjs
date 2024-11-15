@@ -8,7 +8,10 @@ export default [
   {
     files: ["**/*.{js,mjs,cjs,ts,jsx,tsx}"],
     languageOptions: {
-      globals: globals.browser,
+      globals: {
+        ...globals.browser,
+        ...globals.node
+      },
     }
   },
   pluginJs.configs.recommended,
@@ -20,10 +23,6 @@ export default [
       react: {
         version: "detect",
       }
-    },
-    env: {
-      node: true,  
-      browser: true, 
-    },
+    }
   }
 ];

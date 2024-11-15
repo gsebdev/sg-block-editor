@@ -2,6 +2,7 @@ import React from "react";
 import { BlockType, EditorParsedBlock } from "../definitions";
 type GroupBlockType = BlockType<{
     flow: 'horizontal' | 'vertical';
+    template?: number[];
 }>;
 export interface RowBlockProps {
     block: EditorParsedBlock<GroupBlockType>;

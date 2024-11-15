@@ -10,7 +10,7 @@ import { FaPlus } from "react-icons/fa6";
 
 type GroupBlockType = BlockType<{
     flow: 'horizontal' | 'vertical',
-    template: number[],
+    template?: number[],
 }>
 export interface RowBlockProps {
     block: EditorParsedBlock<GroupBlockType>,
@@ -31,7 +31,7 @@ const RowBlock: React.FC<RowBlockProps> = ({ block, isActive }) => {
 
     const prevXRef = useRef<number | null>(null);
 
-    const isResizable = groupWidth > (minChildWidth * children.length);
+    const isResizable = !!children?.length && groupWidth ? groupWidth > (minChildWidth * children?.length) : false;
 
     //Resize Handlers
 
@@ -46,29 +46,29 @@ const RowBlock: React.FC<RowBlockProps> = ({ block, isActive }) => {
 
     useEffect(() => {
         if (isResizing !== null) {
-            const currentTemplateRef = { current : null }
+            const currentTemplateRef: { current: number[] | null } = { current: null }
 
             const handleResize = (e: MouseEvent) => {
                 e.preventDefault();
                 e.stopPropagation();
 
-                const deltaX = e.clientX - prevXRef.current;
-                const deltaPercentage = deltaX / groupWidth * 100;
-
-                setCurrentTemplate((prevTemplate) => {
-                    const newTemplate = [...prevTemplate];
-                    newTemplate[isResizing] += deltaPercentage;
-                    newTemplate[isResizing + 1] -= deltaPercentage;
-                    if (
-                        newTemplate[isResizing] / 100 * groupWidth < minChildWidth ||
-                        newTemplate[isResizing + 1] / 100 * groupWidth < minChildWidth
-                    ) {
-                        currentTemplateRef.current = prevTemplate;
-                        return prevTemplate;
-                    }
-                    currentTemplateRef.current = newTemplate;
-                    return newTemplate;
-                });
+                const deltaX = !!prevXRef.current ? e.clientX - prevXRef.current : 0;
+                const deltaPercentage = !!groupWidth ? deltaX / groupWidth * 100 : 0;
+                if (groupWidth)
+                    setCurrentTemplate((prevTemplate) => {
+                        const newTemplate = [...prevTemplate];
+                        newTemplate[isResizing] += deltaPercentage;
+                        newTemplate[isResizing + 1] -= deltaPercentage;
+                        if (
+                            newTemplate[isResizing] / 100 * groupWidth < minChildWidth ||
+                            newTemplate[isResizing + 1] / 100 * groupWidth < minChildWidth
+                        ) {
+                            currentTemplateRef.current = prevTemplate;
+                            return prevTemplate;
+                        }
+                        currentTemplateRef.current = newTemplate;
+                        return newTemplate;
+                    });
                 prevXRef.current = e.clientX;
             };
 
@@ -77,11 +77,14 @@ const RowBlock: React.FC<RowBlockProps> = ({ block, isActive }) => {
                 setIsResizing(null);
                 prevXRef.current = null;
                 document.body.style.userSelect = '';
-                updateBlock(blockID, {
-                    value: {
-                        template: currentTemplateRef.current.map((val => Math.round(val))) || undefined
-                    }
-                })
+                if (currentTemplateRef.current) {
+                    updateBlock(blockID, {
+                        value: {
+                            template: currentTemplateRef.current.map((val => Math.floor(val)))
+                        }
+                    });
+                }
+
             };
 
 
@@ -95,13 +98,13 @@ const RowBlock: React.FC<RowBlockProps> = ({ block, isActive }) => {
     }, [isResizing, groupWidth]);
 
     useEffect(() => {
-        setCurrentTemplate(template);
+        setCurrentTemplate(template || []);
     }, [template])
 
     //Observe Resize event on group div
     useEffect(() => {
-        const handleResize = (entries) => {
-            for (let entry of entries) {
+        const handleResize = (entries: ResizeObserverEntry[]) => {
+            for (const entry of entries) {
                 const { width } = entry.contentRect;
                 setGroupWidth(width);
             }
@@ -122,13 +125,14 @@ const RowBlock: React.FC<RowBlockProps> = ({ block, isActive }) => {
     }, []);
 
     useEffect(() => {
-        updateBlock(blockID, {
-            value: {
-                template: children.map(() => 100 / children.length)
-            }
+        if (children)
+            updateBlock(blockID, {
+                value: {
+                    template: children.map(() => 100 / children.length)
+                }
 
-        })
-    }, [children.length])
+            })
+    }, [children])
 
     return (
         <>
@@ -172,7 +176,7 @@ const RowBlock: React.FC<RowBlockProps> = ({ block, isActive }) => {
                 ref={groupRef}
             >
                 {!!children &&
-                    block.children.map((childID, indexEl) => (
+                    block.children?.map((childID, indexEl) => (
                         <div
                             key={childID}
                             className="sg-block__blockGroup__childContainer"

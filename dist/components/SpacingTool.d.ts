@@ -1,5 +1,6 @@
 import React from "react";
 type SpacingToolState = {
+    [key: string]: any;
     left?: string;
     right?: string;
     bottom?: string;

@@ -52,7 +52,7 @@ export const AddBlockContextMenu: React.FC<addBlockMenuProps> = ({ className, ch
                                     onClick={() => addBlock(block.type, args)}
                                     className="sg-block__addMenu__item"
                                 >
-                                    <Icon style={{ marginRight: '4px' }} />
+                                    {!!Icon && <Icon style={{ marginRight: '4px' }} />}
                                     {block.name}
                                 </DropdownMenu.Item>
                             )
@@ -173,17 +173,19 @@ const Block: React.FC<{ block: EditorParsedBlock | undefined, className?: string
     const isActive = blockID === activeBlock;
 
     const { isResizable, hasSpacingOptions, BlockEditorElement } = useMemo(() => {
-
+        if(!type) return {}
         return {
             isResizable: availableBlocks[type]?.isResizable || false,
             hasSpacingOptions: !!availableBlocks[type]?.hasSpacingOptions,
             BlockEditorElement: availableBlocks[type]?.editor
         }
-    }, [availableBlocks[type], parentID]);
+    }, [availableBlocks, parentID]);
 
     const scrollHandler = useCallback(() => {
         const { top, bottom } = blockRef.current?.getBoundingClientRect() ?? {};
-        setToolbarPosition(window.innerHeight - bottom > top ? 'bottom' : 'top');
+        if (bottom !== undefined && top !== undefined) {
+            setToolbarPosition(window.innerHeight - bottom > top ? 'bottom' : 'top');
+        }
     }, [blockRef, setToolbarPosition])
 
     useEffect(() => {
@@ -212,6 +214,8 @@ const Block: React.FC<{ block: EditorParsedBlock | undefined, className?: string
 
     if (!block) return null;
 
+    if (!blockID) return null;
+
     if (!BlockEditorElement) return null;
 
     return (
@@ -236,7 +240,7 @@ const Block: React.FC<{ block: EditorParsedBlock | undefined, className?: string
                     }
 
                     onResizeStop={(e, dir, ref, d) => {
-                        const containerWidth = ref.parentElement.parentElement.clientWidth;
+                        const containerWidth = ref.parentElement?.parentElement?.clientWidth;
                         const newWidth = ref.offsetWidth;
                         const newHeight = ref.offsetHeight;
 
@@ -249,8 +253,8 @@ const Block: React.FC<{ block: EditorParsedBlock | undefined, className?: string
                     }}
 
                     style={{
-                        alignSelf: value?.align && alignStyles.alignSelf[value.align as string | undefined],
-                        margin: value?.align && alignStyles.margin[value.align as string | undefined],
+                        alignSelf: !!value?.align && (alignStyles.alignSelf as any)[value.align as string],
+                        margin: !!value?.align && (alignStyles.margin as any)[value.align as string],
                         paddingTop: value?.spacings?.top,
                         paddingBottom: value?.spacings?.bottom,
                         paddingLeft: value?.spacings?.left,

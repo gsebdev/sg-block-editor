@@ -7,7 +7,7 @@ type ImageType = {
 };
 type ImageBlockType = BlockType<{
     image?: ImageType;
-    aspect?: number;
+    aspect?: number | string;
     size?: {
         height: string | number;
         width: string | number;
@@ -15,8 +15,8 @@ type ImageBlockType = BlockType<{
     align?: 'left' | 'right' | 'center';
 }>;
 type ImageSelectorProps = PropsWithChildren<{
-    value: ImageType;
-    onSelect?: (image: ImageType, preview?: string) => void;
+    value?: ImageType;
+    onSelect?: (image?: ImageType, preview?: string) => void;
     className?: string;
 }>;
 declare const ImageBlock: React.FC<{

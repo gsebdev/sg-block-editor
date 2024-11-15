@@ -9,7 +9,7 @@ const DefaultImageSelector = ({ children, value, onSelect, className }) => {
     const [currentImage, setCurrentImage] = useState(value);
     const inputRef = useRef(null);
     useEffect(() => {
-        if (onSelect && (currentImage === null || currentImage === void 0 ? void 0 : currentImage.src) !== (value === null || value === void 0 ? void 0 : value.src))
+        if (onSelect && currentImage && currentImage.src !== (value === null || value === void 0 ? void 0 : value.src))
             onSelect(currentImage);
     }, [currentImage]);
     const handleImageclick = () => {
@@ -18,7 +18,8 @@ const DefaultImageSelector = ({ children, value, onSelect, className }) => {
         }
     };
     const handleFileChange = (e) => {
-        const file = e.target.files[0];
+        var _a;
+        const file = (_a = e.target.files) === null || _a === void 0 ? void 0 : _a[0];
         if (file) {
             const reader = new FileReader();
             reader.onload = function (e) {
@@ -58,13 +59,15 @@ const ImageBlock = ({ block, ImageSelector }) => {
         });
     };
     const handleImageSelection = (newValue, imagePreviewSrc = undefined) => {
-        updateImageBlock({
-            image: {
-                id: newValue.id,
-                src: newValue.src
-            }
-        });
-        setImagePreview(imagePreviewSrc !== null && imagePreviewSrc !== void 0 ? imagePreviewSrc : newValue.src);
+        if (newValue) {
+            updateImageBlock({
+                image: {
+                    id: newValue.id,
+                    src: newValue.src
+                }
+            });
+            setImagePreview(imagePreviewSrc !== null && imagePreviewSrc !== void 0 ? imagePreviewSrc : newValue.src);
+        }
     };
     useEffect(() => {
         if (aspect && height !== 'auto') {
@@ -73,17 +76,17 @@ const ImageBlock = ({ block, ImageSelector }) => {
             });
         }
     }, [height]);
-    const aspects = [4 / 3, 3 / 2, 16 / 9, 1];
-    const aspectsLabels = ['4:3', '3:2', '16:9', '1:1'];
+    const aspects = ['auto', 'fill', 4 / 3, 3 / 2, 16 / 9, 1];
+    const aspectsLabels = ['original', 'Remplir', '4:3', '3:2', '16:9', '1:1'];
     const aligns = ['left', 'center', 'right'];
     const alignsIcons = [
         _jsx(MdAlignHorizontalLeft, {}, "alignLeft"),
         _jsx(MdAlignHorizontalCenter, {}, "alignCenter"),
         _jsx(MdAlignHorizontalRight, {}, "alignRight")
     ];
-    return (_jsxs(_Fragment, { children: [_jsxs(BlockToolbar, { children: [_jsx(BlockToolbarColumn, { children: aspects.map((value, index) => (_jsx(Button, { variant: aspect === value && 'selected', onClick: () => updateImageBlock({
-                                aspect: aspect === value ? undefined : value,
-                                height: 'auto'
-                            }), children: aspectsLabels[index] }, value))) }), _jsx(BlockToolbarColumn, { children: aligns.map((value, index) => (_jsx(Button, { variant: align === value ? 'selected' : "", onClick: () => updateImageBlock({ align: align === value ? undefined : value }), children: alignsIcons[index] }, value))) })] }), _jsx(ImageSelectorWrapper, { className: "sg-block__blockImage__selectorWrapper", value: image, onSelect: handleImageSelection, ImageSelector: ImageSelector, children: _jsx(ImagePreview, { src: imagePreview, align: align, aspect: aspect }) })] }));
+    return (_jsxs(_Fragment, { children: [_jsxs(BlockToolbar, { children: [_jsx(BlockToolbarColumn, { title: 'Aspect', children: aspects.map((value, index) => (_jsx(Button, { variant: aspect === value || (value === 'fill' && height === '100%') ? 'selected' : undefined, onClick: () => updateImageBlock({
+                                aspect: aspect === value || value === 'fill' ? undefined : value,
+                                height: value === 'fill' ? '100%' : 'auto'
+                            }), children: aspectsLabels[index] }, value))) }), _jsx(BlockToolbarColumn, { title: 'Alignement', children: aligns.map((value, index) => (_jsx(Button, { variant: align === value ? 'selected' : "", onClick: () => updateImageBlock({ align: align === value ? undefined : value }), children: alignsIcons[index] }, value))) })] }), _jsx(ImageSelectorWrapper, { className: "sg-block__blockImage__selectorWrapper", value: image, onSelect: handleImageSelection, ImageSelector: ImageSelector, children: _jsx(ImagePreview, { src: imagePreview, align: align, aspect: aspect }) })] }));
 };
 export default ImageBlock;

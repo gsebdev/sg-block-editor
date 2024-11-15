@@ -384,8 +384,9 @@ body {
       position: absolute;
       top: 0;
       width: var(--thickness);
-      right: calc(-1 * var(--thickness));
+      right: calc(-1 * (( var(--thickness) / 2) + 10px));
       height: 100%;
+      padding: 0 10px;
       cursor: col-resize;
       background: linear-gradient(
         180deg,
@@ -393,7 +394,16 @@ body {
         transparent 50%
       );
       background-repeat: repeat-y;
-      background-size: 100% 20px;
+      background-size: var(--thickness) 20px;
+      background-position: center;
+
+      &:hover {
+        background-image: linear-gradient(
+          180deg,
+          var(--sg-block-hover-tool-color, rgb(0, 140, 255)) 50%,
+          transparent 50%
+        );
+      }
       &--disabled {
         display: none;
       }

@@ -17,7 +17,7 @@ const TextBlock = ({ block, isActive }) => {
     ];
     const { updateBlock } = useEditor();
     const { blockID, value } = block;
-    const { htmlContent } = value;
+    const { htmlContent } = value !== null && value !== void 0 ? value : {};
     const editorRef = useRef(null);
     useEffect(() => {
         var _a, _b;
@@ -25,6 +25,19 @@ const TextBlock = ({ block, isActive }) => {
             editorRef.current.editorRef.current.focus();
         }
     }, [isActive]);
+    useEffect(() => {
+        var _a, _b;
+        if ((_b = (_a = editorRef.current) === null || _a === void 0 ? void 0 : _a.editorRef) === null || _b === void 0 ? void 0 : _b.current) {
+            const preventDefault = (e) => e.preventDefault();
+            editorRef.current.editorRef.current.addEventListener("dragover", preventDefault);
+            editorRef.current.editorRef.current.addEventListener("drop", preventDefault);
+            return () => {
+                var _a, _b, _c, _d, _e, _f;
+                (_c = (_b = (_a = editorRef.current) === null || _a === void 0 ? void 0 : _a.editorRef) === null || _b === void 0 ? void 0 : _b.current) === null || _c === void 0 ? void 0 : _c.removeEventListener("dragover", preventDefault);
+                (_f = (_e = (_d = editorRef.current) === null || _d === void 0 ? void 0 : _d.editorRef) === null || _e === void 0 ? void 0 : _e.current) === null || _f === void 0 ? void 0 : _f.removeEventListener("drop", preventDefault);
+            };
+        }
+    }, [editorRef.current]);
     const handleChange = useCallback((val) => {
         updateBlock(blockID, {
             value: {

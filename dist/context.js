@@ -79,22 +79,13 @@ export const BlocksEditorContextProvider = forwardRef(({ children, data, onChang
     }, [data]);
     const updateBlock = useCallback((blockID, updatedData, shouldNotDirty) => {
         setBlocks(prevBlocks => {
-            var _a, _b, _c;
+            var _a, _b;
             const newBlocks = new Map(prevBlocks);
             const blockToUpdate = newBlocks.get(blockID);
             if (!blockToUpdate)
                 return prevBlocks;
             const newBlock = Object.assign(Object.assign(Object.assign({}, blockToUpdate), updatedData), { value: Object.assign(Object.assign({}, (_a = blockToUpdate.value) !== null && _a !== void 0 ? _a : {}), (_b = updatedData.value) !== null && _b !== void 0 ? _b : {}) });
             newBlocks.set(blockID, newBlock);
-            if (((_c = updatedData.value) === null || _c === void 0 ? void 0 : _c.flow) && availableBlocks[blockToUpdate.type].autoChildrenSizing) {
-                blockToUpdate.children.forEach(child => {
-                    var _a;
-                    const childBlock = newBlocks.get(child);
-                    if (childBlock) {
-                        childBlock.value = Object.assign(Object.assign({}, (childBlock.value || {})), { width: updatedData.value.flow !== 'vertical' ? (100 / blockToUpdate.children.length) + '%' : '100%', height: updatedData.value.flow === 'vertical' ? (100 / blockToUpdate.children.length) + '%' : (_a = blockToUpdate.value) === null || _a === void 0 ? void 0 : _a.height });
-                    }
-                });
-            }
             return newBlocks;
         });
         if (!shouldNotDirty)
@@ -137,10 +128,10 @@ export const BlocksEditorContextProvider = forwardRef(({ children, data, onChang
             newBlocksArray.splice(insertIndex, 0, [
                 blockID, {
                     type,
-                    value: (_a = availableBlocks[type]) === null || _a === void 0 ? void 0 : _a.defaultValue,
+                    value: type in availableBlocks ? (_a = availableBlocks[Symbol(type)]) === null || _a === void 0 ? void 0 : _a.defaultValue : undefined,
                     blockID,
                     parentID,
-                    children: ((_b = availableBlocks[type]) === null || _b === void 0 ? void 0 : _b.acceptChildren) ? [] : undefined
+                    children: ((_b = availableBlocks[Symbol(type)]) === null || _b === void 0 ? void 0 : _b.acceptChildren) ? [] : undefined
                 }
             ]);
             if (parentID) {
@@ -154,16 +145,6 @@ export const BlocksEditorContextProvider = forwardRef(({ children, data, onChang
                                 childrenInsertIndex += 1;
                         }
                         parentBlock.children.splice(childrenInsertIndex, 0, blockID);
-                        if (availableBlocks[parentBlock.type].autoChildrenSizing) {
-                            parentBlock.children.forEach(child => {
-                                var _a, _b, _c, _d;
-                                const childBlock = (_a = newBlocksArray.find(([id]) => id === child)) === null || _a === void 0 ? void 0 : _a[1];
-                                if (childBlock) {
-                                    const { value } = childBlock;
-                                    childBlock.value = Object.assign(Object.assign({}, (value || {})), { width: ((_b = parentBlock.value) === null || _b === void 0 ? void 0 : _b.flow) !== 'vertical' ? (100 / parentBlock.children.length) + '%' : undefined, height: ((_c = parentBlock.value) === null || _c === void 0 ? void 0 : _c.flow) === 'vertical' ? (100 / parentBlock.children.length) + '%' : (_d = parentBlock.value) === null || _d === void 0 ? void 0 : _d.height });
-                                }
-                            });
-                        }
                     }
                 }
             }
@@ -175,7 +156,6 @@ export const BlocksEditorContextProvider = forwardRef(({ children, data, onChang
     const deleteBlock = useCallback((blockID) => {
         let newSelectedBlock = null;
         setBlocks(prevBlock => {
-            var _a;
             const newBlocks = new Map(prevBlock);
             const blockToDelete = newBlocks.get(blockID);
             if (!blockToDelete)
@@ -206,17 +186,6 @@ export const BlocksEditorContextProvider = forwardRef(({ children, data, onChang
                 IDsToDelete.forEach(ID => newBlocks.delete(ID));
             };
             deleteBlockWithchildren();
-            const parentBlock = newBlocks.get(newSelectedBlock);
-            if (newSelectedBlock && ((_a = availableBlocks[parentBlock === null || parentBlock === void 0 ? void 0 : parentBlock.type]) === null || _a === void 0 ? void 0 : _a.autoChildrenSizing)) {
-                parentBlock.children.forEach(child => {
-                    var _a, _b, _c;
-                    const childBlock = newBlocks.get(child);
-                    if (childBlock) {
-                        const { value } = childBlock;
-                        childBlock.value = Object.assign(Object.assign({}, (value || {})), { width: ((_a = parentBlock.value) === null || _a === void 0 ? void 0 : _a.flow) !== 'vertical' ? (100 / parentBlock.children.length) + '%' : undefined, height: ((_b = parentBlock.value) === null || _b === void 0 ? void 0 : _b.flow) === 'vertical' ? (100 / parentBlock.children.length) + '%' : (_c = parentBlock.value) === null || _c === void 0 ? void 0 : _c.height });
-                    }
-                });
-            }
             return newBlocks;
         });
         setActiveBlock(newSelectedBlock);
