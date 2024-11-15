@@ -15,7 +15,16 @@ export default {
         defaultValue: {
             htmlContent: '<p>Nouveau Bloc de Texte</p>'
         },
-        isResizable: true,
+        isResizable: {
+            right:true,
+            left: true,
+            top: false,
+            bottom: false,
+            bottomLeft: false,
+            bottomRight: false,
+            topLeft: false,
+            topRight: false
+        },
         hasSpacingOptions: true
     },
     image: {
@@ -34,11 +43,9 @@ export default {
         render: undefined,
         editor: RowBlock,
         acceptChildren: true,
-        autoChildrenSizing: true,
-        isResizable: true,
+        isResizable: false,
         defaultValue: {
-            flow: 'horizontal',
-            height: '280px'
+            flow: 'horizontal'
         },
         hasSpacingOptions: true
     }

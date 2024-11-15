@@ -1,3 +1,4 @@
+import { Enable } from "re-resizable"
 import { ComponentType, ReactElement } from "react"
 import { IconType } from "react-icons"
 
@@ -20,8 +21,7 @@ export type EditorBlock = {
     editor?: ComponentType<EditorBlockComponentProps>,
     defaultValue?: BlockType<Record<string, string|number|object>>['value'],
     acceptChildren?: boolean,
-    autoChildrenSizing?: boolean,
-    isResizable?: boolean,
+    isResizable?: boolean | Enable,
     hasSpacingOptions?: boolean
 }
 

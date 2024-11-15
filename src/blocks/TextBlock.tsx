@@ -38,6 +38,20 @@ const TextBlock: React.FC<{ block: EditorParsedBlock<TextBlockType>, isActive?: 
         }
     }, [isActive])
 
+    useEffect(() => {
+        if(editorRef.current?.editorRef?.current) {
+            const preventDefault = (e) => e.preventDefault();
+            editorRef.current.editorRef.current.addEventListener("dragover", preventDefault);
+            editorRef.current.editorRef.current.addEventListener("drop", preventDefault);
+
+            return () => {
+                editorRef.current.editorRef.current.removeEventListener("dragover", preventDefault);
+                editorRef.current.editorRef.current.removeEventListener("drop", preventDefault);
+            }
+
+        }
+    }, [editorRef.current])
+
     const handleChange = useCallback((val: string) => {
         updateBlock(blockID, {
             value: {

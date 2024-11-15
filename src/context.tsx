@@ -35,7 +35,6 @@ export const BlocksEditorContextProvider = forwardRef<EditorRefObject, EditorPro
     const [renderedBlocks, setRenderedBlocks] = useState<BlockType[] | null | undefined>(data);
     const [isDirty, setIsDirty] = useState<boolean>(false);
     const [activeBlock, setActiveBlock] = useState<string | null>(null);
-
     
     useImperativeHandle(ref, () => ({
         getRenderedValue: () => renderedBlocks ?? []
@@ -125,20 +124,6 @@ export const BlocksEditorContextProvider = forwardRef<EditorRefObject, EditorPro
 
             newBlocks.set(blockID, newBlock);
 
-             //if the parent block has to resize its children when a change occurs
-             if (updatedData.value?.flow && availableBlocks[blockToUpdate.type].autoChildrenSizing) {
-                blockToUpdate.children.forEach(child => {
-                    const childBlock = newBlocks.get(child);
-                    if (childBlock) {
-                        childBlock.value = {
-                            ...(childBlock.value || {}),
-                            width: updatedData.value.flow !== 'vertical' ? (100 / blockToUpdate.children.length) + '%' : '100%',
-                            height: updatedData.value.flow === 'vertical' ? (100 / blockToUpdate.children.length) + '%' : blockToUpdate.value?.height,
-                        }
-                    }
-                });
-            }
-
             return newBlocks;
         });
         if (!shouldNotDirty) setIsDirty(true);
@@ -202,21 +187,6 @@ export const BlocksEditorContextProvider = forwardRef<EditorRefObject, EditorPro
                             if (position === 'after') childrenInsertIndex += 1;
                         }
                         parentBlock.children.splice(childrenInsertIndex, 0, blockID);
-
-                        //if the parent block has to resize its children when a change occurs
-                        if (availableBlocks[parentBlock.type].autoChildrenSizing) {
-                            parentBlock.children.forEach(child => {
-                                const childBlock = newBlocksArray.find(([id]) => id === child)?.[1];
-                                if (childBlock) {
-                                    const { value } = childBlock;
-                                    childBlock.value = {
-                                        ...(value || {}),
-                                        width: parentBlock.value?.flow !== 'vertical' ? (100 / parentBlock.children.length) + '%' : undefined,
-                                        height: parentBlock.value?.flow === 'vertical' ? (100 / parentBlock.children.length) + '%' : parentBlock.value?.height,
-                                    }
-                                }
-                            });
-                        }
                     }
                 }
             }
@@ -267,22 +237,6 @@ export const BlocksEditorContextProvider = forwardRef<EditorRefObject, EditorPro
 
 
             deleteBlockWithchildren();
-
-            //if the parent block has to resie its children when a change occurs
-            const parentBlock = newBlocks.get(newSelectedBlock);
-            if (newSelectedBlock && availableBlocks[parentBlock?.type]?.autoChildrenSizing) {
-                parentBlock.children.forEach(child => {
-                    const childBlock = newBlocks.get(child);
-                    if (childBlock) {
-                        const { value } = childBlock;
-                        childBlock.value = {
-                            ...(value || {}),
-                            width: parentBlock.value?.flow !== 'vertical' ? (100 / parentBlock.children.length) + '%' : undefined,
-                            height: parentBlock.value?.flow === 'vertical' ? (100 / parentBlock.children.length) + '%' : parentBlock.value?.height,
-                        }
-                    }
-                });
-            }
 
             return newBlocks;
         });

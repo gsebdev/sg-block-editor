@@ -65,14 +65,11 @@ body {
     transition: color 0.2s ease-out;
 
     &:hover {
-      //background-color: var(--sg-block-hover-color, lightgray);
       color: var(--sg-block-selected-color, black);
     }
 
     &--selected {
-      //background-color: var(--sg-block-selected-color, blue);
-      color: var(--sg-block-selected-color, white);
-      transform: scale(1.15);
+      color: var(--sg-block-selected-color, blue);
     }
     &--round {
       border-radius: 50%;
@@ -183,7 +180,6 @@ body {
     border-radius: 5px;
     width: 100%;
     height: auto;
-    //min-height: fit-content !important;
     transition: border-color 0.3s ease-in-out, opacity 0.3s ease-in-out;
     &--hover {
       &:hover {
@@ -201,6 +197,8 @@ body {
       bottom: 0;
       left: 0;
       display: flex;
+      flex-wrap: wrap;
+      max-width: 100%;
       animation: fade-in 0.3s ease-in-out both;
       opacity: 0;
       gap: 1rem;
@@ -219,6 +217,8 @@ body {
       &__column {
         display: flex;
         flex-direction: row;
+        flex-wrap: wrap;
+        border: 1px var(--sg-block-primary-foreground-color, grey) solid;
       }
     }
     &__resizeHandle {
@@ -271,11 +271,12 @@ body {
   }
 
   &__blockText {
+    position: relative;
     .editor-container {
       .toolbar {
         display: none;
         position: absolute;
-        top : -5px;
+        top: -5px;
         transform: translateY(-100%);
         padding: 1rem;
         border: 1px solid var(--sg-block-primary-foreground-color, grey);
@@ -333,10 +334,12 @@ body {
 
   &__blockGroup {
     display: flex;
+    flex-wrap: wrap;
     height: 100%;
+
     &--vertical {
-      flex-direction: column;
       width: 100%;
+      flex-direction: column;
 
       .sg-block__block {
         height: auto;
@@ -354,6 +357,7 @@ body {
       position: absolute;
       top: 0;
       right: 0;
+      z-index: 51;
     }
 
     &__focusParent {
@@ -363,15 +367,35 @@ body {
     }
 
     .sg-block__block {
-      flex-shrink: 1 !important;
-      flex-grow: 0;
-      min-width: 150px;
-      min-height: 50px;
+      width: 100%;
     }
 
     &--fixedHeight {
       .sg-block__block {
         flex-grow: 1;
+      }
+    }
+    &__childContainer {
+      position: relative;
+    }
+    &__resizeHandle {
+      --thickness: 4px;
+      z-index: 30;
+      position: absolute;
+      top: 0;
+      width: var(--thickness);
+      right: calc(-1 * var(--thickness));
+      height: 100%;
+      cursor: col-resize;
+      background: linear-gradient(
+        180deg,
+        var(--sg-block-selected-color, blue) 50%,
+        transparent 50%
+      );
+      background-repeat: repeat-y;
+      background-size: 100% 20px;
+      &--disabled {
+        display: none;
       }
     }
   }
@@ -426,5 +450,4 @@ body {
       opacity: 1;
     }
   }
-
 }

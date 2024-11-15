@@ -14,7 +14,7 @@ type ImageType = {
 
 type ImageBlockType = BlockType<{
     image?: ImageType,
-    aspect?: number,
+    aspect?: number | string,
     size?: {
         height: string | number,
         width: string | number
@@ -103,26 +103,26 @@ const ImageSelectorWrapper: React.FC<ImageSelectorWrapperProps> = ({
     )
 }
 
-const ImagePreview: React.FC<{ src?: string, aspect?: number, align?: "left"|"right"|"center"}> = ({ src, aspect, align }) => {
+const ImagePreview: React.FC<{ src?: string, aspect?: number | string, align?: "left" | "right" | "center" }> = ({ src, aspect, align }) => {
 
     return (
         <>
-         { src ?
-            <img
-                className="sg-block__blockImage__img"
-                src={src}
-                style={{
-                    aspectRatio: aspect,
-                    textAlign: align
-                }}
-                alt="Selected Image"
-            /> :
-            <div className="sg-block__blockImage__placeholder">
-                <FaImage />
-            </div>
-        }
+            {src ?
+                <img
+                    className="sg-block__blockImage__img"
+                    src={src}
+                    style={{
+                        aspectRatio: aspect,
+                        textAlign: align
+                    }}
+                    alt="Selected Image"
+                /> :
+                <div className="sg-block__blockImage__placeholder">
+                    <FaImage />
+                </div>
+            }
         </>
-       
+
     )
 }
 
@@ -169,8 +169,8 @@ const ImageBlock: React.FC<{ block: EditorParsedBlock<ImageBlockType>, isActive?
         }
     }, [height])
 
-    const aspects = [4 / 3, 3 / 2, 16 / 9, 1];
-    const aspectsLabels = ['4:3', '3:2', '16:9', '1:1'];
+    const aspects = ['auto', 'fill', 4 / 3, 3 / 2, 16 / 9, 1];
+    const aspectsLabels = ['original', 'Remplir', '4:3', '3:2', '16:9', '1:1'];
 
     const aligns = ['left', 'center', 'right'];
     const alignsIcons = [
@@ -182,15 +182,18 @@ const ImageBlock: React.FC<{ block: EditorParsedBlock<ImageBlockType>, isActive?
     return (
         <>
             <BlockToolbar>
-                <BlockToolbarColumn>
+                <BlockToolbarColumn
+                    title={'Aspect'}
+                >
+
                     {
                         aspects.map((value, index) => (
                             <Button
                                 key={value}
-                                variant={aspect === value && 'selected'}
+                                variant={aspect === value || (value === 'fill' && height === '100%') ? 'selected' : undefined}
                                 onClick={() => updateImageBlock({
-                                    aspect: aspect === value ? undefined : value,
-                                    height: 'auto'
+                                    aspect: aspect === value || value === 'fill' ? undefined : value,
+                                    height: value === 'fill' ? '100%' : 'auto'
                                 })}
                             >
                                 {aspectsLabels[index]}
@@ -198,7 +201,9 @@ const ImageBlock: React.FC<{ block: EditorParsedBlock<ImageBlockType>, isActive?
                         ))
                     }
                 </BlockToolbarColumn>
-                <BlockToolbarColumn>
+                <BlockToolbarColumn
+                    title={'Alignement'}
+                >
                     {
                         aligns.map((value: 'left' | 'right' | 'center', index) => (
                             <Button
@@ -219,7 +224,7 @@ const ImageBlock: React.FC<{ block: EditorParsedBlock<ImageBlockType>, isActive?
                 ImageSelector={ImageSelector}
             >
 
-            <ImagePreview src={imagePreview} align={align} aspect={aspect} />
+                <ImagePreview src={imagePreview} align={align} aspect={aspect} />
             </ImageSelectorWrapper>
         </>
 

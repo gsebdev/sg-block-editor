@@ -32,7 +32,6 @@ const SpacingTool: React.FC<SpacingToolProps> = ({ value, onChange }) => {
     }
 
     const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-        console.log(e.key)
         if (e.key === "Enter") {
             spacingToolRef.current?.querySelectorAll('input').forEach((el) => {
                 el.blur();
@@ -41,26 +40,31 @@ const SpacingTool: React.FC<SpacingToolProps> = ({ value, onChange }) => {
     }
 
     return (
-        <div className="sg-block__SpacingTool" ref={spacingToolRef}>
-            {directions.map((direction) => {
-                return (
-                    <div
-                        key={direction}
-                        className={`sg-block__SpacingTool__${direction}`}
-                    >
-                        <input
-                            type="text"
-                            onChange={(e) => handleChange(direction, e.target.value)}
-                            onBlur={() => onChange?.(spacings)}
-                            onKeyDown={(e) => handleKeyDown(e)}
-                            value={spacings[direction] ?? '0px'}
-                        />
-                    </div>
-                )
-            })
-            }
-            <div className="sg-block__SpacingTool__center" />
+        <div>
+            <p><b>Marges</b></p>
+            <div className="sg-block__SpacingTool" ref={spacingToolRef}>
+
+                {directions.map((direction) => {
+                    return (
+                        <div
+                            key={direction}
+                            className={`sg-block__SpacingTool__${direction}`}
+                        >
+                            <input
+                                type="text"
+                                onChange={(e) => handleChange(direction, e.target.value)}
+                                onBlur={() => onChange?.(spacings)}
+                                onKeyDown={(e) => handleKeyDown(e)}
+                                value={spacings[direction] ?? '0px'}
+                            />
+                        </div>
+                    )
+                })
+                }
+                <div className="sg-block__SpacingTool__center" />
+            </div>
         </div>
+
     )
 }
 
