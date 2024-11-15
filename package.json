@@ -1,8 +1,14 @@
 {
   "name": "sg-block-editor",
-  "version": "1.0.0",
+  "version": "0.1.0",
+  "author": "gsebdev",
+  "license": "MIT License",
+  "keywords": "react package block editor cms html wysiwyg lightweight easy-to-use",
+  "description": "This is a simple, easy to use, WYSIWYG blocs editor that can be used to let user create content",
+  "entryPoint": "dist/index.js",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "gitRepository": "https://github.com/gsebdev/sg-block-editor.git",
   "peerDependencies": {
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
