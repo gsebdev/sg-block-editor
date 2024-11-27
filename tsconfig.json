@@ -1,17 +1,19 @@
 {
-  "compilerOptions": {
-    "target": "ES6",
-    "module": "ESNext",
-    "declaration": true,
-    "jsx": "react-jsx",
-    "esModuleInterop": true,
-    "moduleResolution": "node",
-    "skipLibCheck": true,
-    "noEmit": true,
-    "resolveJsonModule": true,
-    "strict": true,
-    "allowJs": true
-  },
-  "include": ["src/**/*", "demo/**/*", "lib/rich-text-module"],
-  "exclude": ["node_modules", "dist"]
-}
+    "compilerOptions": {
+      "target": "ES6",
+      "module": "ESNext",
+      "outDir": "./dist",
+      "declaration": true,
+      "jsx": "react-jsx",
+      "esModuleInterop": true,
+      "moduleResolution": "node",
+      "skipLibCheck": false,
+      "noEmit": false,
+      "resolveJsonModule": true,
+      "removeComments": true,
+      "strict": true,
+      "allowJs": true
+    },
+    "include": ["src/**/*", "lib/text-module/component"],
+    "exclude": ["node_modules", "dist"]
+  }

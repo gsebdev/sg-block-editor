@@ -69,6 +69,7 @@ const TextBlock: React.FC<{ block: EditorParsedBlock<TextBlockType>, isActive?: 
             )}>
                 <TextIgniter
                     ref={editorRef}
+                    //@ts-expect-error js ignore
                     onChange={handleChange}
                     defaultContent={htmlContent}
                     features={features}

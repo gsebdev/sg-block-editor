@@ -1,12 +1,7 @@
-"use strict";
-var __create = Object.create;
 var __defProp = Object.defineProperty;
 var __defProps = Object.defineProperties;
-var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
 var __getOwnPropDescs = Object.getOwnPropertyDescriptors;
-var __getOwnPropNames = Object.getOwnPropertyNames;
 var __getOwnPropSymbols = Object.getOwnPropertySymbols;
-var __getProtoOf = Object.getPrototypeOf;
 var __hasOwnProp = Object.prototype.hasOwnProperty;
 var __propIsEnum = Object.prototype.propertyIsEnumerable;
 var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
@@ -34,52 +29,18 @@ var __objRest = (source, exclude) => {
     }
   return target;
 };
-var __export = (target, all) => {
-  for (var name in all)
-    __defProp(target, name, { get: all[name], enumerable: true });
-};
-var __copyProps = (to, from, except, desc) => {
-  if (from && typeof from === "object" || typeof from === "function") {
-    for (let key of __getOwnPropNames(from))
-      if (!__hasOwnProp.call(to, key) && key !== except)
-        __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
-  }
-  return to;
-};
-var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(
-  // If the importer is in node compatibility mode or this is not an ESM
-  // file that has been converted to a CommonJS file using a Babel-
-  // compatible transform (i.e. "__esModule" has not been set), then set
-  // "default" to the CommonJS "module.exports" for node compatibility.
-  isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
-  mod
-));
-var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
-
-// src/index.ts
-var src_exports = {};
-__export(src_exports, {
-  BlockEditor: () => BlockEditor_default,
-  Definitions: () => definitions_exports,
-  ImageBlock: () => ImageBlock_default,
-  RowBlock: () => GroupBlock_default,
-  TextBlock: () => TextBlock_default,
-  defaultBlocks: () => default_blocks_default,
-  useEditor: () => useEditor
-});
-module.exports = __toCommonJS(src_exports);
 
 // src/BlockEditor.tsx
-var import_react21 = require("react");
+import { forwardRef as forwardRef3, useCallback as useCallback9, useEffect as useEffect10, useRef as useRef7 } from "react";
 
 // src/context.tsx
-var import_react = require("react");
+import { createContext, forwardRef, useCallback, useContext, useEffect, useImperativeHandle, useState } from "react";
 
 // src/helpers.ts
 var genBlockID = () => "_" + Math.random().toString(36).substr(2, 9);
 
 // src/context.tsx
-var import_jsx_runtime = require("react/jsx-runtime");
+import { jsx } from "react/jsx-runtime";
 var initialContext = {
   isDirty: false,
   setIsDirty: () => {
@@ -98,18 +59,18 @@ var initialContext = {
   },
   availableBlocks: {}
 };
-var blockEditorContext = (0, import_react.createContext)(initialContext);
-var BlocksEditorContextProvider = (0, import_react.forwardRef)(({ children, data, onChange, availableBlocks }, ref) => {
-  const [blocks, setBlocks] = (0, import_react.useState)(/* @__PURE__ */ new Map());
-  const [renderedJSON, setRenderedJSON] = (0, import_react.useState)(data);
-  const [renderedHTML, setRenderedHTML] = (0, import_react.useState)("");
-  const [isDirty, setIsDirty] = (0, import_react.useState)(false);
-  const [activeBlock, setActiveBlock] = (0, import_react.useState)(null);
-  (0, import_react.useImperativeHandle)(ref, () => ({
+var blockEditorContext = createContext(initialContext);
+var BlocksEditorContextProvider = forwardRef(({ children, data, onChange, availableBlocks }, ref) => {
+  const [blocks, setBlocks] = useState(/* @__PURE__ */ new Map());
+  const [renderedJSON, setRenderedJSON] = useState(data);
+  const [renderedHTML, setRenderedHTML] = useState("");
+  const [isDirty, setIsDirty] = useState(false);
+  const [activeBlock, setActiveBlock] = useState(null);
+  useImperativeHandle(ref, () => ({
     getJSONValue: () => renderedJSON != null ? renderedJSON : [],
     getHTMLValue: () => renderedHTML != null ? renderedHTML : ""
   }));
-  (0, import_react.useEffect)(() => {
+  useEffect(() => {
     if (isDirty) {
       const renderBlocks = (b) => {
         if (b.children && Array.isArray(b.children)) {
@@ -154,7 +115,7 @@ var BlocksEditorContextProvider = (0, import_react.forwardRef)(({ children, data
       });
     }
   }, [blocks, isDirty, onChange]);
-  (0, import_react.useEffect)(() => {
+  useEffect(() => {
     setRenderedJSON(data);
     if (data) {
       const initialBlocks = /* @__PURE__ */ new Map();
@@ -177,7 +138,7 @@ var BlocksEditorContextProvider = (0, import_react.forwardRef)(({ children, data
       setBlocks(initialBlocks);
     }
   }, [data]);
-  const updateBlock = (0, import_react.useCallback)((blockID, updatedData, shouldNotDirty) => {
+  const updateBlock = useCallback((blockID, updatedData, shouldNotDirty) => {
     setBlocks((prevBlocks) => {
       var _a, _b;
       const newBlocks = new Map(prevBlocks);
@@ -191,7 +152,7 @@ var BlocksEditorContextProvider = (0, import_react.forwardRef)(({ children, data
     });
     if (!shouldNotDirty) setIsDirty(true);
   }, [setBlocks]);
-  (0, import_react.useEffect)(() => {
+  useEffect(() => {
     var _a;
     const blocksThatShouldHaveFocusWithin = [];
     if (activeBlock) {
@@ -210,7 +171,7 @@ var BlocksEditorContextProvider = (0, import_react.forwardRef)(({ children, data
       }
     });
   }, [blocks, activeBlock, updateBlock]);
-  const addBlock = (0, import_react.useCallback)((type, args) => {
+  const addBlock = useCallback((type, args) => {
     const blockID = genBlockID();
     const { parentID, position, reference } = args != null ? args : {};
     setBlocks((prevBlocks) => {
@@ -249,7 +210,7 @@ var BlocksEditorContextProvider = (0, import_react.forwardRef)(({ children, data
     setActiveBlock(blockID);
     setIsDirty(true);
   }, []);
-  const deleteBlock = (0, import_react.useCallback)((blockID) => {
+  const deleteBlock = useCallback((blockID) => {
     let newSelectedBlock = null;
     setBlocks((prevBlock) => {
       const newBlocks = new Map(prevBlock);
@@ -285,7 +246,7 @@ var BlocksEditorContextProvider = (0, import_react.forwardRef)(({ children, data
     setActiveBlock(newSelectedBlock);
     setIsDirty(true);
   }, []);
-  return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(blockEditorContext.Provider, { value: {
+  return /* @__PURE__ */ jsx(blockEditorContext.Provider, { value: {
     blocks,
     setBlocks,
     isDirty,
@@ -299,16 +260,16 @@ var BlocksEditorContextProvider = (0, import_react.forwardRef)(({ children, data
   }, children });
 });
 BlocksEditorContextProvider.displayName = "BlocksEditorContextProvider";
-var useEditor = () => (0, import_react.useContext)(blockEditorContext);
+var useEditor = () => useContext(blockEditorContext);
 
 // src/blocks/ImageBlock.tsx
-var import_react4 = require("react");
-var import_md = require("react-icons/md");
+import { useEffect as useEffect3, useRef as useRef3, useState as useState4 } from "react";
+import { MdAlignHorizontalLeft, MdAlignHorizontalRight, MdAlignHorizontalCenter } from "react-icons/md";
 
 // src/components/Button.tsx
-var import_jsx_runtime2 = require("react/jsx-runtime");
+import { jsx as jsx2 } from "react/jsx-runtime";
 var Button = ({ children, className, variant, onClick, ariaLabel, title }) => {
-  return /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(
+  return /* @__PURE__ */ jsx2(
     "button",
     {
       onClick,
@@ -322,25 +283,25 @@ var Button = ({ children, className, variant, onClick, ariaLabel, title }) => {
 var Button_default = Button;
 
 // src/Block.tsx
-var import_clsx = __toESM(require("clsx"));
-var import_react3 = require("react");
-var import_fa6 = require("react-icons/fa6");
-var import_ri = require("react-icons/ri");
-var DropdownMenu = __toESM(require("@radix-ui/react-dropdown-menu"));
-var import_re_resizable = require("re-resizable");
+import clsx from "clsx";
+import { createContext as createContext2, useCallback as useCallback2, useContext as useContext2, useEffect as useEffect2, useMemo, useRef as useRef2, useState as useState3 } from "react";
+import { FaPlus } from "react-icons/fa6";
+import { RiDeleteBin5Line } from "react-icons/ri";
+import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
+import { Resizable } from "re-resizable";
 
 // src/components/SpacingTool.tsx
-var import_react2 = require("react");
-var import_jsx_runtime3 = require("react/jsx-runtime");
+import { useRef, useState as useState2 } from "react";
+import { jsx as jsx3, jsxs } from "react/jsx-runtime";
 var SpacingTool = ({ value, onChange }) => {
-  const [spacings, setSpacings] = (0, import_react2.useState)(value != null ? value : {});
+  const [spacings, setSpacings] = useState2(value != null ? value : {});
   const directions = [
     "left",
     "right",
     "bottom",
     "top"
   ];
-  const spacingToolRef = (0, import_react2.useRef)(null);
+  const spacingToolRef = useRef(null);
   const handleChange = (direction, value2) => {
     const newSpacings = __spreadProps(__spreadValues({}, spacings), {
       [direction]: value2
@@ -355,16 +316,16 @@ var SpacingTool = ({ value, onChange }) => {
       });
     }
   };
-  return /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { children: [
-    /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("p", { children: /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("b", { children: "Marges" }) }),
-    /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "sg-block__SpacingTool", ref: spacingToolRef, children: [
+  return /* @__PURE__ */ jsxs("div", { children: [
+    /* @__PURE__ */ jsx3("p", { children: /* @__PURE__ */ jsx3("b", { children: "Marges" }) }),
+    /* @__PURE__ */ jsxs("div", { className: "sg-block__SpacingTool", ref: spacingToolRef, children: [
       directions.map((direction) => {
         var _a;
-        return /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(
+        return /* @__PURE__ */ jsx3(
           "div",
           {
             className: `sg-block__SpacingTool__${direction}`,
-            children: /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(
+            children: /* @__PURE__ */ jsx3(
               "input",
               {
                 type: "text",
@@ -378,14 +339,14 @@ var SpacingTool = ({ value, onChange }) => {
           direction
         );
       }),
-      /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { className: "sg-block__SpacingTool__center" })
+      /* @__PURE__ */ jsx3("div", { className: "sg-block__SpacingTool__center" })
     ] })
   ] });
 };
 var SpacingTool_default = SpacingTool;
 
 // src/Block.tsx
-var import_jsx_runtime4 = require("react/jsx-runtime");
+import { Fragment, jsx as jsx4, jsxs as jsxs2 } from "react/jsx-runtime";
 var alignStyles = {
   alignSelf: {
     left: "flex-start",
@@ -400,18 +361,18 @@ var alignStyles = {
 };
 var AddBlockContextMenu = ({ className, children, args }) => {
   const { addBlock, availableBlocks } = useEditor();
-  return /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("div", { className: (0, import_clsx.default)(
+  return /* @__PURE__ */ jsx4("div", { className: clsx(
     className
-  ), children: /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)(DropdownMenu.Root, { children: [
-    /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(DropdownMenu.Trigger, { asChild: true, children }),
-    /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)(
+  ), children: /* @__PURE__ */ jsxs2(DropdownMenu.Root, { children: [
+    /* @__PURE__ */ jsx4(DropdownMenu.Trigger, { asChild: true, children }),
+    /* @__PURE__ */ jsxs2(
       DropdownMenu.Content,
       {
         sideOffset: 0,
         align: "center",
         className: "sg-block__addMenu__content",
         children: [
-          /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(
+          /* @__PURE__ */ jsx4(
             DropdownMenu.Label,
             {
               className: "sg-block__addMenu__label",
@@ -420,13 +381,13 @@ var AddBlockContextMenu = ({ className, children, args }) => {
           ),
           Object.values(availableBlocks).map((block) => {
             const Icon = block.icon;
-            return /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)(
+            return /* @__PURE__ */ jsxs2(
               DropdownMenu.Item,
               {
                 onClick: () => addBlock(block.type, args),
                 className: "sg-block__addMenu__item",
                 children: [
-                  !!Icon && /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(Icon, { style: { marginRight: "4px" } }),
+                  !!Icon && /* @__PURE__ */ jsx4(Icon, { style: { marginRight: "4px" } }),
                   block.name
                 ]
               },
@@ -438,20 +399,20 @@ var AddBlockContextMenu = ({ className, children, args }) => {
     )
   ] }) });
 };
-var toolbarContext = (0, import_react3.createContext)([
+var toolbarContext = createContext2([
   null,
   () => {
     throw new Error("Toolbar must be wrapped in context provider");
   }
 ]);
 var BlockToolbarProvider = ({ children }) => {
-  const [toolbar, setToolbar] = (0, import_react3.useState)(null);
-  return /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(toolbarContext.Provider, { value: [toolbar, setToolbar], children });
+  const [toolbar, setToolbar] = useState3(null);
+  return /* @__PURE__ */ jsx4(toolbarContext.Provider, { value: [toolbar, setToolbar], children });
 };
 var BlockToolbarRenderer = ({ position, hasSpacingOptions, block }) => {
-  const [toolbar] = (0, import_react3.useContext)(toolbarContext);
+  const [toolbar] = useContext2(toolbarContext);
   const { updateBlock } = useEditor();
-  const handleChangeSpacings = (0, import_react3.useCallback)((spacingsValue) => {
+  const handleChangeSpacings = useCallback2((spacingsValue) => {
     updateBlock(blockID, {
       value: {
         spacings: spacingsValue
@@ -460,16 +421,16 @@ var BlockToolbarRenderer = ({ position, hasSpacingOptions, block }) => {
   }, [updateBlock, block.blockID]);
   const { value, blockID } = block;
   const { spacings } = value != null ? value : {};
-  return /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)("div", { className: `sg-block__block__toolbar${position === "top" ? " sg-block__block__toolbar--top" : ""}`, children: [
+  return /* @__PURE__ */ jsxs2("div", { className: `sg-block__block__toolbar${position === "top" ? " sg-block__block__toolbar--top" : ""}`, children: [
     toolbar != null ? toolbar : null,
-    hasSpacingOptions && /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(SpacingTool_default, { value: spacings, onChange: handleChangeSpacings })
+    hasSpacingOptions && /* @__PURE__ */ jsx4(SpacingTool_default, { value: spacings, onChange: handleChangeSpacings })
   ] });
 };
 var ResizableWrapper = (_a) => {
   var _b = _a, { isResizable, children } = _b, props = __objRest(_b, ["isResizable", "children"]);
   var _a2, _b2;
-  return /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(
-    import_re_resizable.Resizable,
+  return /* @__PURE__ */ jsx4(
+    Resizable,
     {
       enable: props.enable || (isResizable ? void 0 : false),
       className: props.className,
@@ -493,8 +454,8 @@ var ResizableWrapper = (_a) => {
   );
 };
 var BlockToolbar = ({ children }) => {
-  const [, setToolbar] = (0, import_react3.useContext)(toolbarContext);
-  (0, import_react3.useEffect)(() => {
+  const [, setToolbar] = useContext2(toolbarContext);
+  useEffect2(() => {
     setToolbar(children);
     return () => {
       setToolbar(null);
@@ -503,19 +464,19 @@ var BlockToolbar = ({ children }) => {
   return null;
 };
 var BlockToolbarColumn = ({ children, title }) => {
-  return /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)("div", { children: [
-    /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("p", { className: "sg-block__block__toolbar__column__title", children: /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("b", { children: title }) }),
-    /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("div", { className: "sg-block__block__toolbar__column", children })
+  return /* @__PURE__ */ jsxs2("div", { children: [
+    /* @__PURE__ */ jsx4("p", { className: "sg-block__block__toolbar__column__title", children: /* @__PURE__ */ jsx4("b", { children: title }) }),
+    /* @__PURE__ */ jsx4("div", { className: "sg-block__block__toolbar__column", children })
   ] });
 };
 var Block = ({ block, className, horizontalFlow }) => {
   var _a, _b, _c, _d, _e;
-  const [toolbarPosition, setToolbarPosition] = (0, import_react3.useState)("bottom");
+  const [toolbarPosition, setToolbarPosition] = useState3("bottom");
   const { blocks, activeBlock, setActiveBlock, deleteBlock, availableBlocks, updateBlock } = useEditor();
-  const blockRef = (0, import_react3.useRef)(null);
+  const blockRef = useRef2(null);
   const { blockID, hasFocusWithin, parentID, type, value } = block != null ? block : {};
   const isActive = blockID === activeBlock;
-  const { isResizable, hasSpacingOptions, BlockEditorElement } = (0, import_react3.useMemo)(() => {
+  const { isResizable, hasSpacingOptions, BlockEditorElement } = useMemo(() => {
     var _a2, _b2, _c2;
     if (!type) return {};
     return {
@@ -524,14 +485,14 @@ var Block = ({ block, className, horizontalFlow }) => {
       BlockEditorElement: (_c2 = availableBlocks[type]) == null ? void 0 : _c2.editor
     };
   }, [availableBlocks, parentID]);
-  const scrollHandler = (0, import_react3.useCallback)(() => {
+  const scrollHandler = useCallback2(() => {
     var _a2, _b2;
     const { top, bottom } = (_b2 = (_a2 = blockRef.current) == null ? void 0 : _a2.getBoundingClientRect()) != null ? _b2 : {};
     if (bottom !== void 0 && top !== void 0) {
       setToolbarPosition(window.innerHeight - bottom > top ? "bottom" : "top");
     }
   }, [blockRef, setToolbarPosition]);
-  (0, import_react3.useEffect)(() => {
+  useEffect2(() => {
     if (blockRef.current) {
       if (isActive) {
         scrollHandler();
@@ -543,7 +504,7 @@ var Block = ({ block, className, horizontalFlow }) => {
     }
     return () => window.removeEventListener("scroll", scrollHandler, true);
   }, [isActive, blockRef]);
-  const handleClickCapture = (0, import_react3.useCallback)((e) => {
+  const handleClickCapture = useCallback2((e) => {
     if (activeBlock !== blockID && !hasFocusWithin) {
       e.preventDefault();
       e.stopPropagation();
@@ -553,7 +514,7 @@ var Block = ({ block, className, horizontalFlow }) => {
   if (!block) return null;
   if (!blockID) return null;
   if (!BlockEditorElement) return null;
-  return /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(BlockToolbarProvider, { children: /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(
+  return /* @__PURE__ */ jsx4(BlockToolbarProvider, { children: /* @__PURE__ */ jsx4(
     "div",
     {
       ref: blockRef,
@@ -561,7 +522,7 @@ var Block = ({ block, className, horizontalFlow }) => {
         display: "contents"
       },
       onClickCapture: handleClickCapture,
-      children: /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)(
+      children: /* @__PURE__ */ jsxs2(
         ResizableWrapper,
         {
           isResizable: !!isResizable && isActive,
@@ -590,7 +551,7 @@ var Block = ({ block, className, horizontalFlow }) => {
             paddingLeft: (_c = value == null ? void 0 : value.spacings) == null ? void 0 : _c.left,
             paddingRight: (_d = value == null ? void 0 : value.spacings) == null ? void 0 : _d.right
           },
-          className: (0, import_clsx.default)(
+          className: clsx(
             "sg-block__block",
             !hasFocusWithin && !activeBlock && (!parentID || ((_e = blocks.get(parentID)) == null ? void 0 : _e.hasFocusWithin)) ? "sg-block__block--hover" : "",
             isActive ? "sg-block__block--active" : "",
@@ -598,47 +559,47 @@ var Block = ({ block, className, horizontalFlow }) => {
             className
           ),
           children: [
-            isActive && /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(import_jsx_runtime4.Fragment, { children: /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(
+            isActive && /* @__PURE__ */ jsx4(Fragment, { children: /* @__PURE__ */ jsx4(
               AddBlockContextMenu,
               {
                 args: { position: "before", reference: blockID, parentID },
                 className: "sg-block__contextMenu",
-                children: /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(
+                children: /* @__PURE__ */ jsx4(
                   "button",
                   {
                     title: "Ajouter un \xE9l\xE9ment avant le bloc actif",
                     "aria-label": "Ajotuer un \xE9l\xE9ment avant le bloc actif",
                     className: `sg-block__btn__addBlock sg-block__btn__addBlock--${horizontalFlow ? "left" : "top"}`,
-                    children: /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(import_fa6.FaPlus, {})
+                    children: /* @__PURE__ */ jsx4(FaPlus, {})
                   }
                 )
               }
             ) }),
-            /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(BlockEditorElement, { block, isActive }),
-            isActive && /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(BlockToolbarRenderer, { position: toolbarPosition, hasSpacingOptions, block }),
-            isActive && /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)(import_jsx_runtime4.Fragment, { children: [
-              /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(
+            /* @__PURE__ */ jsx4(BlockEditorElement, { block, isActive }),
+            isActive && /* @__PURE__ */ jsx4(BlockToolbarRenderer, { position: toolbarPosition, hasSpacingOptions, block }),
+            isActive && /* @__PURE__ */ jsxs2(Fragment, { children: [
+              /* @__PURE__ */ jsx4(
                 "button",
                 {
                   className: "sg-block__btn sg-block__btn--square sg-block__btn__deleteBlock",
                   onClick: () => deleteBlock(blockID),
                   "aria-label": "Supprimer le block actif: " + type,
                   title: "Supprimer le block actif: " + type,
-                  children: /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(import_ri.RiDeleteBin5Line, {})
+                  children: /* @__PURE__ */ jsx4(RiDeleteBin5Line, {})
                 }
               ),
-              /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(
+              /* @__PURE__ */ jsx4(
                 AddBlockContextMenu,
                 {
                   args: { position: "after", reference: blockID, parentID },
                   className: "sg-block__contextMenu",
-                  children: /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(
+                  children: /* @__PURE__ */ jsx4(
                     "button",
                     {
                       title: "Ajouter un \xE9l\xE9ment apr\xE8s le bloc actif",
                       "aria-label": "Ajouter un \xE9l\xE9ment apr\xE8s le bloc actif",
                       className: `sg-block__btn__addBlock sg-block__btn__addBlock--${horizontalFlow ? "right" : "bottom"}`,
-                      children: /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(import_fa6.FaPlus, {})
+                      children: /* @__PURE__ */ jsx4(FaPlus, {})
                     }
                   )
                 }
@@ -653,12 +614,12 @@ var Block = ({ block, className, horizontalFlow }) => {
 var Block_default = Block;
 
 // src/blocks/ImageBlock.tsx
-var import_fa62 = require("react-icons/fa6");
-var import_jsx_runtime5 = require("react/jsx-runtime");
+import { FaImage } from "react-icons/fa6";
+import { Fragment as Fragment2, jsx as jsx5, jsxs as jsxs3 } from "react/jsx-runtime";
 var DefaultImageSelector = ({ children, value, onSelect, className }) => {
-  const [currentImage, setCurrentImage] = (0, import_react4.useState)(value);
-  const inputRef = (0, import_react4.useRef)(null);
-  (0, import_react4.useEffect)(() => {
+  const [currentImage, setCurrentImage] = useState4(value);
+  const inputRef = useRef3(null);
+  useEffect3(() => {
     if (onSelect && currentImage && currentImage.src !== (value == null ? void 0 : value.src)) onSelect(currentImage);
   }, [currentImage]);
   const handleImageclick = () => {
@@ -681,9 +642,9 @@ var DefaultImageSelector = ({ children, value, onSelect, className }) => {
       reader.readAsDataURL(file);
     }
   };
-  return /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className, onClick: handleImageclick, children: [
+  return /* @__PURE__ */ jsxs3("div", { className, onClick: handleImageclick, children: [
     children,
-    /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("input", { type: "file", hidden: true, ref: inputRef, accept: ".jpg, .jpeg, .png", onChange: handleFileChange })
+    /* @__PURE__ */ jsx5("input", { type: "file", hidden: true, ref: inputRef, accept: ".jpg, .jpeg, .png", onChange: handleFileChange })
   ] });
 };
 var ImageSelectorWrapper = ({
@@ -693,7 +654,7 @@ var ImageSelectorWrapper = ({
   onSelect,
   className
 }) => {
-  if (ImageSelector) return /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
+  if (ImageSelector) return /* @__PURE__ */ jsx5(
     ImageSelector,
     {
       value,
@@ -702,7 +663,7 @@ var ImageSelectorWrapper = ({
       children
     }
   );
-  return /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
+  return /* @__PURE__ */ jsx5(
     DefaultImageSelector,
     {
       value,
@@ -713,7 +674,7 @@ var ImageSelectorWrapper = ({
   );
 };
 var ImagePreview = ({ src, aspect, align }) => {
-  return /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(import_jsx_runtime5.Fragment, { children: src ? /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
+  return /* @__PURE__ */ jsx5(Fragment2, { children: src ? /* @__PURE__ */ jsx5(
     "img",
     {
       className: "sg-block__blockImage__img",
@@ -724,11 +685,11 @@ var ImagePreview = ({ src, aspect, align }) => {
       },
       alt: "Selected Image"
     }
-  ) : /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("div", { className: "sg-block__blockImage__placeholder", children: /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(import_fa62.FaImage, {}) }) });
+  ) : /* @__PURE__ */ jsx5("div", { className: "sg-block__blockImage__placeholder", children: /* @__PURE__ */ jsx5(FaImage, {}) }) });
 };
 var ImageBlock = ({ block, ImageSelector }) => {
   var _a, _b;
-  const [imagePreview, setImagePreview] = (0, import_react4.useState)((_b = (_a = block.value) == null ? void 0 : _a.image) == null ? void 0 : _b.src);
+  const [imagePreview, setImagePreview] = useState4((_b = (_a = block.value) == null ? void 0 : _a.image) == null ? void 0 : _b.src);
   const { updateBlock } = useEditor();
   const { blockID, value } = block;
   const { image, aspect, height, align } = value != null ? value : {};
@@ -748,7 +709,7 @@ var ImageBlock = ({ block, ImageSelector }) => {
       setImagePreview(imagePreviewSrc != null ? imagePreviewSrc : newValue.src);
     }
   };
-  (0, import_react4.useEffect)(() => {
+  useEffect3(() => {
     if (aspect && height !== "auto") {
       updateImageBlock({
         aspect: void 0
@@ -759,17 +720,17 @@ var ImageBlock = ({ block, ImageSelector }) => {
   const aspectsLabels = ["original", "Remplir", "4:3", "3:2", "16:9", "1:1"];
   const aligns = ["left", "center", "right"];
   const alignsIcons = [
-    /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(import_md.MdAlignHorizontalLeft, {}, "alignLeft"),
-    /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(import_md.MdAlignHorizontalCenter, {}, "alignCenter"),
-    /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(import_md.MdAlignHorizontalRight, {}, "alignRight")
+    /* @__PURE__ */ jsx5(MdAlignHorizontalLeft, {}, "alignLeft"),
+    /* @__PURE__ */ jsx5(MdAlignHorizontalCenter, {}, "alignCenter"),
+    /* @__PURE__ */ jsx5(MdAlignHorizontalRight, {}, "alignRight")
   ];
-  return /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)(import_jsx_runtime5.Fragment, { children: [
-    /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)(BlockToolbar, { children: [
-      /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
+  return /* @__PURE__ */ jsxs3(Fragment2, { children: [
+    /* @__PURE__ */ jsxs3(BlockToolbar, { children: [
+      /* @__PURE__ */ jsx5(
         BlockToolbarColumn,
         {
           title: "Aspect",
-          children: aspects.map((value2, index) => /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
+          children: aspects.map((value2, index) => /* @__PURE__ */ jsx5(
             Button_default,
             {
               variant: aspect === value2 || value2 === "fill" && height === "100%" ? "selected" : void 0,
@@ -783,11 +744,11 @@ var ImageBlock = ({ block, ImageSelector }) => {
           ))
         }
       ),
-      /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
+      /* @__PURE__ */ jsx5(
         BlockToolbarColumn,
         {
           title: "Alignement",
-          children: aligns.map((value2, index) => /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
+          children: aligns.map((value2, index) => /* @__PURE__ */ jsx5(
             Button_default,
             {
               variant: align === value2 ? "selected" : "",
@@ -799,14 +760,14 @@ var ImageBlock = ({ block, ImageSelector }) => {
         }
       )
     ] }),
-    /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
+    /* @__PURE__ */ jsx5(
       ImageSelectorWrapper,
       {
         className: "sg-block__blockImage__selectorWrapper",
         value: image,
         onSelect: handleImageSelection,
         ImageSelector,
-        children: /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(ImagePreview, { src: imagePreview, align, aspect })
+        children: /* @__PURE__ */ jsx5(ImagePreview, { src: imagePreview, align, aspect })
       }
     )
   ] });
@@ -814,25 +775,29 @@ var ImageBlock = ({ block, ImageSelector }) => {
 var ImageBlock_default = ImageBlock;
 
 // src/default-blocks.tsx
-var import_fa64 = require("react-icons/fa6");
-var import_fa65 = require("react-icons/fa6");
-var import_rx = require("react-icons/rx");
+import { FaRegImage } from "react-icons/fa6";
+import { FaAlignJustify } from "react-icons/fa6";
+import { RxGroup } from "react-icons/rx";
 
 // src/blocks/TextBlock.tsx
-var import_clsx2 = __toESM(require("clsx"));
-var import_react19 = require("react");
+import clsx2 from "clsx";
+import { useCallback as useCallback7, useEffect as useEffect8, useRef as useRef5 } from "react";
 
 // lib/text-module/component/src/components/TextIgniter/TextIgniter.jsx
-var import_react18 = __toESM(require("react"));
+import React11, {
+  useImperativeHandle as useImperativeHandle2,
+  forwardRef as forwardRef2,
+  useEffect as useEffect7
+} from "react";
 
 // lib/text-module/component/src/contexts/editorContext.jsx
-var import_react9 = __toESM(require("react"));
+import React3, { createContext as createContext3, useContext as useContext3, useRef as useRef4, useCallback as useCallback6 } from "react";
 
 // lib/text-module/component/src/hooks/useEditorFormatting.jsx
-var import_react5 = require("react");
+import { useCallback as useCallback3, useState as useState5, useEffect as useEffect4 } from "react";
 var useEditorFormatting = (editorRef) => {
-  const [activeStyles, setActiveStyles] = (0, import_react5.useState)(["justifyLeft"]);
-  const updateDataAttributes = (0, import_react5.useCallback)((element) => {
+  const [activeStyles, setActiveStyles] = useState5(["justifyLeft"]);
+  const updateDataAttributes = useCallback3((element) => {
     const styles = window.getComputedStyle(element);
     const dataType = [];
     if (styles.fontWeight === "bold" || parseInt(styles.fontWeight) >= 600)
@@ -844,7 +809,7 @@ var useEditorFormatting = (editorRef) => {
     if (styles.textAlign === "right") dataType.push("justifyRight");
     element.setAttribute("data-type", dataType.join("-") || "normal");
   }, []);
-  const updateActiveStyles = (0, import_react5.useCallback)(() => {
+  const updateActiveStyles = useCallback3(() => {
     const editor = editorRef.current;
     if (editor) {
       const styles = /* @__PURE__ */ new Set();
@@ -878,7 +843,7 @@ var useEditorFormatting = (editorRef) => {
       setActiveStyles(Array.from(styles));
     }
   }, [editorRef]);
-  const formatText = (0, import_react5.useCallback)(
+  const formatText = useCallback3(
     (command, value = null) => {
       const editor = editorRef.current;
       if (editor) {
@@ -906,7 +871,7 @@ var useEditorFormatting = (editorRef) => {
     },
     [editorRef, updateActiveStyles]
   );
-  const addImageOrVideo = (0, import_react5.useCallback)(
+  const addImageOrVideo = useCallback3(
     (file, fileUrl) => {
       const editor = editorRef.current;
       if (editor) {
@@ -946,7 +911,7 @@ var useEditorFormatting = (editorRef) => {
     },
     [editorRef, updateActiveStyles]
   );
-  const addLink = (0, import_react5.useCallback)(
+  const addLink = useCallback3(
     (linkText, linkUrl) => {
       const editor = editorRef.current;
       if (editor) {
@@ -964,7 +929,7 @@ var useEditorFormatting = (editorRef) => {
     },
     [editorRef, updateActiveStyles]
   );
-  const applyHeading = (0, import_react5.useCallback)(
+  const applyHeading = useCallback3(
     (heading) => {
       const editor = editorRef.current;
       if (editor) {
@@ -974,7 +939,7 @@ var useEditorFormatting = (editorRef) => {
     },
     [editorRef, updateActiveStyles]
   );
-  (0, import_react5.useEffect)(() => {
+  useEffect4(() => {
     const editor = editorRef.current;
     if (editor) {
       const handleLinkClick = (e) => {
@@ -1005,7 +970,7 @@ var useEditorFormatting = (editorRef) => {
 };
 
 // lib/text-module/component/src/hooks/useEditorState.jsx
-var import_react6 = require("react");
+import { useReducer, useEffect as useEffect5 } from "react";
 var initialState = { wordCount: 0, charCount: 0, html: null };
 var reducer = (state, action) => {
   switch (action.type) {
@@ -1023,8 +988,8 @@ var reducer = (state, action) => {
   }
 };
 var useEditorState = (editorRef, updateDataAttributes) => {
-  const [state, dispatch] = (0, import_react6.useReducer)(reducer, initialState);
-  (0, import_react6.useEffect)(() => {
+  const [state, dispatch] = useReducer(reducer, initialState);
+  useEffect5(() => {
     const editor = editorRef.current;
     let editorChangedHtml = state.html;
     const handleInput = () => {
@@ -1059,9 +1024,9 @@ var useEditorState = (editorRef, updateDataAttributes) => {
 };
 
 // lib/text-module/component/src/hooks/useTableOperation.jsx
-var import_react7 = require("react");
+import { useCallback as useCallback4 } from "react";
 var useTableOperations = (editorRef) => {
-  const insertTable = (0, import_react7.useCallback)((rows = 2, cols = 2) => {
+  const insertTable = useCallback4((rows = 2, cols = 2) => {
     const editor = editorRef.current;
     if (editor) {
       const table = document.createElement("table");
@@ -1084,7 +1049,7 @@ var useTableOperations = (editorRef) => {
       editor.dispatchEvent(new Event("change"));
     }
   }, [editorRef]);
-  const addTableRow = (0, import_react7.useCallback)(() => {
+  const addTableRow = useCallback4(() => {
     const editor = editorRef.current;
     if (editor) {
       const table = editor.querySelector("table");
@@ -1102,7 +1067,7 @@ var useTableOperations = (editorRef) => {
       editor.dispatchEvent(new Event("change"));
     }
   }, [editorRef]);
-  const addTableColumn = (0, import_react7.useCallback)(() => {
+  const addTableColumn = useCallback4(() => {
     const editor = editorRef.current;
     if (editor) {
       const table = editor.querySelector("table");
@@ -1125,7 +1090,7 @@ var useTableOperations = (editorRef) => {
       editor.dispatchEvent(new Event("change"));
     }
   }, [editorRef]);
-  const insertLayout = (0, import_react7.useCallback)((columns) => {
+  const insertLayout = useCallback4((columns) => {
     const editor = editorRef.current;
     if (editor) {
       const table = document.createElement("table");
@@ -1151,10 +1116,10 @@ var useTableOperations = (editorRef) => {
 };
 
 // lib/text-module/component/src/hooks/useHeadingState.jsx
-var import_react8 = require("react");
+import { useState as useState6, useCallback as useCallback5 } from "react";
 var useHeadingState = () => {
-  const [currentHeading, setCurrentHeading] = (0, import_react8.useState)("p");
-  const changeHeading = (0, import_react8.useCallback)((heading) => {
+  const [currentHeading, setCurrentHeading] = useState6("p");
+  const changeHeading = useCallback5((heading) => {
     setCurrentHeading(heading);
     document.execCommand("formatBlock", false, heading);
   }, []);
@@ -1162,10 +1127,10 @@ var useHeadingState = () => {
 };
 
 // lib/text-module/component/src/contexts/editorContext.jsx
-var import_jsx_runtime6 = require("react/jsx-runtime");
-var EditorContext = (0, import_react9.createContext)();
+import { jsx as jsx6 } from "react/jsx-runtime";
+var EditorContext = createContext3();
 var EditorProvider = ({ children }) => {
-  const editorRef = (0, import_react9.useRef)(null);
+  const editorRef = useRef4(null);
   const {
     formatText,
     updateDataAttributes,
@@ -1177,10 +1142,10 @@ var EditorProvider = ({ children }) => {
   const state = useEditorState(editorRef, updateDataAttributes);
   const { insertTable, addTableRow, addTableColumn, insertLayout } = useTableOperations(editorRef);
   const headingState = useHeadingState();
-  const getHtml = (0, import_react9.useCallback)(() => {
+  const getHtml = useCallback6(() => {
     return editorRef.current ? editorRef.current.innerHTML : "";
   }, [editorRef]);
-  const getJson = (0, import_react9.useCallback)(() => {
+  const getJson = useCallback6(() => {
     if (!editorRef.current) return null;
     const parseNode = (node) => {
       if (node.nodeType === Node.TEXT_NODE) {
@@ -1216,64 +1181,64 @@ var EditorProvider = ({ children }) => {
     getHtml,
     getJson
   });
-  return /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(EditorContext.Provider, { value: editorValue, children });
+  return /* @__PURE__ */ jsx6(EditorContext.Provider, { value: editorValue, children });
 };
-var useEditor2 = () => (0, import_react9.useContext)(EditorContext);
+var useEditor2 = () => useContext3(EditorContext);
 
 // lib/text-module/component/src/components/TextIgniter/Toolbar.jsx
-var import_react16 = __toESM(require("react"));
+import React9, { useState as useState11 } from "react";
 
 // lib/text-module/component/src/assets/icon.jsx
-var import_react10 = __toESM(require("react"));
-var import_jsx_runtime7 = require("react/jsx-runtime");
-var CloseIcon = () => /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(
+import React4 from "react";
+import { jsx as jsx7, jsxs as jsxs4 } from "react/jsx-runtime";
+var CloseIcon = () => /* @__PURE__ */ jsx7(
   "svg",
   {
     xmlns: "http://www.w3.org/2000/svg",
     width: "18",
     height: "20",
     viewBox: "0 0 24 20",
-    children: /* @__PURE__ */ (0, import_jsx_runtime7.jsx)("path", { d: "m16.192 6.344-4.243 4.242-4.242-4.242-1.414 1.414L10.535 12l-4.242 4.242 1.414 1.414 4.242-4.242 4.243 4.242 1.414-1.414L13.364 12l4.242-4.242z" })
+    children: /* @__PURE__ */ jsx7("path", { d: "m16.192 6.344-4.243 4.242-4.242-4.242-1.414 1.414L10.535 12l-4.242 4.242 1.414 1.414 4.242-4.242 4.243 4.242 1.414-1.414L13.364 12l4.242-4.242z" })
   }
 );
-var BoldIcon = () => /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(
+var BoldIcon = () => /* @__PURE__ */ jsx7(
   "svg",
   {
     xmlns: "http://www.w3.org/2000/svg",
     width: "18",
     height: "20",
     viewBox: "0 0 24 20",
-    children: /* @__PURE__ */ (0, import_jsx_runtime7.jsx)("path", { d: "M17.061 11.22A4.46 4.46 0 0 0 18 8.5C18 6.019 15.981 4 13.5 4H6v15h8c2.481 0 4.5-2.019 4.5-4.5a4.48 4.48 0 0 0-1.439-3.28zM13.5 7c.827 0 1.5.673 1.5 1.5s-.673 1.5-1.5 1.5H9V7h4.5zm.5 9H9v-3h5c.827 0 1.5.673 1.5 1.5S14.827 16 14 16z" })
+    children: /* @__PURE__ */ jsx7("path", { d: "M17.061 11.22A4.46 4.46 0 0 0 18 8.5C18 6.019 15.981 4 13.5 4H6v15h8c2.481 0 4.5-2.019 4.5-4.5a4.48 4.48 0 0 0-1.439-3.28zM13.5 7c.827 0 1.5.673 1.5 1.5s-.673 1.5-1.5 1.5H9V7h4.5zm.5 9H9v-3h5c.827 0 1.5.673 1.5 1.5S14.827 16 14 16z" })
   }
 );
-var ItalicIcon = () => /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(
+var ItalicIcon = () => /* @__PURE__ */ jsx7(
   "svg",
   {
     xmlns: "http://www.w3.org/2000/svg",
     width: "18",
     height: "20",
     viewBox: "0 0 24 20",
-    children: /* @__PURE__ */ (0, import_jsx_runtime7.jsx)("path", { d: "M19 7V4H9v3h2.868L9.012 17H5v3h10v-3h-2.868l2.856-10z" })
+    children: /* @__PURE__ */ jsx7("path", { d: "M19 7V4H9v3h2.868L9.012 17H5v3h10v-3h-2.868l2.856-10z" })
   }
 );
-var UnderlineIcon = () => /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(
+var UnderlineIcon = () => /* @__PURE__ */ jsx7(
   "svg",
   {
     xmlns: "http://www.w3.org/2000/svg",
     width: "18",
     height: "20",
     viewBox: "0 0 24 20",
-    children: /* @__PURE__ */ (0, import_jsx_runtime7.jsx)("path", { d: "M5 18h14v2H5zM6 4v6c0 3.309 2.691 6 6 6s6-2.691 6-6V4h-2v6c0 2.206-1.794 4-4 4s-4-1.794-4-4V4H6z" })
+    children: /* @__PURE__ */ jsx7("path", { d: "M5 18h14v2H5zM6 4v6c0 3.309 2.691 6 6 6s6-2.691 6-6V4h-2v6c0 2.206-1.794 4-4 4s-4-1.794-4-4V4H6z" })
   }
 );
-var AlignLeftIcon = () => /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(
+var AlignLeftIcon = () => /* @__PURE__ */ jsx7(
   "svg",
   {
     xmlns: "http://www.w3.org/2000/svg",
     width: "18",
     height: "20",
     viewBox: "0 0 24 20",
-    children: /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(
+    children: /* @__PURE__ */ jsx7(
       "path",
       {
         fillRule: "evenodd",
@@ -1283,7 +1248,7 @@ var AlignLeftIcon = () => /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(
     )
   }
 );
-var AlignCenterIcon = () => /* @__PURE__ */ (0, import_jsx_runtime7.jsxs)(
+var AlignCenterIcon = () => /* @__PURE__ */ jsxs4(
   "svg",
   {
     xmlns: "http://www.w3.org/2000/svg",
@@ -1291,7 +1256,7 @@ var AlignCenterIcon = () => /* @__PURE__ */ (0, import_jsx_runtime7.jsxs)(
     height: "20",
     viewBox: "0 0 24 20",
     children: [
-      /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(
+      /* @__PURE__ */ jsx7(
         "path",
         {
           fillRule: "evenodd",
@@ -1303,7 +1268,7 @@ var AlignCenterIcon = () => /* @__PURE__ */ (0, import_jsx_runtime7.jsxs)(
     ]
   }
 );
-var AlignRightIcon = () => /* @__PURE__ */ (0, import_jsx_runtime7.jsxs)(
+var AlignRightIcon = () => /* @__PURE__ */ jsxs4(
   "svg",
   {
     xmlns: "http://www.w3.org/2000/svg",
@@ -1311,7 +1276,7 @@ var AlignRightIcon = () => /* @__PURE__ */ (0, import_jsx_runtime7.jsxs)(
     height: "20",
     viewBox: "0 0 24 20",
     children: [
-      /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(
+      /* @__PURE__ */ jsx7(
         "path",
         {
           fillRule: "evenodd",
@@ -1323,34 +1288,34 @@ var AlignRightIcon = () => /* @__PURE__ */ (0, import_jsx_runtime7.jsxs)(
     ]
   }
 );
-var UnOrderedListIcon = () => /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(
+var UnOrderedListIcon = () => /* @__PURE__ */ jsx7(
   "svg",
   {
     xmlns: "http://www.w3.org/2000/svg",
     width: "18",
     height: "20",
     viewBox: "0 0 24 20",
-    children: /* @__PURE__ */ (0, import_jsx_runtime7.jsx)("path", { d: "M4 6h2v2H4zm0 5h2v2H4zm0 5h2v2H4zm16-8V6H8.023v2H18.8zM8 11h12v2H8zm0 5h12v2H8z" })
+    children: /* @__PURE__ */ jsx7("path", { d: "M4 6h2v2H4zm0 5h2v2H4zm0 5h2v2H4zm16-8V6H8.023v2H18.8zM8 11h12v2H8zm0 5h12v2H8z" })
   }
 );
-var OrderedListIcon = () => /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(
+var OrderedListIcon = () => /* @__PURE__ */ jsx7(
   "svg",
   {
     xmlns: "http://www.w3.org/2000/svg",
     width: "18",
     height: "20",
     viewBox: "0 0 24 20",
-    children: /* @__PURE__ */ (0, import_jsx_runtime7.jsx)("path", { d: "M5.282 12.064c-.428.328-.72.609-.875.851-.155.24-.249.498-.279.768h2.679v-.748H5.413c.081-.081.152-.151.212-.201.062-.05.182-.142.361-.27.303-.218.511-.42.626-.604.116-.186.173-.375.173-.578a.898.898 0 0 0-.151-.512.892.892 0 0 0-.412-.341c-.174-.076-.419-.111-.733-.111-.3 0-.537.038-.706.114a.889.889 0 0 0-.396.338c-.094.143-.159.346-.194.604l.894.076c.025-.188.074-.317.147-.394a.375.375 0 0 1 .279-.108c.11 0 .2.035.272.108a.344.344 0 0 1 .108.258.55.55 0 0 1-.108.297c-.074.102-.241.254-.503.453zm.055 6.386a.398.398 0 0 1-.282-.105c-.074-.07-.128-.195-.162-.378L4 18.085c.059.204.142.372.251.506.109.133.248.235.417.306.168.069.399.103.692.103.3 0 .541-.047.725-.14a1 1 0 0 0 .424-.403c.098-.175.146-.354.146-.544a.823.823 0 0 0-.088-.393.708.708 0 0 0-.249-.261 1.015 1.015 0 0 0-.286-.11.943.943 0 0 0 .345-.299.673.673 0 0 0 .113-.383.747.747 0 0 0-.281-.596c-.187-.159-.49-.238-.909-.238-.365 0-.648.072-.847.219-.2.143-.334.353-.404.626l.844.151c.023-.162.067-.274.133-.338s.151-.098.257-.098a.33.33 0 0 1 .241.089c.059.06.087.139.087.238 0 .104-.038.193-.117.27s-.177.112-.293.112a.907.907 0 0 1-.116-.011l-.045.649a1.13 1.13 0 0 1 .289-.056c.132 0 .237.041.313.126.077.082.115.199.115.352 0 .146-.04.266-.119.354a.394.394 0 0 1-.301.134zm.948-10.083V5h-.739a1.47 1.47 0 0 1-.394.523c-.168.142-.404.262-.708.365v.754a2.595 2.595 0 0 0 .937-.48v2.206h.904zM9 6h11v2H9zm0 5h11v2H9zm0 5h11v2H9z" })
+    children: /* @__PURE__ */ jsx7("path", { d: "M5.282 12.064c-.428.328-.72.609-.875.851-.155.24-.249.498-.279.768h2.679v-.748H5.413c.081-.081.152-.151.212-.201.062-.05.182-.142.361-.27.303-.218.511-.42.626-.604.116-.186.173-.375.173-.578a.898.898 0 0 0-.151-.512.892.892 0 0 0-.412-.341c-.174-.076-.419-.111-.733-.111-.3 0-.537.038-.706.114a.889.889 0 0 0-.396.338c-.094.143-.159.346-.194.604l.894.076c.025-.188.074-.317.147-.394a.375.375 0 0 1 .279-.108c.11 0 .2.035.272.108a.344.344 0 0 1 .108.258.55.55 0 0 1-.108.297c-.074.102-.241.254-.503.453zm.055 6.386a.398.398 0 0 1-.282-.105c-.074-.07-.128-.195-.162-.378L4 18.085c.059.204.142.372.251.506.109.133.248.235.417.306.168.069.399.103.692.103.3 0 .541-.047.725-.14a1 1 0 0 0 .424-.403c.098-.175.146-.354.146-.544a.823.823 0 0 0-.088-.393.708.708 0 0 0-.249-.261 1.015 1.015 0 0 0-.286-.11.943.943 0 0 0 .345-.299.673.673 0 0 0 .113-.383.747.747 0 0 0-.281-.596c-.187-.159-.49-.238-.909-.238-.365 0-.648.072-.847.219-.2.143-.334.353-.404.626l.844.151c.023-.162.067-.274.133-.338s.151-.098.257-.098a.33.33 0 0 1 .241.089c.059.06.087.139.087.238 0 .104-.038.193-.117.27s-.177.112-.293.112a.907.907 0 0 1-.116-.011l-.045.649a1.13 1.13 0 0 1 .289-.056c.132 0 .237.041.313.126.077.082.115.199.115.352 0 .146-.04.266-.119.354a.394.394 0 0 1-.301.134zm.948-10.083V5h-.739a1.47 1.47 0 0 1-.394.523c-.168.142-.404.262-.708.365v.754a2.595 2.595 0 0 0 .937-.48v2.206h.904zM9 6h11v2H9zm0 5h11v2H9zm0 5h11v2H9z" })
   }
 );
-var ImageIcon = () => /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(
+var ImageIcon = () => /* @__PURE__ */ jsx7(
   "svg",
   {
     xmlns: "http://www.w3.org/2000/svg",
     width: "18",
     height: "20",
     viewBox: "0 0 24 20",
-    children: /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(
+    children: /* @__PURE__ */ jsx7(
       "path",
       {
         fillRule: "evenodd",
@@ -1360,7 +1325,7 @@ var ImageIcon = () => /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(
     )
   }
 );
-var LinkIcon = () => /* @__PURE__ */ (0, import_jsx_runtime7.jsxs)(
+var LinkIcon = () => /* @__PURE__ */ jsxs4(
   "svg",
   {
     xmlns: "http://www.w3.org/2000/svg",
@@ -1368,12 +1333,12 @@ var LinkIcon = () => /* @__PURE__ */ (0, import_jsx_runtime7.jsxs)(
     height: "20",
     viewBox: "0 0 24 20",
     children: [
-      /* @__PURE__ */ (0, import_jsx_runtime7.jsx)("path", { d: "M8.465 11.293c1.133-1.133 3.109-1.133 4.242 0l.707.707 1.414-1.414-.707-.707c-.943-.944-2.199-1.465-3.535-1.465s-2.592.521-3.535 1.465L4.929 12a5.008 5.008 0 0 0 0 7.071 4.983 4.983 0 0 0 3.535 1.462A4.982 4.982 0 0 0 12 19.071l.707-.707-1.414-1.414-.707.707a3.007 3.007 0 0 1-4.243 0 3.005 3.005 0 0 1 0-4.243l2.122-2.121z" }),
-      /* @__PURE__ */ (0, import_jsx_runtime7.jsx)("path", { d: "m12 4.929-.707.707 1.414 1.414.707-.707a3.007 3.007 0 0 1 4.243 0 3.005 3.005 0 0 1 0 4.243l-2.122 2.121c-1.133 1.133-3.109 1.133-4.242 0L10.586 12l-1.414 1.414.707.707c.943.944 2.199 1.465 3.535 1.465s2.592-.521 3.535-1.465L19.071 12a5.008 5.008 0 0 0 0-7.071 5.006 5.006 0 0 0-7.071 0z" })
+      /* @__PURE__ */ jsx7("path", { d: "M8.465 11.293c1.133-1.133 3.109-1.133 4.242 0l.707.707 1.414-1.414-.707-.707c-.943-.944-2.199-1.465-3.535-1.465s-2.592.521-3.535 1.465L4.929 12a5.008 5.008 0 0 0 0 7.071 4.983 4.983 0 0 0 3.535 1.462A4.982 4.982 0 0 0 12 19.071l.707-.707-1.414-1.414-.707.707a3.007 3.007 0 0 1-4.243 0 3.005 3.005 0 0 1 0-4.243l2.122-2.121z" }),
+      /* @__PURE__ */ jsx7("path", { d: "m12 4.929-.707.707 1.414 1.414.707-.707a3.007 3.007 0 0 1 4.243 0 3.005 3.005 0 0 1 0 4.243l-2.122 2.121c-1.133 1.133-3.109 1.133-4.242 0L10.586 12l-1.414 1.414.707.707c.943.944 2.199 1.465 3.535 1.465s2.592-.521 3.535-1.465L19.071 12a5.008 5.008 0 0 0 0-7.071 5.006 5.006 0 0 0-7.071 0z" })
     ]
   }
 );
-var SubScriptIcon = () => /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(
+var SubScriptIcon = () => /* @__PURE__ */ jsx7(
   "svg",
   {
     width: "18",
@@ -1381,7 +1346,7 @@ var SubScriptIcon = () => /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(
     viewBox: "0 0 24 20",
     fill: "none",
     xmlns: "http://www.w3.org/2000/svg",
-    children: /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(
+    children: /* @__PURE__ */ jsx7(
       "path",
       {
         fillRule: "evenodd",
@@ -1392,7 +1357,7 @@ var SubScriptIcon = () => /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(
     )
   }
 );
-var SuperScriptIcon = () => /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(
+var SuperScriptIcon = () => /* @__PURE__ */ jsx7(
   "svg",
   {
     width: "18",
@@ -1400,7 +1365,7 @@ var SuperScriptIcon = () => /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(
     viewBox: "0 0 24 20",
     fill: "none",
     xmlns: "http://www.w3.org/2000/svg",
-    children: /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(
+    children: /* @__PURE__ */ jsx7(
       "path",
       {
         fillRule: "evenodd",
@@ -1411,14 +1376,14 @@ var SuperScriptIcon = () => /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(
     )
   }
 );
-var TableIcon = () => /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(
+var TableIcon = () => /* @__PURE__ */ jsx7(
   "svg",
   {
     xmlns: "http://www.w3.org/2000/svg",
     width: "18",
     height: "20",
     viewBox: "0 0 24 20",
-    children: /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(
+    children: /* @__PURE__ */ jsx7(
       "path",
       {
         fillRule: "evenodd",
@@ -1428,7 +1393,7 @@ var TableIcon = () => /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(
     )
   }
 );
-var LayoutIcon = () => /* @__PURE__ */ (0, import_jsx_runtime7.jsxs)(
+var LayoutIcon = () => /* @__PURE__ */ jsxs4(
   "svg",
   {
     xmlns: "http://www.w3.org/2000/svg",
@@ -1436,7 +1401,7 @@ var LayoutIcon = () => /* @__PURE__ */ (0, import_jsx_runtime7.jsxs)(
     height: "20",
     viewBox: "0 0 24 20",
     children: [
-      /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(
+      /* @__PURE__ */ jsx7(
         "path",
         {
           fillRule: "evenodd",
@@ -1448,65 +1413,65 @@ var LayoutIcon = () => /* @__PURE__ */ (0, import_jsx_runtime7.jsxs)(
     ]
   }
 );
-var HeadingIcon = () => /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(
+var HeadingIcon = () => /* @__PURE__ */ jsx7(
   "svg",
   {
     xmlns: "http://www.w3.org/2000/svg",
     width: "18",
     height: "24",
     viewBox: "0 0 24 24",
-    children: /* @__PURE__ */ (0, import_jsx_runtime7.jsx)("path", { d: "M18 20V4h-3v6H9V4H6v16h3v-7h6v7z" })
+    children: /* @__PURE__ */ jsx7("path", { d: "M18 20V4h-3v6H9V4H6v16h3v-7h6v7z" })
   }
 );
 
 // lib/text-module/component/src/components/ui/Button.jsx
-var import_react12 = __toESM(require("react"));
+import React6, { useState as useState7 } from "react";
 
 // lib/text-module/component/src/components/ui/ToolTip.jsx
-var import_react11 = __toESM(require("react"));
-var import_jsx_runtime8 = require("react/jsx-runtime");
+import React5 from "react";
+import { Fragment as Fragment3, jsx as jsx8, jsxs as jsxs5 } from "react/jsx-runtime";
 var Tooltip = ({ text, children }) => {
-  return text ? /* @__PURE__ */ (0, import_jsx_runtime8.jsxs)("div", { className: "tooltip-container", children: [
-    /* @__PURE__ */ (0, import_jsx_runtime8.jsx)("div", { className: "tooltip", children: text }),
+  return text ? /* @__PURE__ */ jsxs5("div", { className: "tooltip-container", children: [
+    /* @__PURE__ */ jsx8("div", { className: "tooltip", children: text }),
     children
-  ] }) : /* @__PURE__ */ (0, import_jsx_runtime8.jsx)(import_jsx_runtime8.Fragment, {});
+  ] }) : /* @__PURE__ */ jsx8(Fragment3, {});
 };
 var ToolTip_default = Tooltip;
 
 // lib/text-module/component/src/components/ui/Button.jsx
-var import_jsx_runtime9 = require("react/jsx-runtime");
+import { jsx as jsx9, jsxs as jsxs6 } from "react/jsx-runtime";
 var AppButton = ({ type = "primary", children, onClick, disabled = false }) => {
   const className = `button button-${type}`;
-  return /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("button", { className, onClick, disabled, children });
+  return /* @__PURE__ */ jsx9("button", { className, onClick, disabled, children });
 };
 var IconButton = ({ children, onClick, id, toolTip, isActive }) => {
-  return /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)(ToolTip_default, { text: toolTip, children: [
-    /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("style", { children: `
+  return /* @__PURE__ */ jsxs6(ToolTip_default, { text: toolTip, children: [
+    /* @__PURE__ */ jsx9("style", { children: `
           .toolbarBtnDiv.active {
             background-color: #ddd; /* Highlighted background color */
             border: 1px solid #333; /* Highlighted border */
           }
         ` }),
-    /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(
+    /* @__PURE__ */ jsx9(
       "div",
       {
         className: `toolbarBtnDiv ${isActive ? "active" : ""}`,
-        children: /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("button", { className: "toolbarBtn", onClick, id, children })
+        children: /* @__PURE__ */ jsx9("button", { className: "toolbarBtn", onClick, id, children })
       }
     )
   ] });
 };
 
 // lib/text-module/component/src/components/ui/Dialog.jsx
-var import_react13 = __toESM(require("react"));
-var import_jsx_runtime10 = require("react/jsx-runtime");
+import React7, { useEffect as useEffect6, useState as useState8 } from "react";
+import { jsx as jsx10, jsxs as jsxs7 } from "react/jsx-runtime";
 var ImageUploadSelectionDialog = ({ isOpen, onClose, onSubmit, title, children }) => {
-  const [file, setFile] = (0, import_react13.useState)(null);
-  const [imageUrl, setImageUrl] = (0, import_react13.useState)("");
-  const [error, setError] = (0, import_react13.useState)("");
+  const [file, setFile] = useState8(null);
+  const [imageUrl, setImageUrl] = useState8("");
+  const [error, setError] = useState8("");
   const validImageExtensions = ["jpg", "jpeg", "png", "gif", "bmp", "webp"];
   const validVideoExtensions = ["mp4", "avi", "mov", "wmv", "flv", "webm"];
-  (0, import_react13.useEffect)(() => {
+  useEffect6(() => {
     if (isOpen) {
       resetToDefault();
     }
@@ -1542,14 +1507,14 @@ var ImageUploadSelectionDialog = ({ isOpen, onClose, onSubmit, title, children }
     }
   };
   if (!isOpen) return null;
-  return /* @__PURE__ */ (0, import_jsx_runtime10.jsx)("div", { className: "dialog-overlay", children: /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("div", { className: "dialog-container", children: [
-    /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("div", { className: "dialog-header", children: [
+  return /* @__PURE__ */ jsx10("div", { className: "dialog-overlay", children: /* @__PURE__ */ jsxs7("div", { className: "dialog-container", children: [
+    /* @__PURE__ */ jsxs7("div", { className: "dialog-header", children: [
       title,
-      /* @__PURE__ */ (0, import_jsx_runtime10.jsx)(IconButton, { onClick: onClose, id: "dialogClose", children: /* @__PURE__ */ (0, import_jsx_runtime10.jsx)(CloseIcon, {}) })
+      /* @__PURE__ */ jsx10(IconButton, { onClick: onClose, id: "dialogClose", children: /* @__PURE__ */ jsx10(CloseIcon, {}) })
     ] }),
-    /* @__PURE__ */ (0, import_jsx_runtime10.jsx)("div", { className: "dialog-body", children: /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("div", { className: "container", children: [
-      /* @__PURE__ */ (0, import_jsx_runtime10.jsx)("label", { htmlFor: "file-input", className: "custom-file-input", children: !file ? "Select file" : "Reselect file" }),
-      /* @__PURE__ */ (0, import_jsx_runtime10.jsx)(
+    /* @__PURE__ */ jsx10("div", { className: "dialog-body", children: /* @__PURE__ */ jsxs7("div", { className: "container", children: [
+      /* @__PURE__ */ jsx10("label", { htmlFor: "file-input", className: "custom-file-input", children: !file ? "Select file" : "Reselect file" }),
+      /* @__PURE__ */ jsx10(
         "input",
         {
           type: "file",
@@ -1558,31 +1523,31 @@ var ImageUploadSelectionDialog = ({ isOpen, onClose, onSubmit, title, children }
           onChange: handleFileChange
         }
       ),
-      file && /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("div", { className: "file-info", children: [
-        /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("p", { children: [
+      file && /* @__PURE__ */ jsxs7("div", { className: "file-info", children: [
+        /* @__PURE__ */ jsxs7("p", { children: [
           "Selected file: ",
           file.name,
           " "
         ] }),
-        /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("p", { children: [
+        /* @__PURE__ */ jsxs7("p", { children: [
           "File size: ",
           (file.size / 1024).toFixed(2),
           " KB"
         ] })
       ] }),
-      error && /* @__PURE__ */ (0, import_jsx_runtime10.jsx)("p", { className: "error", children: error })
+      error && /* @__PURE__ */ jsx10("p", { className: "error", children: error })
     ] }) }),
-    /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("div", { className: "dialog-footer", children: [
-      /* @__PURE__ */ (0, import_jsx_runtime10.jsx)(AppButton, { type: "cancel", onClick: closeDialog, children: "Cancel" }),
-      /* @__PURE__ */ (0, import_jsx_runtime10.jsx)(AppButton, { onClick: handleSubmit, children: "Submit" })
+    /* @__PURE__ */ jsxs7("div", { className: "dialog-footer", children: [
+      /* @__PURE__ */ jsx10(AppButton, { type: "cancel", onClick: closeDialog, children: "Cancel" }),
+      /* @__PURE__ */ jsx10(AppButton, { onClick: handleSubmit, children: "Submit" })
     ] })
   ] }) });
 };
 var FileUrlDialog = ({ isOpen, onClose, onSubmit, linkText, link, children }) => {
-  const [url, setUrl] = (0, import_react13.useState)(link || "");
-  const [text, setText] = (0, import_react13.useState)(linkText || "");
-  const [error, setError] = (0, import_react13.useState)("");
-  (0, import_react13.useEffect)(() => {
+  const [url, setUrl] = useState8(link || "");
+  const [text, setText] = useState8(linkText || "");
+  const [error, setError] = useState8("");
+  useEffect6(() => {
     if (isOpen) {
       resetToDefault();
     }
@@ -1618,13 +1583,13 @@ var FileUrlDialog = ({ isOpen, onClose, onSubmit, linkText, link, children }) =>
     }
   };
   if (!isOpen) return null;
-  return /* @__PURE__ */ (0, import_jsx_runtime10.jsx)("div", { className: "dialog-overlay", children: /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("div", { className: "dialog-container", children: [
-    /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("div", { className: "dialog-header", children: [
+  return /* @__PURE__ */ jsx10("div", { className: "dialog-overlay", children: /* @__PURE__ */ jsxs7("div", { className: "dialog-container", children: [
+    /* @__PURE__ */ jsxs7("div", { className: "dialog-header", children: [
       "Enter Title",
-      /* @__PURE__ */ (0, import_jsx_runtime10.jsx)(IconButton, { onClick: onClose, id: "dialogClose", children: /* @__PURE__ */ (0, import_jsx_runtime10.jsx)(CloseIcon, {}) })
+      /* @__PURE__ */ jsx10(IconButton, { onClick: onClose, id: "dialogClose", children: /* @__PURE__ */ jsx10(CloseIcon, {}) })
     ] }),
-    /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("div", { className: "dialog-body", children: [
-      /* @__PURE__ */ (0, import_jsx_runtime10.jsx)("div", { className: "container", children: /* @__PURE__ */ (0, import_jsx_runtime10.jsx)(
+    /* @__PURE__ */ jsxs7("div", { className: "dialog-body", children: [
+      /* @__PURE__ */ jsx10("div", { className: "container", children: /* @__PURE__ */ jsx10(
         "input",
         {
           type: "text",
@@ -1634,8 +1599,8 @@ var FileUrlDialog = ({ isOpen, onClose, onSubmit, linkText, link, children }) =>
           onChange: handleLinkText
         }
       ) }),
-      /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("div", { className: "container", children: [
-        /* @__PURE__ */ (0, import_jsx_runtime10.jsx)(
+      /* @__PURE__ */ jsxs7("div", { className: "container", children: [
+        /* @__PURE__ */ jsx10(
           "input",
           {
             type: "text",
@@ -1645,21 +1610,21 @@ var FileUrlDialog = ({ isOpen, onClose, onSubmit, linkText, link, children }) =>
             onChange: handleLinkUrl
           }
         ),
-        error && /* @__PURE__ */ (0, import_jsx_runtime10.jsx)("p", { className: "error", children: error })
+        error && /* @__PURE__ */ jsx10("p", { className: "error", children: error })
       ] })
     ] }),
-    /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("div", { className: "dialog-footer", children: [
-      /* @__PURE__ */ (0, import_jsx_runtime10.jsx)(AppButton, { type: "cancel", onClick: closeDialog, children: "Cancel" }),
-      /* @__PURE__ */ (0, import_jsx_runtime10.jsx)(AppButton, { onClick: handleSubmit, children: "Submit" })
+    /* @__PURE__ */ jsxs7("div", { className: "dialog-footer", children: [
+      /* @__PURE__ */ jsx10(AppButton, { type: "cancel", onClick: closeDialog, children: "Cancel" }),
+      /* @__PURE__ */ jsx10(AppButton, { onClick: handleSubmit, children: "Submit" })
     ] })
   ] }) });
 };
 
 // lib/text-module/component/src/components/ui/Dropdown.jsx
-var import_react14 = __toESM(require("react"));
-var import_jsx_runtime11 = require("react/jsx-runtime");
+import React8, { useState as useState9 } from "react";
+import { jsx as jsx11, jsxs as jsxs8 } from "react/jsx-runtime";
 var IconDropDown = ({ items, onChange, icon, id, openRight, toolTip }) => {
-  const [isOpen, setIsOpen] = (0, import_react14.useState)(false);
+  const [isOpen, setIsOpen] = useState9(false);
   const handleButtonClick = (e) => {
     e.preventDefault();
     setIsOpen(!isOpen);
@@ -1669,15 +1634,15 @@ var IconDropDown = ({ items, onChange, icon, id, openRight, toolTip }) => {
     onChange(value);
     setIsOpen(false);
   };
-  return /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("div", { className: `icon-dropdown ${openRight ? "open-right" : ""}`, children: [
-    /* @__PURE__ */ (0, import_jsx_runtime11.jsx)(ToolTip_default, { text: toolTip, children: /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("button", { className: "dropbtn", id, onMouseDown: handleButtonClick, children: icon }) }),
-    isOpen && /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("div", { className: "icon-dropdown-content", children: items.map((item, index) => /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)(
+  return /* @__PURE__ */ jsxs8("div", { className: `icon-dropdown ${openRight ? "open-right" : ""}`, children: [
+    /* @__PURE__ */ jsx11(ToolTip_default, { text: toolTip, children: /* @__PURE__ */ jsx11("button", { className: "dropbtn", id, onMouseDown: handleButtonClick, children: icon }) }),
+    isOpen && /* @__PURE__ */ jsx11("div", { className: "icon-dropdown-content", children: items.map((item, index) => /* @__PURE__ */ jsxs8(
       "div",
       {
         className: "dropdown-item",
         onMouseDown: (e) => handleItemClick(item.value, e),
         children: [
-          item.icon && /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("span", { className: "dropdown-icon", children: item.icon }),
+          item.icon && /* @__PURE__ */ jsx11("span", { className: "dropdown-icon", children: item.icon }),
           item.label
         ]
       },
@@ -1687,9 +1652,9 @@ var IconDropDown = ({ items, onChange, icon, id, openRight, toolTip }) => {
 };
 
 // lib/text-module/component/src/hooks/usePreviewMode.jsx
-var import_react15 = require("react");
+import { useState as useState10 } from "react";
 var usePreviewMode = () => {
-  const [isToolbarVisible, setToolbarVisibility] = (0, import_react15.useState)(false);
+  const [isToolbarVisible, setToolbarVisibility] = useState10(false);
   const toggleToolbarVisibility = () => {
     setToolbarVisibility((prev) => !prev);
   };
@@ -1697,7 +1662,7 @@ var usePreviewMode = () => {
 };
 
 // lib/text-module/component/src/components/TextIgniter/Toolbar.jsx
-var import_jsx_runtime12 = require("react/jsx-runtime");
+import { Fragment as Fragment4, jsx as jsx12, jsxs as jsxs9 } from "react/jsx-runtime";
 var Toolbar = ({ features }) => {
   const {
     formatText,
@@ -1712,8 +1677,8 @@ var Toolbar = ({ features }) => {
     applyHeading
   } = useEditor2();
   const { isToolbarVisible, toggleToolbarVisibility } = usePreviewMode();
-  const [isImageDialogOpen, setImageDialogOpen] = (0, import_react16.useState)(false);
-  const [isUrlDialogOpen, setUrlDialogOpen] = (0, import_react16.useState)(false);
+  const [isImageDialogOpen, setImageDialogOpen] = useState11(false);
+  const [isUrlDialogOpen, setUrlDialogOpen] = useState11(false);
   const handleImageSubmit = ({ file, fileUrl }) => {
     addImageOrVideo(file, fileUrl);
   };
@@ -1760,89 +1725,89 @@ var Toolbar = ({ features }) => {
   };
   const getIsActive = (style) => activeStyles.includes(style);
   const featureButtons = {
-    bold: /* @__PURE__ */ (0, import_jsx_runtime12.jsx)(
+    bold: /* @__PURE__ */ jsx12(
       IconButton,
       {
         onClick: () => formatText("bold"),
         toolTip: "Bold",
         isActive: getIsActive("bold"),
-        children: /* @__PURE__ */ (0, import_jsx_runtime12.jsx)(BoldIcon, {})
+        children: /* @__PURE__ */ jsx12(BoldIcon, {})
       }
     ),
-    italic: /* @__PURE__ */ (0, import_jsx_runtime12.jsx)(
+    italic: /* @__PURE__ */ jsx12(
       IconButton,
       {
         onClick: () => formatText("italic"),
         toolTip: "Italic",
         isActive: getIsActive("italic"),
-        children: /* @__PURE__ */ (0, import_jsx_runtime12.jsx)(ItalicIcon, {})
+        children: /* @__PURE__ */ jsx12(ItalicIcon, {})
       }
     ),
-    underline: /* @__PURE__ */ (0, import_jsx_runtime12.jsx)(
+    underline: /* @__PURE__ */ jsx12(
       IconButton,
       {
         onClick: () => formatText("underline"),
         toolTip: "Underline",
         isActive: getIsActive("underline"),
-        children: /* @__PURE__ */ (0, import_jsx_runtime12.jsx)(UnderlineIcon, {})
+        children: /* @__PURE__ */ jsx12(UnderlineIcon, {})
       }
     ),
-    orderedList: /* @__PURE__ */ (0, import_jsx_runtime12.jsx)(
+    orderedList: /* @__PURE__ */ jsx12(
       IconButton,
       {
         onClick: () => formatText("insertOrderedList"),
         toolTip: "Ordered List",
         isActive: getIsActive("orderedList"),
-        children: /* @__PURE__ */ (0, import_jsx_runtime12.jsx)(OrderedListIcon, {})
+        children: /* @__PURE__ */ jsx12(OrderedListIcon, {})
       }
     ),
-    unorderedList: /* @__PURE__ */ (0, import_jsx_runtime12.jsx)(
+    unorderedList: /* @__PURE__ */ jsx12(
       IconButton,
       {
         onClick: () => formatText("insertUnorderedList"),
         toolTip: "Unordered List",
         isActive: getIsActive("unorderedList"),
-        children: /* @__PURE__ */ (0, import_jsx_runtime12.jsx)(UnOrderedListIcon, {})
+        children: /* @__PURE__ */ jsx12(UnOrderedListIcon, {})
       }
     ),
-    justifyLeft: /* @__PURE__ */ (0, import_jsx_runtime12.jsx)(
+    justifyLeft: /* @__PURE__ */ jsx12(
       IconButton,
       {
         onClick: () => formatText("justifyLeft"),
         toolTip: "Justify Left",
         isActive: getIsActive("justifyLeft"),
-        children: /* @__PURE__ */ (0, import_jsx_runtime12.jsx)(AlignLeftIcon, {})
+        children: /* @__PURE__ */ jsx12(AlignLeftIcon, {})
       }
     ),
-    justifyCenter: /* @__PURE__ */ (0, import_jsx_runtime12.jsx)(
+    justifyCenter: /* @__PURE__ */ jsx12(
       IconButton,
       {
         onClick: () => formatText("justifyCenter"),
         toolTip: "Justify Center",
         isActive: getIsActive("justifyCenter"),
-        children: /* @__PURE__ */ (0, import_jsx_runtime12.jsx)(AlignCenterIcon, {})
+        children: /* @__PURE__ */ jsx12(AlignCenterIcon, {})
       }
     ),
-    justifyRight: /* @__PURE__ */ (0, import_jsx_runtime12.jsx)(
+    justifyRight: /* @__PURE__ */ jsx12(
       IconButton,
       {
         onClick: () => formatText("justifyRight"),
         toolTip: "Justify Right",
         isActive: getIsActive("justifyRight"),
-        children: /* @__PURE__ */ (0, import_jsx_runtime12.jsx)(AlignRightIcon, {})
+        children: /* @__PURE__ */ jsx12(AlignRightIcon, {})
       }
     ),
-    createLink: /* @__PURE__ */ (0, import_jsx_runtime12.jsxs)(import_jsx_runtime12.Fragment, { children: [
-      /* @__PURE__ */ (0, import_jsx_runtime12.jsx)(
+    createLink: /* @__PURE__ */ jsxs9(Fragment4, { children: [
+      /* @__PURE__ */ jsx12(
         IconButton,
         {
           onClick: () => setUrlDialogOpen(true),
           toolTip: "Create Link",
           isActive: getIsActive("createLink"),
-          children: /* @__PURE__ */ (0, import_jsx_runtime12.jsx)(LinkIcon, {})
+          children: /* @__PURE__ */ jsx12(LinkIcon, {})
         }
       ),
-      /* @__PURE__ */ (0, import_jsx_runtime12.jsx)(
+      /* @__PURE__ */ jsx12(
         FileUrlDialog,
         {
           isOpen: isUrlDialogOpen,
@@ -1854,17 +1819,17 @@ var Toolbar = ({ features }) => {
         }
       )
     ] }),
-    insertImage: /* @__PURE__ */ (0, import_jsx_runtime12.jsxs)(import_jsx_runtime12.Fragment, { children: [
-      /* @__PURE__ */ (0, import_jsx_runtime12.jsx)(
+    insertImage: /* @__PURE__ */ jsxs9(Fragment4, { children: [
+      /* @__PURE__ */ jsx12(
         IconButton,
         {
           onClick: () => setImageDialogOpen(true),
           toolTip: "Insert Image/Video",
           isActive: getIsActive("insertImage"),
-          children: /* @__PURE__ */ (0, import_jsx_runtime12.jsx)(ImageIcon, {})
+          children: /* @__PURE__ */ jsx12(ImageIcon, {})
         }
       ),
-      /* @__PURE__ */ (0, import_jsx_runtime12.jsx)(
+      /* @__PURE__ */ jsx12(
         ImageUploadSelectionDialog,
         {
           isOpen: isImageDialogOpen,
@@ -1874,29 +1839,29 @@ var Toolbar = ({ features }) => {
         }
       )
     ] }),
-    superscript: /* @__PURE__ */ (0, import_jsx_runtime12.jsx)(
+    superscript: /* @__PURE__ */ jsx12(
       IconButton,
       {
         onClick: () => formatText("superscript"),
         toolTip: "Superscript",
         isActive: getIsActive("superscript"),
-        children: /* @__PURE__ */ (0, import_jsx_runtime12.jsx)(SuperScriptIcon, {})
+        children: /* @__PURE__ */ jsx12(SuperScriptIcon, {})
       }
     ),
-    subscript: /* @__PURE__ */ (0, import_jsx_runtime12.jsx)(
+    subscript: /* @__PURE__ */ jsx12(
       IconButton,
       {
         onClick: () => formatText("subscript"),
         toolTip: "Subscript",
         isActive: getIsActive("subscript"),
-        children: /* @__PURE__ */ (0, import_jsx_runtime12.jsx)(SubScriptIcon, {})
+        children: /* @__PURE__ */ jsx12(SubScriptIcon, {})
       }
     ),
-    table: /* @__PURE__ */ (0, import_jsx_runtime12.jsx)(
+    table: /* @__PURE__ */ jsx12(
       IconDropDown,
       {
         id: "tableDropdown",
-        icon: /* @__PURE__ */ (0, import_jsx_runtime12.jsx)(TableIcon, {}),
+        icon: /* @__PURE__ */ jsx12(TableIcon, {}),
         toolTip: "Table",
         items: [
           { value: "insert", label: "Insert Table" },
@@ -1906,11 +1871,11 @@ var Toolbar = ({ features }) => {
         onChange: handleTableOperation
       }
     ),
-    layout: /* @__PURE__ */ (0, import_jsx_runtime12.jsx)(
+    layout: /* @__PURE__ */ jsx12(
       IconDropDown,
       {
         id: "layoutDropdown",
-        icon: /* @__PURE__ */ (0, import_jsx_runtime12.jsx)(LayoutIcon, {}),
+        icon: /* @__PURE__ */ jsx12(LayoutIcon, {}),
         toolTip: "Layout",
         items: [
           { value: "single", label: "Single Column" },
@@ -1922,10 +1887,10 @@ var Toolbar = ({ features }) => {
         onChange: handleLayoutOperation
       }
     ),
-    heading: /* @__PURE__ */ (0, import_jsx_runtime12.jsx)(
+    heading: /* @__PURE__ */ jsx12(
       IconDropDown,
       {
-        icon: /* @__PURE__ */ (0, import_jsx_runtime12.jsx)(HeadingIcon, {}),
+        icon: /* @__PURE__ */ jsx12(HeadingIcon, {}),
         items: [
           { value: "h1", label: "Heading 1" },
           { value: "h2", label: "Heading 2" },
@@ -1939,9 +1904,9 @@ var Toolbar = ({ features }) => {
       }
     )
   };
-  return /* @__PURE__ */ (0, import_jsx_runtime12.jsxs)("div", { className: "toolbar", children: [
-    /* @__PURE__ */ (0, import_jsx_runtime12.jsx)("div", { className: "toolbar-switch", children: /* @__PURE__ */ (0, import_jsx_runtime12.jsxs)("label", { children: [
-      /* @__PURE__ */ (0, import_jsx_runtime12.jsx)(
+  return /* @__PURE__ */ jsxs9("div", { className: "toolbar", children: [
+    /* @__PURE__ */ jsx12("div", { className: "toolbar-switch", children: /* @__PURE__ */ jsxs9("label", { children: [
+      /* @__PURE__ */ jsx12(
         "input",
         {
           type: "checkbox",
@@ -1951,14 +1916,14 @@ var Toolbar = ({ features }) => {
       ),
       !isToolbarVisible ? "Preview Mode" : "Edit Mode"
     ] }) }),
-    !isToolbarVisible && features.map((feature, index) => /* @__PURE__ */ (0, import_jsx_runtime12.jsx)(import_react16.default.Fragment, { children: featureButtons[feature] }, index))
+    !isToolbarVisible && features.map((feature, index) => /* @__PURE__ */ jsx12(React9.Fragment, { children: featureButtons[feature] }, index))
   ] });
 };
 var Toolbar_default = Toolbar;
 
 // lib/text-module/component/src/components/TextIgniter/Editor.jsx
-var import_react17 = __toESM(require("react"));
-var import_jsx_runtime13 = require("react/jsx-runtime");
+import React10 from "react";
+import { Fragment as Fragment5, jsx as jsx13, jsxs as jsxs10 } from "react/jsx-runtime";
 var placeCursorTextEnd = (el) => {
   const range = document.createRange();
   range.selectNodeContents(el);
@@ -1969,8 +1934,8 @@ var placeCursorTextEnd = (el) => {
 };
 var Editor = ({ height = "300px" }) => {
   const { editorRef, wordCount, charCount } = useEditor2();
-  return /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)(import_jsx_runtime13.Fragment, { children: [
-    /* @__PURE__ */ (0, import_jsx_runtime13.jsx)(
+  return /* @__PURE__ */ jsxs10(Fragment5, { children: [
+    /* @__PURE__ */ jsx13(
       "div",
       {
         ref: editorRef,
@@ -1984,13 +1949,13 @@ var Editor = ({ height = "300px" }) => {
         }
       }
     ),
-    /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("div", { className: "editor-footer", children: [
-      /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("span", { children: [
+    /* @__PURE__ */ jsxs10("div", { className: "editor-footer", children: [
+      /* @__PURE__ */ jsxs10("span", { children: [
         "Words: ",
         wordCount
       ] }),
       " | ",
-      /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("span", { children: [
+      /* @__PURE__ */ jsxs10("span", { children: [
         "Chars: ",
         charCount
       ] })
@@ -2000,35 +1965,35 @@ var Editor = ({ height = "300px" }) => {
 var Editor_default = Editor;
 
 // lib/text-module/component/src/components/TextIgniter/TextIgniter.jsx
-var import_jsx_runtime14 = require("react/jsx-runtime");
-var TextIgniterContent = (0, import_react18.forwardRef)(
+import { jsx as jsx14, jsxs as jsxs11 } from "react/jsx-runtime";
+var TextIgniterContent = forwardRef2(
   ({ features, height, onChange, defaultContent }, ref) => {
     const { getHtml, getJson, html, editorRef } = useEditor2();
-    (0, import_react18.useImperativeHandle)(ref, () => ({
+    useImperativeHandle2(ref, () => ({
       getHtml,
       getJson,
       html,
       editorRef
     }));
-    (0, import_react18.useEffect)(() => {
+    useEffect7(() => {
       if ((editorRef == null ? void 0 : editorRef.current) && !!defaultContent) {
         editorRef.current.innerHTML = defaultContent;
       }
     }, []);
-    (0, import_react18.useEffect)(() => {
+    useEffect7(() => {
       html !== null && onChange && typeof onChange === "function" ? onChange(html) : void 0;
     }, [html, onChange]);
-    return /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "editor-container", children: [
-      /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(Toolbar_default, { features }),
-      /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(Editor_default, { height })
+    return /* @__PURE__ */ jsxs11("div", { className: "editor-container", children: [
+      /* @__PURE__ */ jsx14(Toolbar_default, { features }),
+      /* @__PURE__ */ jsx14(Editor_default, { height })
     ] });
   }
 );
-var TextIgniter = (0, import_react18.forwardRef)((props, ref) => /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(EditorProvider, { children: /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(TextIgniterContent, __spreadProps(__spreadValues({}, props), { ref })) }));
+var TextIgniter = forwardRef2((props, ref) => /* @__PURE__ */ jsx14(EditorProvider, { children: /* @__PURE__ */ jsx14(TextIgniterContent, __spreadProps(__spreadValues({}, props), { ref })) }));
 var TextIgniter_default = TextIgniter;
 
 // src/blocks/TextBlock.tsx
-var import_jsx_runtime15 = require("react/jsx-runtime");
+import { Fragment as Fragment6, jsx as jsx15 } from "react/jsx-runtime";
 var TextBlock = ({ block, isActive }) => {
   const features = [
     "heading",
@@ -2044,14 +2009,14 @@ var TextBlock = ({ block, isActive }) => {
   const { updateBlock } = useEditor();
   const { blockID, value } = block;
   const { htmlContent } = value != null ? value : {};
-  const editorRef = (0, import_react19.useRef)(null);
-  (0, import_react19.useEffect)(() => {
+  const editorRef = useRef5(null);
+  useEffect8(() => {
     var _a, _b;
     if (((_b = (_a = editorRef.current) == null ? void 0 : _a.editorRef) == null ? void 0 : _b.current) && isActive) {
       editorRef.current.editorRef.current.focus();
     }
   }, [isActive]);
-  (0, import_react19.useEffect)(() => {
+  useEffect8(() => {
     var _a, _b;
     if ((_b = (_a = editorRef.current) == null ? void 0 : _a.editorRef) == null ? void 0 : _b.current) {
       const preventDefault = (e) => e.preventDefault();
@@ -2064,17 +2029,17 @@ var TextBlock = ({ block, isActive }) => {
       };
     }
   }, [editorRef.current]);
-  const handleChange = (0, import_react19.useCallback)((val) => {
+  const handleChange = useCallback7((val) => {
     updateBlock(blockID, {
       value: {
         htmlContent: val
       }
     });
   }, [blockID, updateBlock]);
-  return /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(import_jsx_runtime15.Fragment, { children: /* @__PURE__ */ (0, import_jsx_runtime15.jsx)("div", { className: (0, import_clsx2.default)(
+  return /* @__PURE__ */ jsx15(Fragment6, { children: /* @__PURE__ */ jsx15("div", { className: clsx2(
     "sg-block__blockText",
     isActive && "sg-block__blockText--active"
-  ), children: /* @__PURE__ */ (0, import_jsx_runtime15.jsx)(
+  ), children: /* @__PURE__ */ jsx15(
     TextIgniter_default,
     {
       ref: editorRef,
@@ -2088,32 +2053,32 @@ var TextBlock = ({ block, isActive }) => {
 var TextBlock_default = TextBlock;
 
 // src/blocks/GroupBlock.tsx
-var import_react20 = require("react");
-var import_clsx3 = __toESM(require("clsx"));
-var import_bs = require("react-icons/bs");
-var import_md2 = require("react-icons/md");
-var import_fa63 = require("react-icons/fa6");
-var import_jsx_runtime16 = require("react/jsx-runtime");
+import { useCallback as useCallback8, useEffect as useEffect9, useRef as useRef6, useState as useState12 } from "react";
+import clsx3 from "clsx";
+import { BsArrowsExpand, BsArrowsExpandVertical } from "react-icons/bs";
+import { MdCenterFocusStrong } from "react-icons/md";
+import { FaPlus as FaPlus2 } from "react-icons/fa6";
+import { Fragment as Fragment7, jsx as jsx16, jsxs as jsxs12 } from "react/jsx-runtime";
 var RowBlock = ({ block, isActive }) => {
   var _a;
   const minChildWidth = 320;
   const { blockID, hasFocusWithin, value, children } = block;
   const { flow, height, template } = value != null ? value : {};
-  const [groupWidth, setGroupWidth] = (0, import_react20.useState)(null);
-  const [currentTemplate, setCurrentTemplate] = (0, import_react20.useState)(template || []);
-  const [isResizing, setIsResizing] = (0, import_react20.useState)(null);
-  const groupRef = (0, import_react20.useRef)(null);
+  const [groupWidth, setGroupWidth] = useState12(null);
+  const [currentTemplate, setCurrentTemplate] = useState12(template || []);
+  const [isResizing, setIsResizing] = useState12(null);
+  const groupRef = useRef6(null);
   const { blocks, setActiveBlock, updateBlock } = useEditor();
-  const prevXRef = (0, import_react20.useRef)(null);
+  const prevXRef = useRef6(null);
   const isResizable = !!(children == null ? void 0 : children.length) && groupWidth ? groupWidth > minChildWidth * (children == null ? void 0 : children.length) : false;
-  const handleResizeStart = (0, import_react20.useCallback)((e, indexEl) => {
+  const handleResizeStart = useCallback8((e, indexEl) => {
     if (isResizable) {
       setIsResizing(indexEl);
       prevXRef.current = e.clientX;
       document.body.style.userSelect = "none";
     }
   }, [prevXRef, setIsResizing, groupWidth, minChildWidth]);
-  (0, import_react20.useEffect)(() => {
+  useEffect9(() => {
     if (isResizing !== null) {
       const currentTemplateRef = { current: null };
       const handleResize = (e) => {
@@ -2155,10 +2120,10 @@ var RowBlock = ({ block, isActive }) => {
       };
     }
   }, [isResizing, groupWidth]);
-  (0, import_react20.useEffect)(() => {
+  useEffect9(() => {
     setCurrentTemplate(template || []);
   }, [template]);
-  (0, import_react20.useEffect)(() => {
+  useEffect9(() => {
     const handleResize = (entries) => {
       for (const entry of entries) {
         const { width } = entry.contentRect;
@@ -2176,7 +2141,7 @@ var RowBlock = ({ block, isActive }) => {
       resizeObserver.disconnect();
     };
   }, []);
-  (0, import_react20.useEffect)(() => {
+  useEffect9(() => {
     if (children)
       updateBlock(blockID, {
         value: {
@@ -2184,13 +2149,13 @@ var RowBlock = ({ block, isActive }) => {
         }
       });
   }, [children]);
-  return /* @__PURE__ */ (0, import_jsx_runtime16.jsxs)(import_jsx_runtime16.Fragment, { children: [
-    /* @__PURE__ */ (0, import_jsx_runtime16.jsx)(BlockToolbar, { children: /* @__PURE__ */ (0, import_jsx_runtime16.jsxs)(
+  return /* @__PURE__ */ jsxs12(Fragment7, { children: [
+    /* @__PURE__ */ jsx16(BlockToolbar, { children: /* @__PURE__ */ jsxs12(
       BlockToolbarColumn,
       {
         title: "Direction",
         children: [
-          /* @__PURE__ */ (0, import_jsx_runtime16.jsx)(
+          /* @__PURE__ */ jsx16(
             Button_default,
             {
               variant: flow === "vertical" ? void 0 : "selected",
@@ -2201,10 +2166,10 @@ var RowBlock = ({ block, isActive }) => {
               }),
               title: "Empiler les blocs horizontalement",
               ariaLabel: "Empiler les blocs horizontalement",
-              children: /* @__PURE__ */ (0, import_jsx_runtime16.jsx)(import_bs.BsArrowsExpandVertical, {})
+              children: /* @__PURE__ */ jsx16(BsArrowsExpandVertical, {})
             }
           ),
-          /* @__PURE__ */ (0, import_jsx_runtime16.jsx)(
+          /* @__PURE__ */ jsx16(
             Button_default,
             {
               variant: flow !== "vertical" ? void 0 : "selected",
@@ -2215,16 +2180,16 @@ var RowBlock = ({ block, isActive }) => {
               }),
               title: "Empiler les blocs verticalement",
               ariaLabel: "Empiler les blocs verticalement",
-              children: /* @__PURE__ */ (0, import_jsx_runtime16.jsx)(import_bs.BsArrowsExpand, {})
+              children: /* @__PURE__ */ jsx16(BsArrowsExpand, {})
             }
           )
         ]
       }
     ) }),
-    /* @__PURE__ */ (0, import_jsx_runtime16.jsxs)(
+    /* @__PURE__ */ jsxs12(
       "div",
       {
-        className: (0, import_clsx3.default)(
+        className: clsx3(
           "sg-block__blockGroup",
           block.hasFocusWithin && "sg-block__blockGroup--focusWithin",
           flow === "vertical" ? "sg-block__blockGroup--vertical" : "sg-block__blockGroup--horizontal",
@@ -2232,7 +2197,7 @@ var RowBlock = ({ block, isActive }) => {
         ),
         ref: groupRef,
         children: [
-          !!children && ((_a = block.children) == null ? void 0 : _a.map((childID, indexEl) => /* @__PURE__ */ (0, import_jsx_runtime16.jsxs)(
+          !!children && ((_a = block.children) == null ? void 0 : _a.map((childID, indexEl) => /* @__PURE__ */ jsxs12(
             "div",
             {
               className: "sg-block__blockGroup__childContainer",
@@ -2241,17 +2206,17 @@ var RowBlock = ({ block, isActive }) => {
                 minWidth: minChildWidth + "px"
               },
               children: [
-                /* @__PURE__ */ (0, import_jsx_runtime16.jsx)(
+                /* @__PURE__ */ jsx16(
                   Block_default,
                   {
                     horizontalFlow: flow !== "vertical",
                     block: blocks.get(childID)
                   }
                 ),
-                isActive && indexEl !== children.length - 1 && /* @__PURE__ */ (0, import_jsx_runtime16.jsx)(
+                isActive && indexEl !== children.length - 1 && /* @__PURE__ */ jsx16(
                   "div",
                   {
-                    className: (0, import_clsx3.default)(
+                    className: clsx3(
                       "sg-block__blockGroup__resizeHandle",
                       (!isResizable || flow === "vertical") && "sg-block__blockGroup__resizeHandle--disabled"
                     ),
@@ -2262,24 +2227,24 @@ var RowBlock = ({ block, isActive }) => {
             },
             childID
           ))),
-          !(children == null ? void 0 : children.length) && /* @__PURE__ */ (0, import_jsx_runtime16.jsx)("div", { className: "sg-block__blockGroup__placeholder" }),
-          !!isActive && /* @__PURE__ */ (0, import_jsx_runtime16.jsx)(
+          !(children == null ? void 0 : children.length) && /* @__PURE__ */ jsx16("div", { className: "sg-block__blockGroup__placeholder" }),
+          !!isActive && /* @__PURE__ */ jsx16(
             AddBlockContextMenu,
             {
               args: { parentID: blockID },
               className: "sg-block__blockGroup__addChild",
-              children: /* @__PURE__ */ (0, import_jsx_runtime16.jsx)(
+              children: /* @__PURE__ */ jsx16(
                 "button",
                 {
                   title: "Ajouter des blocs \xE0 l'int\xE9rieur du groupe",
                   "aria-label": "Ajouter des blocs \xE0 l'int\xE9rieur du groupe",
                   className: "sg-block__btn sg-block__btn--square",
-                  children: /* @__PURE__ */ (0, import_jsx_runtime16.jsx)(import_fa63.FaPlus, {})
+                  children: /* @__PURE__ */ jsx16(FaPlus2, {})
                 }
               )
             }
           ),
-          hasFocusWithin && !isActive && /* @__PURE__ */ (0, import_jsx_runtime16.jsx)(
+          hasFocusWithin && !isActive && /* @__PURE__ */ jsx16(
             Button_default,
             {
               className: "sg-block__btn sg-block__btn--square sg-block__blockGroup__focusParent",
@@ -2289,7 +2254,7 @@ var RowBlock = ({ block, isActive }) => {
               },
               title: "S\xE9lectionner le groupe parent",
               ariaLabel: "S\xE9lectionner le groupe parent",
-              children: /* @__PURE__ */ (0, import_jsx_runtime16.jsx)(import_md2.MdCenterFocusStrong, {})
+              children: /* @__PURE__ */ jsx16(MdCenterFocusStrong, {})
             }
           )
         ]
@@ -2304,7 +2269,7 @@ var default_blocks_default = {
   text: {
     name: "Text",
     type: "text",
-    icon: import_fa65.FaAlignJustify,
+    icon: FaAlignJustify,
     render: void 0,
     editor: TextBlock_default,
     defaultValue: {
@@ -2325,7 +2290,7 @@ var default_blocks_default = {
   image: {
     name: "Image",
     type: "image",
-    icon: import_fa64.FaRegImage,
+    icon: FaRegImage,
     render: void 0,
     editor: ImageBlock_default,
     isResizable: true,
@@ -2334,7 +2299,7 @@ var default_blocks_default = {
   group: {
     name: "Group",
     type: "group",
-    icon: import_rx.RxGroup,
+    icon: RxGroup,
     render: void 0,
     editor: GroupBlock_default,
     acceptChildren: true,
@@ -2347,49 +2312,48 @@ var default_blocks_default = {
 };
 
 // src/BlockEditor.tsx
-var import_fa66 = require("react-icons/fa6");
-var import_clsx4 = __toESM(require("clsx"));
-var import_jsx_runtime17 = require("react/jsx-runtime");
+import { FaPlus as FaPlus3 } from "react-icons/fa6";
+import clsx4 from "clsx";
+import { jsx as jsx17, jsxs as jsxs13 } from "react/jsx-runtime";
 var BlockEditorContent = () => {
   const { blocks, setActiveBlock } = useEditor();
-  const editorRef = (0, import_react21.useRef)(null);
-  const handleClickOutside = (0, import_react21.useCallback)((e) => {
+  const editorRef = useRef7(null);
+  const handleClickOutside = useCallback9((e) => {
     if (editorRef.current && !editorRef.current.contains(e.target)) {
       setActiveBlock(null);
     }
   }, [setActiveBlock]);
-  (0, import_react21.useEffect)(() => {
+  useEffect10(() => {
     document.body.addEventListener("click", handleClickOutside);
     return () => {
       document.body.removeEventListener("click", handleClickOutside);
     };
   }, [handleClickOutside]);
-  return /* @__PURE__ */ (0, import_jsx_runtime17.jsx)("div", { ref: editorRef, className: (0, import_clsx4.default)(
+  return /* @__PURE__ */ jsx17("div", { ref: editorRef, className: clsx4(
     "sg-block__editor__content",
     blocks.size === 0 ? "sg-block__editor__content--empty" : ""
-  ), children: /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("div", { children: [
-    !!blocks && Array.from(blocks.values()).filter((block) => !block.parentID).map((block) => /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(Block_default, { block }, block.blockID)),
-    blocks.size === 0 && /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(AddBlockContextMenu, { children: /* @__PURE__ */ (0, import_jsx_runtime17.jsxs)("button", { className: "sg-block__btn", children: [
-      /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(import_fa66.FaPlus, { style: { marginRight: 4 } }),
+  ), children: /* @__PURE__ */ jsxs13("div", { children: [
+    !!blocks && Array.from(blocks.values()).filter((block) => !block.parentID).map((block) => /* @__PURE__ */ jsx17(Block_default, { block }, block.blockID)),
+    blocks.size === 0 && /* @__PURE__ */ jsx17(AddBlockContextMenu, { children: /* @__PURE__ */ jsxs13("button", { className: "sg-block__btn", children: [
+      /* @__PURE__ */ jsx17(FaPlus3, { style: { marginRight: 4 } }),
       "Ajouter du contenu"
     ] }) })
   ] }) });
 };
-var BlockEditor_default = (0, import_react21.forwardRef)(function BlocksEditor({ data, onChange, extraBlocks }, ref) {
+var BlockEditor_default = forwardRef3(function BlocksEditor({ data, onChange, extraBlocks }, ref) {
   const blocks = __spreadValues(__spreadValues({}, default_blocks_default), extraBlocks);
-  return /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(BlocksEditorContextProvider, { data, onChange, ref, availableBlocks: blocks, children: /* @__PURE__ */ (0, import_jsx_runtime17.jsx)(BlockEditorContent, {}) });
+  return /* @__PURE__ */ jsx17(BlocksEditorContextProvider, { data, onChange, ref, availableBlocks: blocks, children: /* @__PURE__ */ jsx17(BlockEditorContent, {}) });
 });
 
 // src/definitions.tsx
 var definitions_exports = {};
-// Annotate the CommonJS export names for ESM import in node:
-0 && (module.exports = {
-  BlockEditor,
-  Definitions,
-  ImageBlock,
-  RowBlock,
-  TextBlock,
-  defaultBlocks,
+export {
+  BlockEditor_default as BlockEditor,
+  definitions_exports as Definitions,
+  ImageBlock_default as ImageBlock,
+  GroupBlock_default as RowBlock,
+  TextBlock_default as TextBlock,
+  default_blocks_default as defaultBlocks,
   useEditor
-});
-//# sourceMappingURL=index.js.map
+};
+//# sourceMappingURL=index.mjs.map

@@ -1,6 +1,6 @@
 {
   "name": "sg-block-editor",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "author": "gsebdev",
   "license": "MIT License",
   "keywords": "react package block editor cms html wysiwyg lightweight easy-to-use",
@@ -26,6 +26,7 @@
     "@types/react-dom": "^18.3.1",
     "babel-loader": "^9.2.1",
     "css-loader": "^7.1.2",
+    "esbuild-sass-plugin": "^3.3.1",
     "eslint": "^9.14.0",
     "eslint-plugin-react": "^7.37.2",
     "globals": "^15.12.0",
@@ -36,6 +37,7 @@
     "style-loader": "^4.0.0",
     "terser-webpack-plugin": "^5.3.10",
     "ts-loader": "^9.5.1",
+    "tsup": "^8.3.5",
     "typescript": "^5.6.3",
     "typescript-eslint": "^8.13.0",
     "webpack": "^5.95.0",
@@ -45,7 +47,7 @@
     "webpack-node-externals": "^3.0.0"
   },
   "scripts": {
-    "build": "webpack --mode production && webpack",
+    "build": "tsup && webpack",
     "dev": "webpack serve --mode development",
     "lint": "eslint src --fix"
   },
