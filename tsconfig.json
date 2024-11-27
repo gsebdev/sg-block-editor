@@ -9,8 +9,9 @@
     "skipLibCheck": true,
     "noEmit": true,
     "resolveJsonModule": true,
-    "strict": true
+    "strict": true,
+    "allowJs": true
   },
-  "include": ["src/**/*", "demo/**/*"],
+  "include": ["src/**/*", "demo/**/*", "lib/rich-text-module"],
   "exclude": ["node_modules", "dist"]
 }

@@ -7,13 +7,13 @@
       "jsx": "react-jsx",
       "esModuleInterop": true,
       "moduleResolution": "node",
-      "skipLibCheck": true,
+      "skipLibCheck": false,
       "noEmit": false,
       "resolveJsonModule": true,
       "removeComments": true,
-      "strict": true
-      
+      "strict": true,
+      "allowJs": true
     },
-    "include": ["src/**/*"],
+    "include": ["src/**/*", "lib/rich-text-module/component"],
     "exclude": ["node_modules", "dist"]
   }

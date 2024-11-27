@@ -5,6 +5,7 @@ import RowBlock from "./blocks/GroupBlock";
 import ImageBlock from "./blocks/ImageBlock";
 import TextBlock from "./blocks/TextBlock";
 import defaultBlocks from "./default-blocks";
+import './sg-block-editor-default-theme.scss';
 
 export {
     BlockEditor,

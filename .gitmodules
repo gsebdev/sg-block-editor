@@ -1,3 +1,3 @@
-[submodule "lib/rich-text-module"]
-	path = lib/rich-text-module
+[submodule "lib/text-module"]
+	path = lib/text-module
 	url = https://github.com/gsebdev/react-text-igniter.git
