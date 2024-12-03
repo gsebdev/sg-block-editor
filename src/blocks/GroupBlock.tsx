@@ -26,7 +26,7 @@ const RowBlock: React.FC<RowBlockProps> = ({ block, isActive }) => {
     const [currentTemplate, setCurrentTemplate] = useState<number[]>(template || []);
     const [isResizing, setIsResizing] = useState<number | null>(null);
 
-    const groupRef = useRef(null);
+    const groupRef = useRef<HTMLDivElement|null>(null);
     const { blocks, setActiveBlock, updateBlock } = useEditor();
 
     const prevXRef = useRef<number | null>(null);
@@ -41,13 +41,16 @@ const RowBlock: React.FC<RowBlockProps> = ({ block, isActive }) => {
             prevXRef.current = e.clientX;
             document.body.style.userSelect = 'none';
         }
-    }, [prevXRef, setIsResizing, groupWidth, minChildWidth]);
+    }, [prevXRef, setIsResizing, groupWidth, minChildWidth, isResizable]);
 
     useEffect(() => {
-
         if (children && children?.length !== currentTemplate.length) {
             const newTemplate = Array(children.length).fill(100 / children?.length);
-            setCurrentTemplate(newTemplate);
+            updateBlock(blockID, {
+                value: {
+                    template: newTemplate
+                }
+            })
         }
     }, [children?.length]);
 
@@ -123,6 +126,8 @@ const RowBlock: React.FC<RowBlockProps> = ({ block, isActive }) => {
         if (groupRef.current) {
             resizeObserver.observe(groupRef.current);
         }
+        
+        setGroupWidth(groupRef.current?.getBoundingClientRect().width || null);
 
         return () => {
             if (groupRef.current) {
