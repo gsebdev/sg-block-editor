@@ -101,14 +101,19 @@ var initialContext = {
 var blockEditorContext = (0, import_react.createContext)(initialContext);
 var BlocksEditorContextProvider = (0, import_react.forwardRef)(({ children, data, onChange, availableBlocks }, ref) => {
   const [blocks, setBlocks] = (0, import_react.useState)(/* @__PURE__ */ new Map());
-  const [renderedJSON, setRenderedJSON] = (0, import_react.useState)(data);
-  const [renderedHTML, setRenderedHTML] = (0, import_react.useState)("");
   const [isDirty, setIsDirty] = (0, import_react.useState)(false);
   const [activeBlock, setActiveBlock] = (0, import_react.useState)(null);
-  (0, import_react.useImperativeHandle)(ref, () => ({
-    getJSONValue: () => renderedJSON != null ? renderedJSON : [],
-    getHTMLValue: () => renderedHTML != null ? renderedHTML : ""
-  }));
+  const renderedRef = (0, import_react.useRef)({
+    JSONValue: data != null ? data : [],
+    HTMLValue: "",
+    getJSONValue() {
+      return this.JSONValue;
+    },
+    getHTMLValue() {
+      return this.HTMLValue;
+    }
+  });
+  (0, import_react.useImperativeHandle)(ref, () => renderedRef.current);
   (0, import_react.useEffect)(() => {
     if (isDirty) {
       const renderBlocks = (b) => {
@@ -147,15 +152,15 @@ var BlocksEditorContextProvider = (0, import_react.forwardRef)(({ children, data
           return result + "<p>No render function provided</p>";
         }, "");
         const newRenderedJSON = blocksValue.filter((block) => !block.parentID).map((editorBlock) => renderBlocks(editorBlock));
-        setRenderedJSON(newRenderedJSON);
-        setRenderedHTML(newRenderedHTML);
+        renderedRef.current.JSONValue = newRenderedJSON;
+        renderedRef.current.HTMLValue = newRenderedHTML;
         onChange == null ? void 0 : onChange(newRenderedJSON);
         setIsDirty(false);
       });
     }
   }, [blocks, isDirty, onChange]);
   (0, import_react.useEffect)(() => {
-    setRenderedJSON(data);
+    renderedRef.current.JSONValue = data != null ? data : [];
     if (data) {
       const initialBlocks = /* @__PURE__ */ new Map();
       const parseBlocks = (b, parentID) => {
@@ -2334,7 +2339,9 @@ var default_blocks_default = {
     name: "Text",
     type: "text",
     icon: import_fa65.FaAlignJustify,
-    render: void 0,
+    render: (value) => {
+      return value.htmlContent;
+    },
     editor: TextBlock_default,
     defaultValue: {
       htmlContent: "<p>Nouveau Bloc de Texte</p>"

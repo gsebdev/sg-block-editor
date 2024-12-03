@@ -31,10 +31,10 @@ var __objRest = (source, exclude) => {
 };
 
 // src/BlockEditor.tsx
-import { forwardRef as forwardRef3, useCallback as useCallback9, useEffect as useEffect10, useRef as useRef7 } from "react";
+import { forwardRef as forwardRef3, useCallback as useCallback9, useEffect as useEffect10, useRef as useRef8 } from "react";
 
 // src/context.tsx
-import { createContext, forwardRef, useCallback, useContext, useEffect, useImperativeHandle, useState } from "react";
+import { createContext, forwardRef, useCallback, useContext, useEffect, useImperativeHandle, useRef, useState } from "react";
 
 // src/helpers.ts
 var genBlockID = () => "_" + Math.random().toString(36).substr(2, 9);
@@ -62,14 +62,19 @@ var initialContext = {
 var blockEditorContext = createContext(initialContext);
 var BlocksEditorContextProvider = forwardRef(({ children, data, onChange, availableBlocks }, ref) => {
   const [blocks, setBlocks] = useState(/* @__PURE__ */ new Map());
-  const [renderedJSON, setRenderedJSON] = useState(data);
-  const [renderedHTML, setRenderedHTML] = useState("");
   const [isDirty, setIsDirty] = useState(false);
   const [activeBlock, setActiveBlock] = useState(null);
-  useImperativeHandle(ref, () => ({
-    getJSONValue: () => renderedJSON != null ? renderedJSON : [],
-    getHTMLValue: () => renderedHTML != null ? renderedHTML : ""
-  }));
+  const renderedRef = useRef({
+    JSONValue: data != null ? data : [],
+    HTMLValue: "",
+    getJSONValue() {
+      return this.JSONValue;
+    },
+    getHTMLValue() {
+      return this.HTMLValue;
+    }
+  });
+  useImperativeHandle(ref, () => renderedRef.current);
   useEffect(() => {
     if (isDirty) {
       const renderBlocks = (b) => {
@@ -108,15 +113,15 @@ var BlocksEditorContextProvider = forwardRef(({ children, data, onChange, availa
           return result + "<p>No render function provided</p>";
         }, "");
         const newRenderedJSON = blocksValue.filter((block) => !block.parentID).map((editorBlock) => renderBlocks(editorBlock));
-        setRenderedJSON(newRenderedJSON);
-        setRenderedHTML(newRenderedHTML);
+        renderedRef.current.JSONValue = newRenderedJSON;
+        renderedRef.current.HTMLValue = newRenderedHTML;
         onChange == null ? void 0 : onChange(newRenderedJSON);
         setIsDirty(false);
       });
     }
   }, [blocks, isDirty, onChange]);
   useEffect(() => {
-    setRenderedJSON(data);
+    renderedRef.current.JSONValue = data != null ? data : [];
     if (data) {
       const initialBlocks = /* @__PURE__ */ new Map();
       const parseBlocks = (b, parentID) => {
@@ -263,7 +268,7 @@ BlocksEditorContextProvider.displayName = "BlocksEditorContextProvider";
 var useEditor = () => useContext(blockEditorContext);
 
 // src/blocks/ImageBlock.tsx
-import { useEffect as useEffect3, useRef as useRef3, useState as useState4 } from "react";
+import { useEffect as useEffect3, useRef as useRef4, useState as useState4 } from "react";
 import { MdAlignHorizontalLeft, MdAlignHorizontalRight, MdAlignHorizontalCenter } from "react-icons/md";
 
 // src/components/Button.tsx
@@ -287,14 +292,14 @@ var Button_default = Button;
 
 // src/Block.tsx
 import clsx from "clsx";
-import { createContext as createContext2, useCallback as useCallback2, useContext as useContext2, useEffect as useEffect2, useMemo, useRef as useRef2, useState as useState3 } from "react";
+import { createContext as createContext2, useCallback as useCallback2, useContext as useContext2, useEffect as useEffect2, useMemo, useRef as useRef3, useState as useState3 } from "react";
 import { FaPlus } from "react-icons/fa6";
 import { RiDeleteBin5Line } from "react-icons/ri";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { Resizable } from "re-resizable";
 
 // src/components/SpacingTool.tsx
-import { useRef, useState as useState2 } from "react";
+import { useRef as useRef2, useState as useState2 } from "react";
 import { jsx as jsx3, jsxs } from "react/jsx-runtime";
 var SpacingTool = ({ value, onChange }) => {
   const [spacings, setSpacings] = useState2(value != null ? value : {});
@@ -304,7 +309,7 @@ var SpacingTool = ({ value, onChange }) => {
     "bottom",
     "top"
   ];
-  const spacingToolRef = useRef(null);
+  const spacingToolRef = useRef2(null);
   const handleChange = (direction, value2) => {
     const newSpacings = __spreadProps(__spreadValues({}, spacings), {
       [direction]: value2
@@ -476,7 +481,7 @@ var Block = ({ block, className, horizontalFlow }) => {
   var _a, _b, _c, _d, _e;
   const [toolbarPosition, setToolbarPosition] = useState3("bottom");
   const { blocks, activeBlock, setActiveBlock, deleteBlock, availableBlocks, updateBlock } = useEditor();
-  const blockRef = useRef2(null);
+  const blockRef = useRef3(null);
   const { blockID, hasFocusWithin, parentID, type, value } = block != null ? block : {};
   const isActive = blockID === activeBlock;
   const { isResizable, hasSpacingOptions, BlockEditorElement } = useMemo(() => {
@@ -621,7 +626,7 @@ import { FaImage } from "react-icons/fa6";
 import { Fragment as Fragment2, jsx as jsx5, jsxs as jsxs3 } from "react/jsx-runtime";
 var DefaultImageSelector = ({ children, value, onSelect, className }) => {
   const [currentImage, setCurrentImage] = useState4(value);
-  const inputRef = useRef3(null);
+  const inputRef = useRef4(null);
   useEffect3(() => {
     if (onSelect && currentImage && currentImage.src !== (value == null ? void 0 : value.src)) onSelect(currentImage);
   }, [currentImage]);
@@ -784,7 +789,7 @@ import { RxGroup } from "react-icons/rx";
 
 // src/blocks/TextBlock.tsx
 import clsx2 from "clsx";
-import { useCallback as useCallback7, useEffect as useEffect8, useRef as useRef5 } from "react";
+import { useCallback as useCallback7, useEffect as useEffect8, useRef as useRef6 } from "react";
 
 // lib/text-module/component/src/components/TextIgniter/TextIgniter.jsx
 import React11, {
@@ -794,7 +799,7 @@ import React11, {
 } from "react";
 
 // lib/text-module/component/src/contexts/editorContext.jsx
-import React3, { createContext as createContext3, useContext as useContext3, useRef as useRef4, useCallback as useCallback6 } from "react";
+import React3, { createContext as createContext3, useContext as useContext3, useRef as useRef5, useCallback as useCallback6 } from "react";
 
 // lib/text-module/component/src/hooks/useEditorFormatting.jsx
 import { useCallback as useCallback3, useState as useState5, useEffect as useEffect4 } from "react";
@@ -1133,7 +1138,7 @@ var useHeadingState = () => {
 import { jsx as jsx6 } from "react/jsx-runtime";
 var EditorContext = createContext3();
 var EditorProvider = ({ children }) => {
-  const editorRef = useRef4(null);
+  const editorRef = useRef5(null);
   const {
     formatText,
     updateDataAttributes,
@@ -2026,7 +2031,7 @@ var TextBlock = ({ block, isActive }) => {
   const { updateBlock } = useEditor();
   const { blockID, value } = block;
   const { htmlContent } = value != null ? value : {};
-  const editorRef = useRef5(null);
+  const editorRef = useRef6(null);
   useEffect8(() => {
     var _a, _b;
     if (((_b = (_a = editorRef.current) == null ? void 0 : _a.editorRef) == null ? void 0 : _b.current) && isActive) {
@@ -2070,7 +2075,7 @@ var TextBlock = ({ block, isActive }) => {
 var TextBlock_default = TextBlock;
 
 // src/blocks/GroupBlock.tsx
-import { useCallback as useCallback8, useEffect as useEffect9, useRef as useRef6, useState as useState12 } from "react";
+import { useCallback as useCallback8, useEffect as useEffect9, useRef as useRef7, useState as useState12 } from "react";
 import clsx3 from "clsx";
 import { BsArrowsExpand, BsArrowsExpandVertical } from "react-icons/bs";
 import { MdCenterFocusStrong } from "react-icons/md";
@@ -2084,9 +2089,9 @@ var RowBlock = ({ block, isActive }) => {
   const [groupWidth, setGroupWidth] = useState12(null);
   const [currentTemplate, setCurrentTemplate] = useState12(template || []);
   const [isResizing, setIsResizing] = useState12(null);
-  const groupRef = useRef6(null);
+  const groupRef = useRef7(null);
   const { blocks, setActiveBlock, updateBlock } = useEditor();
-  const prevXRef = useRef6(null);
+  const prevXRef = useRef7(null);
   const isResizable = !!(children == null ? void 0 : children.length) && groupWidth ? groupWidth > minChildWidth * (children == null ? void 0 : children.length) : false;
   const handleResizeStart = useCallback8((e, indexEl) => {
     if (isResizable) {
@@ -2299,7 +2304,9 @@ var default_blocks_default = {
     name: "Text",
     type: "text",
     icon: FaAlignJustify,
-    render: void 0,
+    render: (value) => {
+      return value.htmlContent;
+    },
     editor: TextBlock_default,
     defaultValue: {
       htmlContent: "<p>Nouveau Bloc de Texte</p>"
@@ -2346,7 +2353,7 @@ import clsx4 from "clsx";
 import { jsx as jsx17, jsxs as jsxs13 } from "react/jsx-runtime";
 var BlockEditorContent = () => {
   const { blocks, setActiveBlock } = useEditor();
-  const editorRef = useRef7(null);
+  const editorRef = useRef8(null);
   const handleClickOutside = useCallback9((e) => {
     if (editorRef.current && !editorRef.current.contains(e.target)) {
       setActiveBlock(null);

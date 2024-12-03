@@ -54,8 +54,10 @@ type BlockType<V = BlockValueGeneric> = {
     children?: BlockType<BlockValueGeneric>[];
 };
 type EditorRefObject = {
-    getJSONValue: () => BlockType[];
-    getHTMLValue: () => string;
+    JSONValue: BlockType<BlockValueGeneric>[];
+    HTMLValue: string;
+    getJSONValue(): BlockType[];
+    getHTMLValue(): string;
 };
 type addBlockMenuProps = {
     className?: string;
