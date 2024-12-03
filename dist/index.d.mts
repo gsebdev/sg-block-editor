@@ -1,7 +1,6 @@
 import * as react from 'react';
 import react__default, { ComponentType, ReactElement, Dispatch, SetStateAction, PropsWithChildren } from 'react';
 import { Enable } from 're-resizable';
-import * as react_icons from 'react-icons';
 import { IconType } from 'react-icons';
 
 interface BlocksEditorProps {
@@ -29,7 +28,7 @@ interface EditorProviderProps {
     data?: BlockType[] | null;
     onChange?: (data: BlockType[]) => void;
     availableBlocks: {
-        [key: symbol]: EditorBlock;
+        [key: string | symbol]: EditorBlock;
     };
 }
 type EditorParsedBlock<T extends BlockType = BlockType<BlockValueGeneric>> = Omit<T, 'children'> & {
@@ -143,101 +142,7 @@ declare const TextBlock: react__default.FC<{
 }>;
 
 declare const _default: {
-    text: {
-        name: string;
-        type: string;
-        icon: react_icons.IconType;
-        render: undefined;
-        editor: react.FC<{
-            block: EditorParsedBlock<{
-                type: string;
-                value?: ({
-                    htmlContent: string;
-                } & {
-                    width?: number | string;
-                    height?: number | string;
-                    spacings?: {
-                        top?: string;
-                        right?: string;
-                        bottom?: string;
-                        left?: string;
-                    };
-                }) | undefined;
-                children?: BlockType<{
-                    [x: string]: string | number | object | undefined;
-                    [x: symbol]: string | number | object | undefined;
-                }>[];
-            }>;
-            isActive?: boolean;
-        }>;
-        defaultValue: {
-            htmlContent: string;
-        };
-        isResizable: {
-            right: boolean;
-            left: boolean;
-            top: boolean;
-            bottom: boolean;
-            bottomLeft: boolean;
-            bottomRight: boolean;
-            topLeft: boolean;
-            topRight: boolean;
-        };
-        hasSpacingOptions: boolean;
-    };
-    image: {
-        name: string;
-        type: string;
-        icon: react_icons.IconType;
-        render: undefined;
-        editor: react.FC<{
-            block: EditorParsedBlock<{
-                type: string;
-                value?: ({
-                    image?: {
-                        id?: number | string;
-                        src: string;
-                    };
-                    aspect?: number | string;
-                    size?: {
-                        height: string | number;
-                        width: string | number;
-                    };
-                    align?: "left" | "right" | "center";
-                } & {
-                    width?: number | string;
-                    height?: number | string;
-                    spacings?: {
-                        top?: string;
-                        right?: string;
-                        bottom?: string;
-                        left?: string;
-                    };
-                }) | undefined;
-                children?: BlockType<{
-                    [x: string]: string | number | object | undefined;
-                    [x: symbol]: string | number | object | undefined;
-                }>[];
-            }>;
-            isActive?: boolean;
-            ImageSelector?: react.ComponentType<ImageSelectorProps>;
-        }>;
-        isResizable: boolean;
-        hasSpacingOptions: boolean;
-    };
-    group: {
-        name: string;
-        type: string;
-        icon: react_icons.IconType;
-        render: undefined;
-        editor: react.FC<RowBlockProps>;
-        acceptChildren: boolean;
-        isResizable: boolean;
-        defaultValue: {
-            flow: string;
-        };
-        hasSpacingOptions: boolean;
-    };
+    [key: string]: EditorBlock;
 };
 
 export { _default$1 as BlockEditor, definitions as Definitions, ImageBlock, RowBlock, TextBlock, _default as defaultBlocks, useEditor };

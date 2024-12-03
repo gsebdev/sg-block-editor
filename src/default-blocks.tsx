@@ -4,6 +4,7 @@ import { FaAlignJustify } from "react-icons/fa6";
 import { RxGroup } from "react-icons/rx";
 import TextBlock from "./blocks/TextBlock";
 import RowBlock from "./blocks/GroupBlock";
+import { EditorBlock } from "./definitions";
 
 export default {
     text: {
@@ -49,4 +50,4 @@ export default {
         },
         hasSpacingOptions: true
     }
-}
+} as { [key: string]: EditorBlock }

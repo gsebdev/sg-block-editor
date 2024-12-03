@@ -101,7 +101,7 @@ var BlocksEditorContextProvider = forwardRef(({ children, data, onChange, availa
         const newRenderedHTML = blocksValue.reduce((result, b) => {
           var _a;
           const { type, value } = b;
-          const { render } = (_a = availableBlocks[Symbol(type)]) != null ? _a : {};
+          const { render } = (_a = availableBlocks[type]) != null ? _a : {};
           if (render) {
             return result + render(value);
           }
@@ -186,10 +186,10 @@ var BlocksEditorContextProvider = forwardRef(({ children, data, onChange, availa
         blockID,
         {
           type,
-          value: type in availableBlocks ? (_a = availableBlocks[Symbol(type)]) == null ? void 0 : _a.defaultValue : void 0,
+          value: type in availableBlocks ? (_a = availableBlocks[type]) == null ? void 0 : _a.defaultValue : void 0,
           blockID,
           parentID,
-          children: ((_b = availableBlocks[Symbol(type)]) == null ? void 0 : _b.acceptChildren) ? [] : void 0
+          children: ((_b = availableBlocks[type]) == null ? void 0 : _b.acceptChildren) ? [] : void 0
         }
       ]);
       if (parentID) {
@@ -1648,7 +1648,10 @@ var IconDropDown = ({ items, onChange, icon, id, openRight, toolTip }) => {
     setIsOpen(false);
   };
   return /* @__PURE__ */ jsxs8("div", { className: `icon-dropdown ${openRight ? "open-right" : ""}`, children: [
-    /* @__PURE__ */ jsx11(ToolTip_default, { text: toolTip, children: /* @__PURE__ */ jsx11("button", { className: "dropbtn", id, onMouseDown: handleButtonClick, children: icon }) }),
+    /* @__PURE__ */ jsx11(ToolTip_default, { text: toolTip, children: /* @__PURE__ */ jsx11("button", { className: "dropbtn", id, onMouseDown: handleButtonClick, onClick: (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+    }, children: icon }) }),
     isOpen && /* @__PURE__ */ jsx11("div", { className: "icon-dropdown-content", children: items.map((item, index) => /* @__PURE__ */ jsxs8(
       "div",
       {
@@ -2091,11 +2094,15 @@ var RowBlock = ({ block, isActive }) => {
       prevXRef.current = e.clientX;
       document.body.style.userSelect = "none";
     }
-  }, [prevXRef, setIsResizing, groupWidth, minChildWidth]);
+  }, [prevXRef, setIsResizing, groupWidth, minChildWidth, isResizable]);
   useEffect9(() => {
     if (children && (children == null ? void 0 : children.length) !== currentTemplate.length) {
       const newTemplate = Array(children.length).fill(100 / (children == null ? void 0 : children.length));
-      setCurrentTemplate(newTemplate);
+      updateBlock(blockID, {
+        value: {
+          template: newTemplate
+        }
+      });
     }
   }, [children == null ? void 0 : children.length]);
   useEffect9(() => {
@@ -2144,6 +2151,7 @@ var RowBlock = ({ block, isActive }) => {
     setCurrentTemplate(template || []);
   }, [template]);
   useEffect9(() => {
+    var _a2;
     const handleResize = (entries) => {
       for (const entry of entries) {
         const { width } = entry.contentRect;
@@ -2154,6 +2162,7 @@ var RowBlock = ({ block, isActive }) => {
     if (groupRef.current) {
       resizeObserver.observe(groupRef.current);
     }
+    setGroupWidth(((_a2 = groupRef.current) == null ? void 0 : _a2.getBoundingClientRect().width) || null);
     return () => {
       if (groupRef.current) {
         resizeObserver.unobserve(groupRef.current);
