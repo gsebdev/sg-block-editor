@@ -73,7 +73,7 @@ export const BlocksEditorContextProvider = forwardRef<EditorRefObject, EditorPro
                 //Render the HTML if render function is provided
                 const newRenderedHTML = blocksValue.reduce((result: string, b: EditorParsedBlock) => {
                     const { type, value } = b;
-                    const { render } = availableBlocks[Symbol(type)] ?? {};
+                    const { render } = availableBlocks[type] ?? {};
                     if(render) {
                         return result + render(value);
                     }
@@ -187,10 +187,10 @@ export const BlocksEditorContextProvider = forwardRef<EditorRefObject, EditorPro
             newBlocksArray.splice(insertIndex, 0, [
                 blockID, {
                     type,
-                    value: type in availableBlocks ? availableBlocks[Symbol(type)]?.defaultValue : undefined,
+                    value: type in availableBlocks ? availableBlocks[type]?.defaultValue : undefined,
                     blockID,
                     parentID,
-                    children: availableBlocks[Symbol(type)]?.acceptChildren ? [] : undefined
+                    children: availableBlocks[type]?.acceptChildren ? [] : undefined
                 }]);
 
             // When parentID is provided, we insert the new block as a child of that parent

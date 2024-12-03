@@ -16,7 +16,7 @@ export default {
             htmlContent: '<p>Nouveau Bloc de Texte</p>'
         },
         isResizable: {
-            right:true,
+            right: true,
             left: true,
             top: false,
             bottom: false,

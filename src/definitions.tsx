@@ -29,7 +29,7 @@ export interface EditorProviderProps {
     children: React.ReactNode,
     data?: BlockType[] | null,
     onChange?: (data: BlockType[]) => void,
-    availableBlocks: { [key: symbol]: EditorBlock }
+    availableBlocks: { [key: string|symbol]: EditorBlock }
 }
 
 export type EditorParsedBlock<T extends BlockType = BlockType<BlockValueGeneric>> = Omit<T, 'children'> & {
