@@ -11,7 +11,7 @@ type ButtonProps = PropsWithChildren<{
 const Button: React.FC<ButtonProps> = ({ children, className, variant, onClick, ariaLabel, title }) => {
     return (
         <button
-            onClick={onClick}
+            onClick={(e) => {e.preventDefault(); onClick?.(e);}}
             aria-label={ariaLabel}
             title={title}
             className={`sg-block__btn${variant ? ' sg-block__btn--' + variant : ''}${className ? ' ' + className : ''}`}

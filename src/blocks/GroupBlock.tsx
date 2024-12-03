@@ -43,6 +43,14 @@ const RowBlock: React.FC<RowBlockProps> = ({ block, isActive }) => {
         }
     }, [prevXRef, setIsResizing, groupWidth, minChildWidth]);
 
+    useEffect(() => {
+
+        if (children && children?.length !== currentTemplate.length) {
+            const newTemplate = Array(children.length).fill(100 / children?.length);
+            setCurrentTemplate(newTemplate);
+        }
+    }, [children?.length]);
+
 
     useEffect(() => {
         if (isResizing !== null) {
@@ -52,8 +60,8 @@ const RowBlock: React.FC<RowBlockProps> = ({ block, isActive }) => {
                 e.preventDefault();
                 e.stopPropagation();
 
-                const deltaX = !!prevXRef.current ? e.clientX - prevXRef.current : 0;
-                const deltaPercentage = !!groupWidth ? deltaX / groupWidth * 100 : 0;
+                const deltaX = prevXRef.current ? e.clientX - prevXRef.current : 0;
+                const deltaPercentage = groupWidth ? deltaX / groupWidth * 100 : 0;
                 if (groupWidth)
                     setCurrentTemplate((prevTemplate) => {
                         const newTemplate = [...prevTemplate];

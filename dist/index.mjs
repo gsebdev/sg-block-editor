@@ -272,7 +272,10 @@ var Button = ({ children, className, variant, onClick, ariaLabel, title }) => {
   return /* @__PURE__ */ jsx2(
     "button",
     {
-      onClick,
+      onClick: (e) => {
+        e.preventDefault();
+        onClick == null ? void 0 : onClick(e);
+      },
       "aria-label": ariaLabel,
       title,
       className: `sg-block__btn${variant ? " sg-block__btn--" + variant : ""}${className ? " " + className : ""}`,
@@ -1442,9 +1445,19 @@ var ToolTip_default = Tooltip;
 import { jsx as jsx9, jsxs as jsxs6 } from "react/jsx-runtime";
 var AppButton = ({ type = "primary", children, onClick, disabled = false }) => {
   const className = `button button-${type}`;
-  return /* @__PURE__ */ jsx9("button", { className, onClick, disabled, children });
+  const handleClick = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    onClick();
+  };
+  return /* @__PURE__ */ jsx9("button", { className, onClick: handleClick, disabled, children });
 };
 var IconButton = ({ children, onClick, id, toolTip, isActive }) => {
+  const handleClick = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    onClick();
+  };
   return /* @__PURE__ */ jsxs6(ToolTip_default, { text: toolTip, children: [
     /* @__PURE__ */ jsx9("style", { children: `
           .toolbarBtnDiv.active {
@@ -1456,7 +1469,7 @@ var IconButton = ({ children, onClick, id, toolTip, isActive }) => {
       "div",
       {
         className: `toolbarBtnDiv ${isActive ? "active" : ""}`,
-        children: /* @__PURE__ */ jsx9("button", { className: "toolbarBtn", onClick, id, children })
+        children: /* @__PURE__ */ jsx9("button", { className: "toolbarBtn", onClick: handleClick, id, children })
       }
     )
   ] });
@@ -1892,6 +1905,7 @@ var Toolbar = ({ features }) => {
       {
         icon: /* @__PURE__ */ jsx12(HeadingIcon, {}),
         items: [
+          { value: "p", label: "Paragraph" },
           { value: "h1", label: "Heading 1" },
           { value: "h2", label: "Heading 2" },
           { value: "h3", label: "Heading 3" },
@@ -2079,13 +2093,19 @@ var RowBlock = ({ block, isActive }) => {
     }
   }, [prevXRef, setIsResizing, groupWidth, minChildWidth]);
   useEffect9(() => {
+    if (children && (children == null ? void 0 : children.length) !== currentTemplate.length) {
+      const newTemplate = Array(children.length).fill(100 / (children == null ? void 0 : children.length));
+      setCurrentTemplate(newTemplate);
+    }
+  }, [children == null ? void 0 : children.length]);
+  useEffect9(() => {
     if (isResizing !== null) {
       const currentTemplateRef = { current: null };
       const handleResize = (e) => {
         e.preventDefault();
         e.stopPropagation();
-        const deltaX = !!prevXRef.current ? e.clientX - prevXRef.current : 0;
-        const deltaPercentage = !!groupWidth ? deltaX / groupWidth * 100 : 0;
+        const deltaX = prevXRef.current ? e.clientX - prevXRef.current : 0;
+        const deltaPercentage = groupWidth ? deltaX / groupWidth * 100 : 0;
         if (groupWidth)
           setCurrentTemplate((prevTemplate) => {
             const newTemplate = [...prevTemplate];
