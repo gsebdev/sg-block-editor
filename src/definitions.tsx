@@ -58,8 +58,10 @@ export type BlockType<V = BlockValueGeneric> = {
 };
 
 export type EditorRefObject = {
-    getJSONValue: () => BlockType[];
-    getHTMLValue: () => string;
+    JSONValue: BlockType<BlockValueGeneric>[],
+    HTMLValue: string,
+    getJSONValue(): BlockType[];
+    getHTMLValue(): string;
 }
 
 export type addBlockMenuProps = { 

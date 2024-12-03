@@ -11,7 +11,7 @@ export default {
         name: 'Text',
         type: 'text',
         icon: FaAlignJustify,
-        render: undefined,
+        render: (value) => { return (value as { htmlContent: string }).htmlContent },
         editor: TextBlock,
         defaultValue: {
             htmlContent: '<p>Nouveau Bloc de Texte</p>'
