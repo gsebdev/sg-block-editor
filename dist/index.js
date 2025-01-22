@@ -55,6 +55,26 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
   mod
 ));
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
+var __async = (__this, __arguments, generator) => {
+  return new Promise((resolve, reject) => {
+    var fulfilled = (value) => {
+      try {
+        step(generator.next(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var rejected = (value) => {
+      try {
+        step(generator.throw(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var step = (x) => x.done ? resolve(x.value) : Promise.resolve(x.value).then(fulfilled, rejected);
+    step((generator = generator.apply(__this, __arguments)).next());
+  });
+};
 
 // src/index.ts
 var src_exports = {};
@@ -116,7 +136,7 @@ var BlocksEditorContextProvider = (0, import_react.forwardRef)(({ children, data
   (0, import_react.useImperativeHandle)(ref, () => renderedRef.current);
   (0, import_react.useEffect)(() => {
     if (isDirty) {
-      const renderBlocks = (b) => {
+      const renderBlocksToJSONRecursive = (b) => {
         if (b.children && Array.isArray(b.children)) {
           return {
             type: b.type,
@@ -124,7 +144,7 @@ var BlocksEditorContextProvider = (0, import_react.forwardRef)(({ children, data
             children: b.children.map((child) => {
               const childBlock = blocks.get(child);
               if (childBlock) {
-                return renderBlocks(childBlock);
+                return renderBlocksToJSONRecursive(childBlock);
               }
               return {
                 type: "text",
@@ -140,21 +160,30 @@ var BlocksEditorContextProvider = (0, import_react.forwardRef)(({ children, data
           value: b.value
         };
       };
-      setTimeout(() => {
+      const updateValuesAsync = () => __async(void 0, null, function* () {
+        var _a;
         const blocksValue = Array.from(blocks.values());
-        const newRenderedHTML = blocksValue.reduce((result, b) => {
-          var _a;
+        let newRenderedHTML = "";
+        for (const b of blocksValue) {
           const { type, value } = b;
           const { render } = (_a = availableBlocks[type]) != null ? _a : {};
           if (render) {
-            return result + render(value);
+            const next = yield render(value);
+            newRenderedHTML += next;
+          } else {
+            newRenderedHTML += "<p>No render function provided</p>";
           }
-          return result + "<p>No render function provided</p>";
-        }, "");
-        const newRenderedJSON = blocksValue.filter((block) => !block.parentID).map((editorBlock) => renderBlocks(editorBlock));
-        renderedRef.current.JSONValue = newRenderedJSON;
-        renderedRef.current.HTMLValue = newRenderedHTML;
-        onChange == null ? void 0 : onChange(newRenderedJSON);
+        }
+        const newRenderedJSON = blocksValue.filter((block) => !block.parentID).map((editorBlock) => renderBlocksToJSONRecursive(editorBlock));
+        return {
+          HTMLValue: newRenderedHTML,
+          JSONValue: newRenderedJSON
+        };
+      });
+      updateValuesAsync().then(({ HTMLValue, JSONValue }) => {
+        renderedRef.current.JSONValue = JSONValue;
+        renderedRef.current.HTMLValue = HTMLValue;
+        onChange == null ? void 0 : onChange(JSONValue);
         setIsDirty(false);
       });
     }
