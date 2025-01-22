@@ -45,7 +45,7 @@ export const BlocksEditorContextProvider = forwardRef<EditorRefObject, EditorPro
 
     useEffect(() => {
         if (isDirty) {
-            const renderBlocks = (b: EditorParsedBlock): BlockType => {
+            const renderBlocksToJSONRecursive = (b: EditorParsedBlock): BlockType => {
                 if (b.children && Array.isArray(b.children)) {
                     return {
                         type: b.type,
@@ -53,7 +53,7 @@ export const BlocksEditorContextProvider = forwardRef<EditorRefObject, EditorPro
                         children: b.children.map(child => {
                             const childBlock = blocks.get(child);
                             if (childBlock) {
-                                return renderBlocks(childBlock);
+                                return renderBlocksToJSONRecursive(childBlock);
                             }
                             return {
                                 type: 'text',
@@ -69,28 +69,38 @@ export const BlocksEditorContextProvider = forwardRef<EditorRefObject, EditorPro
                     value: b.value,
                 };
             }
-            setTimeout(() => {
+            
+            const updateValuesAsync = async () => {
                 const blocksValue = Array.from(blocks.values())
                 
                 //Render the HTML if render function is provided
-                const newRenderedHTML = blocksValue.reduce((result: string, b: EditorParsedBlock) => {
+                let newRenderedHTML = '';
+                for (const b of blocksValue) {
                     const { type, value } = b;
                     const { render } = availableBlocks[type] ?? {};
                     if(render) {
-                        return result + render(value);
+                        const next = await render(value);
+                        newRenderedHTML += next;
+                    } else {
+                        newRenderedHTML += '<p>No render function provided</p>';
                     }
-                    return result + '<p>No render function provided</p>';
-                    
-                }, '');
+                }
 
                 // Render the JSON
-                const newRenderedJSON = blocksValue.filter(block => !block.parentID).map(editorBlock => renderBlocks(editorBlock));
+                const newRenderedJSON = blocksValue.filter(block => !block.parentID).map(editorBlock => renderBlocksToJSONRecursive(editorBlock));
+                return {
+                    HTMLValue: newRenderedHTML,
+                    JSONValue: newRenderedJSON
+                }
+            }
 
-                renderedRef.current.JSONValue = newRenderedJSON;
-                renderedRef.current.HTMLValue = newRenderedHTML;
-                onChange?.(newRenderedJSON);
+            // set the updated values and trigger change callback
+            updateValuesAsync().then(({ HTMLValue, JSONValue }) => {
+                renderedRef.current.JSONValue = JSONValue;
+                renderedRef.current.HTMLValue = HTMLValue;
+                onChange?.(JSONValue);
                 setIsDirty(false);
-            })
+            });
 
         }
     }, [blocks, isDirty, onChange]);

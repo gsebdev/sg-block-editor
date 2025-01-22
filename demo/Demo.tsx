@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import { BlockType, EditorRefObject } from "../src/definitions";
 import { BlockEditor } from "../src";
 import defaultDemoContent from "./default-demo-content.json";

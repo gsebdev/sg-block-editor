@@ -17,7 +17,7 @@ export type EditorBlock = {
     name: string,
     type: string,
     icon?: IconType|ComponentType,
-    render?: (value: BlockType<BlockValueGeneric>['value']) => string,
+    render?: (value: BlockType<BlockValueGeneric>['value']) => Promise<string>|string,
     editor?: ComponentType<EditorBlockComponentProps>,
     defaultValue?: BlockType<BlockValueGeneric>['value'],
     acceptChildren?: boolean,
