@@ -889,15 +889,29 @@ var useEditorFormatting = (editorRef) => {
       if (selection.rangeCount > 0) {
         const range = selection.getRangeAt(0);
         const parentElement = range.commonAncestorContainer.nodeType === Node.TEXT_NODE ? range.commonAncestorContainer.parentElement : range.commonAncestorContainer;
-        if (document.queryCommandState("bold")) styles.add("bold");
-        if (document.queryCommandState("italic")) styles.add("italic");
-        if (document.queryCommandState("underline")) styles.add("underline");
-        if (document.queryCommandState("insertOrderedList")) {
-          styles.add("orderedList");
-        } else if (document.queryCommandState("insertUnorderedList")) {
-          styles.add("unorderedList");
-        }
         const computedStyle = window.getComputedStyle(parentElement);
+        const fontWeight = computedStyle.fontWeight;
+        const fontStyle = computedStyle.fontStyle;
+        const textDecoration = computedStyle.textDecoration;
+        if (fontWeight === 700) styles.add("bold");
+        if (fontStyle === "italic") styles.add("italic");
+        if (textDecoration === "underline") styles.add("underline");
+        let node = parentElement;
+        while (node && node !== document) {
+          if (node.tagName === "OL") {
+            styles.add("orderedList");
+          }
+          if (node.tagName === "UL") {
+            styles.add("unorderedList");
+          }
+          if (node.tagName === "SUP") {
+            styles.add("superscript");
+          }
+          if (node.tagName === "SUB") {
+            styles.add("subscript");
+          }
+          node = node.parentNode;
+        }
         const textAlign = computedStyle.textAlign;
         if (textAlign === "left" || textAlign === "start") {
           styles.add("justifyLeft");
@@ -906,11 +920,6 @@ var useEditorFormatting = (editorRef) => {
         } else if (textAlign === "right") {
           styles.add("justifyRight");
         }
-      }
-      if (document.queryCommandState("superscript")) {
-        styles.add("superscript");
-      } else if (document.queryCommandState("subscript")) {
-        styles.add("subscript");
       }
       setActiveStyles(Array.from(styles));
     }
@@ -984,18 +993,26 @@ var useEditorFormatting = (editorRef) => {
     [editorRef, updateActiveStyles]
   );
   const addLink = (0, import_react5.useCallback)(
-    (linkText, linkUrl) => {
+    (linkText, linkUrl, range = null) => {
       const editor = editorRef.current;
+      const selection = window.getSelection();
       if (editor) {
         editor.focus();
         const linkElement = document.createElement("a");
         linkElement.textContent = linkText;
         linkElement.href = linkUrl;
-        linkElement.target = "_blank";
         linkElement.rel = "noopener noreferrer";
-        linkElement.className = "link-btn";
-        editor.appendChild(linkElement);
-        editor.appendChild(document.createElement("br"));
+        linkElement.className = "sg-link";
+        if (range) {
+          range.deleteContents();
+          range.insertNode(linkElement);
+          range.setStartAfter(linkElement);
+          range.setEndAfter(linkElement);
+          selection.removeAllRanges();
+          selection.addRange(range);
+        } else {
+          editor.appendChild(linkElement);
+        }
         updateActiveStyles();
       }
     },
@@ -1098,29 +1115,32 @@ var useEditorState = (editorRef, updateDataAttributes) => {
 // lib/text-module/component/src/hooks/useTableOperation.jsx
 var import_react7 = require("react");
 var useTableOperations = (editorRef) => {
-  const insertTable = (0, import_react7.useCallback)((rows = 2, cols = 2) => {
-    const editor = editorRef.current;
-    if (editor) {
-      const table = document.createElement("table");
-      table.style.width = "100%";
-      table.style.border = "1px solid #ccc";
-      table.style.borderCollapse = "collapse";
-      for (let i = 0; i < rows; i++) {
-        const row = table.insertRow();
-        for (let j = 0; j < cols; j++) {
-          const cell = row.insertCell();
-          cell.style.border = "1px solid #ccc";
-          cell.style.padding = "5px";
-          cell.style.height = "30px";
-          cell.style.width = `${100 / cols}%`;
-          cell.contentEditable = true;
+  const insertTable = (0, import_react7.useCallback)(
+    (rows = 2, cols = 2) => {
+      const editor = editorRef.current;
+      if (editor) {
+        const table = document.createElement("table");
+        table.style.width = "100%";
+        table.style.border = "1px solid #ccc";
+        table.style.borderCollapse = "collapse";
+        for (let i = 0; i < rows; i++) {
+          const row = table.insertRow();
+          for (let j = 0; j < cols; j++) {
+            const cell = row.insertCell();
+            cell.style.border = "1px solid #ccc";
+            cell.style.padding = "5px";
+            cell.style.height = "30px";
+            cell.style.width = `${100 / cols}%`;
+            cell.contentEditable = true;
+          }
         }
+        editor.appendChild(table);
+        editor.appendChild(document.createElement("br"));
+        editor.dispatchEvent(new Event("change"));
       }
-      editor.appendChild(table);
-      editor.appendChild(document.createElement("br"));
-      editor.dispatchEvent(new Event("change"));
-    }
-  }, [editorRef]);
+    },
+    [editorRef]
+  );
   const addTableRow = (0, import_react7.useCallback)(() => {
     const editor = editorRef.current;
     if (editor) {
@@ -1162,28 +1182,31 @@ var useTableOperations = (editorRef) => {
       editor.dispatchEvent(new Event("change"));
     }
   }, [editorRef]);
-  const insertLayout = (0, import_react7.useCallback)((columns) => {
-    const editor = editorRef.current;
-    if (editor) {
-      const table = document.createElement("table");
-      table.className = "layout-table";
-      table.style.width = "100%";
-      table.style.border = "1px solid #ccc";
-      table.style.borderCollapse = "collapse";
-      const row = table.insertRow();
-      columns.forEach((colWidth) => {
-        const cell = row.insertCell();
-        cell.style.border = "1px solid #ccc";
-        cell.style.padding = "5px";
-        cell.style.height = "30px";
-        cell.style.width = `${colWidth}%`;
-        cell.contentEditable = true;
-      });
-      editor.appendChild(table);
-      editor.appendChild(document.createElement("br"));
-      editor.dispatchEvent(new Event("change"));
-    }
-  }, [editorRef]);
+  const insertLayout = (0, import_react7.useCallback)(
+    (columns) => {
+      const editor = editorRef.current;
+      if (editor) {
+        const table = document.createElement("table");
+        table.className = "layout-table";
+        table.style.width = "100%";
+        table.style.border = "1px solid #ccc";
+        table.style.borderCollapse = "collapse";
+        const row = table.insertRow();
+        columns.forEach((colWidth) => {
+          const cell = row.insertCell();
+          cell.style.border = "1px solid #ccc";
+          cell.style.padding = "5px";
+          cell.style.height = "30px";
+          cell.style.width = `${colWidth}%`;
+          cell.contentEditable = true;
+        });
+        editor.appendChild(table);
+        editor.appendChild(document.createElement("br"));
+        editor.dispatchEvent(new Event("change"));
+      }
+    },
+    [editorRef]
+  );
   return { insertTable, addTableRow, addTableColumn, insertLayout };
 };
 
@@ -1512,7 +1535,12 @@ var ToolTip_default = Tooltip;
 
 // lib/text-module/component/src/components/ui/Button.jsx
 var import_jsx_runtime9 = require("react/jsx-runtime");
-var AppButton = ({ type = "primary", children, onClick, disabled = false }) => {
+var AppButton = ({
+  type = "primary",
+  children,
+  onClick,
+  disabled = false
+}) => {
   const className = `button button-${type}`;
   const handleClick = (e) => {
     e.preventDefault();
@@ -1534,20 +1562,20 @@ var IconButton = ({ children, onClick, id, toolTip, isActive }) => {
             border: 1px solid #333; /* Highlighted border */
           }
         ` }),
-    /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(
-      "div",
-      {
-        className: `toolbarBtnDiv ${isActive ? "active" : ""}`,
-        children: /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("button", { className: "toolbarBtn", onClick: handleClick, id, children })
-      }
-    )
+    /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("div", { className: `toolbarBtnDiv ${isActive ? "active" : ""}`, children: /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("button", { className: "toolbarBtn", onClick: handleClick, id, children }) })
   ] });
 };
 
 // lib/text-module/component/src/components/ui/Dialog.jsx
 var import_react13 = __toESM(require("react"));
 var import_jsx_runtime10 = require("react/jsx-runtime");
-var ImageUploadSelectionDialog = ({ isOpen, onClose, onSubmit, title, children }) => {
+var ImageUploadSelectionDialog = ({
+  isOpen,
+  onClose,
+  onSubmit,
+  title,
+  children
+}) => {
   const [file, setFile] = (0, import_react13.useState)(null);
   const [imageUrl, setImageUrl] = (0, import_react13.useState)("");
   const [error, setError] = (0, import_react13.useState)("");
@@ -1625,13 +1653,23 @@ var ImageUploadSelectionDialog = ({ isOpen, onClose, onSubmit, title, children }
     ] })
   ] }) });
 };
-var FileUrlDialog = ({ isOpen, onClose, onSubmit, linkText, link, children }) => {
+var FileUrlDialog = ({
+  isOpen,
+  onClose,
+  onSubmit,
+  linkText,
+  link,
+  children
+}) => {
   const [url, setUrl] = (0, import_react13.useState)(link || "");
   const [text, setText] = (0, import_react13.useState)(linkText || "");
   const [error, setError] = (0, import_react13.useState)("");
+  const range = (0, import_react13.useRef)(null);
   (0, import_react13.useEffect)(() => {
     if (isOpen) {
       resetToDefault();
+      const selection = window.getSelection();
+      range.current = selection.rangeCount > 0 ? selection.getRangeAt(0) : null;
     }
   }, [isOpen, link, linkText]);
   const closeDialog = () => {
@@ -1639,8 +1677,9 @@ var FileUrlDialog = ({ isOpen, onClose, onSubmit, linkText, link, children }) =>
     onClose();
   };
   const resetToDefault = () => {
-    setUrl(link || "");
-    setText(linkText || "");
+    const selection = window.getSelection().rangeCount > 0 ? window.getSelection().toString() : null;
+    setUrl(link || selection || "");
+    setText(linkText || selection || "");
     setError("");
   };
   const handleLinkUrl = (event) => {
@@ -1652,15 +1691,15 @@ var FileUrlDialog = ({ isOpen, onClose, onSubmit, linkText, link, children }) =>
   const handleSubmit = () => {
     let errorMessage = "";
     if (!url) {
-      errorMessage += "Please provide a file URL. ";
+      errorMessage += "Please provide an URL.";
     }
     if (!text) {
-      errorMessage += "Please provide a title for the link.";
+      errorMessage += "Please provide a text for the link.";
     }
     if (errorMessage) {
       setError(errorMessage);
     } else {
-      onSubmit({ text, url });
+      onSubmit({ text, url }, range.current);
       onClose();
     }
   };
@@ -1676,7 +1715,7 @@ var FileUrlDialog = ({ isOpen, onClose, onSubmit, linkText, link, children }) =>
         {
           type: "text",
           className: "image-url-input",
-          placeholder: "Link Text",
+          placeholder: "Texte du lien",
           value: text,
           onChange: handleLinkText
         }
@@ -1687,7 +1726,7 @@ var FileUrlDialog = ({ isOpen, onClose, onSubmit, linkText, link, children }) =>
           {
             type: "text",
             className: "image-url-input",
-            placeholder: "Paste image URL",
+            placeholder: "URL du lien",
             value: url,
             onChange: handleLinkUrl
           }
@@ -1696,8 +1735,8 @@ var FileUrlDialog = ({ isOpen, onClose, onSubmit, linkText, link, children }) =>
       ] })
     ] }),
     /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("div", { className: "dialog-footer", children: [
-      /* @__PURE__ */ (0, import_jsx_runtime10.jsx)(AppButton, { type: "cancel", onClick: closeDialog, children: "Cancel" }),
-      /* @__PURE__ */ (0, import_jsx_runtime10.jsx)(AppButton, { onClick: handleSubmit, children: "Submit" })
+      /* @__PURE__ */ (0, import_jsx_runtime10.jsx)(AppButton, { type: "cancel", onClick: closeDialog, children: "Annuler" }),
+      /* @__PURE__ */ (0, import_jsx_runtime10.jsx)(AppButton, { onClick: handleSubmit, children: "Valider" })
     ] })
   ] }) });
 };
@@ -1717,10 +1756,19 @@ var IconDropDown = ({ items, onChange, icon, id, openRight, toolTip }) => {
     setIsOpen(false);
   };
   return /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("div", { className: `icon-dropdown ${openRight ? "open-right" : ""}`, children: [
-    /* @__PURE__ */ (0, import_jsx_runtime11.jsx)(ToolTip_default, { text: toolTip, children: /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("button", { className: "dropbtn", id, onMouseDown: handleButtonClick, onClick: (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-    }, children: icon }) }),
+    /* @__PURE__ */ (0, import_jsx_runtime11.jsx)(ToolTip_default, { text: toolTip, children: /* @__PURE__ */ (0, import_jsx_runtime11.jsx)(
+      "button",
+      {
+        className: "dropbtn",
+        id,
+        onMouseDown: handleButtonClick,
+        onClick: (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+        },
+        children: icon
+      }
+    ) }),
     isOpen && /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("div", { className: "icon-dropdown-content", children: items.map((item, index) => /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)(
       "div",
       {
@@ -1900,7 +1948,7 @@ var Toolbar = ({ features }) => {
           title: "Provide URL",
           linkText: "",
           link: "",
-          onSubmit: (data) => addLink(data.text, data.url)
+          onSubmit: (data, range) => addLink(data.text, data.url, range)
         }
       )
     ] }),
