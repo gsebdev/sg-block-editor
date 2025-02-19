@@ -893,9 +893,11 @@ var useEditorFormatting = (editorRef) => {
         const fontWeight = computedStyle.fontWeight;
         const fontStyle = computedStyle.fontStyle;
         const textDecoration = computedStyle.textDecoration;
-        if (fontWeight === 700) styles.add("bold");
+        console.log(textDecoration);
+        if (fontWeight === "700") styles.add("bold");
         if (fontStyle === "italic") styles.add("italic");
-        if (textDecoration === "underline") styles.add("underline");
+        if (textDecoration.indexOf("underline") !== -1) styles.add("underline");
+        console.log(styles);
         let node = parentElement;
         while (node && node !== document) {
           if (node.tagName === "OL") {
@@ -1526,8 +1528,8 @@ var import_react12 = __toESM(require("react"));
 var import_react11 = __toESM(require("react"));
 var import_jsx_runtime8 = require("react/jsx-runtime");
 var Tooltip = ({ text, children }) => {
-  return text ? /* @__PURE__ */ (0, import_jsx_runtime8.jsxs)("div", { className: "tooltip-container", children: [
-    /* @__PURE__ */ (0, import_jsx_runtime8.jsx)("div", { className: "tooltip", children: text }),
+  return text ? /* @__PURE__ */ (0, import_jsx_runtime8.jsxs)("div", { className: "sg-text__tooltip-container", children: [
+    /* @__PURE__ */ (0, import_jsx_runtime8.jsx)("div", { className: "sg-text__tooltip", children: text }),
     children
   ] }) : /* @__PURE__ */ (0, import_jsx_runtime8.jsx)(import_jsx_runtime8.Fragment, {});
 };
@@ -1541,7 +1543,7 @@ var AppButton = ({
   onClick,
   disabled = false
 }) => {
-  const className = `button button-${type}`;
+  const className = `sg-text__button sg-text__button-${type}`;
   const handleClick = (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -1555,15 +1557,7 @@ var IconButton = ({ children, onClick, id, toolTip, isActive }) => {
     e.stopPropagation();
     onClick();
   };
-  return /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)(ToolTip_default, { text: toolTip, children: [
-    /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("style", { children: `
-          .toolbarBtnDiv.active {
-            background-color: #ddd; /* Highlighted background color */
-            border: 1px solid #333; /* Highlighted border */
-          }
-        ` }),
-    /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("div", { className: `toolbarBtnDiv ${isActive ? "active" : ""}`, children: /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("button", { className: "toolbarBtn", onClick: handleClick, id, children }) })
-  ] });
+  return /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(ToolTip_default, { text: toolTip, children: /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("div", { className: `sg-text__toolbarBtnDiv ${isActive ? "active" : ""}`, children: /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("button", { className: "sg-text__toolbarBtn", onClick: handleClick, id, children }) }) });
 };
 
 // lib/text-module/component/src/components/ui/Dialog.jsx
@@ -1617,13 +1611,13 @@ var ImageUploadSelectionDialog = ({
     }
   };
   if (!isOpen) return null;
-  return /* @__PURE__ */ (0, import_jsx_runtime10.jsx)("div", { className: "dialog-overlay", children: /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("div", { className: "dialog-container", children: [
-    /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("div", { className: "dialog-header", children: [
+  return /* @__PURE__ */ (0, import_jsx_runtime10.jsx)("div", { className: "sg-text__dialog-overlay", children: /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("div", { className: "sg-text__dialog-container", children: [
+    /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("div", { className: "sg-text__dialog-header", children: [
       title,
       /* @__PURE__ */ (0, import_jsx_runtime10.jsx)(IconButton, { onClick: onClose, id: "dialogClose", children: /* @__PURE__ */ (0, import_jsx_runtime10.jsx)(CloseIcon, {}) })
     ] }),
-    /* @__PURE__ */ (0, import_jsx_runtime10.jsx)("div", { className: "dialog-body", children: /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("div", { className: "container", children: [
-      /* @__PURE__ */ (0, import_jsx_runtime10.jsx)("label", { htmlFor: "file-input", className: "custom-file-input", children: !file ? "Select file" : "Reselect file" }),
+    /* @__PURE__ */ (0, import_jsx_runtime10.jsx)("div", { className: "sg-text__dialog-body", children: /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("div", { className: "sg-text__container", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime10.jsx)("label", { htmlFor: "file-input", className: "sg-text__custom-file-input", children: !file ? "Select file" : "Reselect file" }),
       /* @__PURE__ */ (0, import_jsx_runtime10.jsx)(
         "input",
         {
@@ -1633,7 +1627,7 @@ var ImageUploadSelectionDialog = ({
           onChange: handleFileChange
         }
       ),
-      file && /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("div", { className: "file-info", children: [
+      file && /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("div", { className: "sg-text__file-info", children: [
         /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("p", { children: [
           "Selected file: ",
           file.name,
@@ -1645,9 +1639,9 @@ var ImageUploadSelectionDialog = ({
           " KB"
         ] })
       ] }),
-      error && /* @__PURE__ */ (0, import_jsx_runtime10.jsx)("p", { className: "error", children: error })
+      error && /* @__PURE__ */ (0, import_jsx_runtime10.jsx)("p", { className: "sg-text__error", children: error })
     ] }) }),
-    /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("div", { className: "dialog-footer", children: [
+    /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("div", { className: "sg-text__dialog-footer", children: [
       /* @__PURE__ */ (0, import_jsx_runtime10.jsx)(AppButton, { type: "cancel", onClick: closeDialog, children: "Cancel" }),
       /* @__PURE__ */ (0, import_jsx_runtime10.jsx)(AppButton, { onClick: handleSubmit, children: "Submit" })
     ] })
@@ -1704,37 +1698,37 @@ var FileUrlDialog = ({
     }
   };
   if (!isOpen) return null;
-  return /* @__PURE__ */ (0, import_jsx_runtime10.jsx)("div", { className: "dialog-overlay", children: /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("div", { className: "dialog-container", children: [
-    /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("div", { className: "dialog-header", children: [
+  return /* @__PURE__ */ (0, import_jsx_runtime10.jsx)("div", { className: "sg-text__dialog-overlay", children: /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("div", { className: "sg-text__dialog-container", children: [
+    /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("div", { className: "sg-text__dialog-header", children: [
       "Enter Title",
       /* @__PURE__ */ (0, import_jsx_runtime10.jsx)(IconButton, { onClick: onClose, id: "dialogClose", children: /* @__PURE__ */ (0, import_jsx_runtime10.jsx)(CloseIcon, {}) })
     ] }),
-    /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("div", { className: "dialog-body", children: [
-      /* @__PURE__ */ (0, import_jsx_runtime10.jsx)("div", { className: "container", children: /* @__PURE__ */ (0, import_jsx_runtime10.jsx)(
+    /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("div", { className: "sg-text__dialog-body", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime10.jsx)("div", { className: "sg-text__container", children: /* @__PURE__ */ (0, import_jsx_runtime10.jsx)(
         "input",
         {
           type: "text",
-          className: "image-url-input",
+          className: "sg-text__image-url-input",
           placeholder: "Texte du lien",
           value: text,
           onChange: handleLinkText
         }
       ) }),
-      /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("div", { className: "container", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("div", { className: "sg-text__container", children: [
         /* @__PURE__ */ (0, import_jsx_runtime10.jsx)(
           "input",
           {
             type: "text",
-            className: "image-url-input",
+            className: "sg-text__image-url-input",
             placeholder: "URL du lien",
             value: url,
             onChange: handleLinkUrl
           }
         ),
-        error && /* @__PURE__ */ (0, import_jsx_runtime10.jsx)("p", { className: "error", children: error })
+        error && /* @__PURE__ */ (0, import_jsx_runtime10.jsx)("p", { className: "sg-text__error", children: error })
       ] })
     ] }),
-    /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("div", { className: "dialog-footer", children: [
+    /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)("div", { className: "sg-text__dialog-footer", children: [
       /* @__PURE__ */ (0, import_jsx_runtime10.jsx)(AppButton, { type: "cancel", onClick: closeDialog, children: "Annuler" }),
       /* @__PURE__ */ (0, import_jsx_runtime10.jsx)(AppButton, { onClick: handleSubmit, children: "Valider" })
     ] })
@@ -1755,11 +1749,11 @@ var IconDropDown = ({ items, onChange, icon, id, openRight, toolTip }) => {
     onChange(value);
     setIsOpen(false);
   };
-  return /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("div", { className: `icon-dropdown ${openRight ? "open-right" : ""}`, children: [
+  return /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)("div", { className: `sg-text__icon-dropdown ${openRight ? "open-right" : ""}`, children: [
     /* @__PURE__ */ (0, import_jsx_runtime11.jsx)(ToolTip_default, { text: toolTip, children: /* @__PURE__ */ (0, import_jsx_runtime11.jsx)(
       "button",
       {
-        className: "dropbtn",
+        className: "sg-text__dropbtn",
         id,
         onMouseDown: handleButtonClick,
         onClick: (e) => {
@@ -1769,13 +1763,13 @@ var IconDropDown = ({ items, onChange, icon, id, openRight, toolTip }) => {
         children: icon
       }
     ) }),
-    isOpen && /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("div", { className: "icon-dropdown-content", children: items.map((item, index) => /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)(
+    isOpen && /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("div", { className: "sg-text__icon-dropdown-content", children: items.map((item, index) => /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)(
       "div",
       {
-        className: "dropdown-item",
+        className: "sg-text__dropdown-item",
         onMouseDown: (e) => handleItemClick(item.value, e),
         children: [
-          item.icon && /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("span", { className: "dropdown-icon", children: item.icon }),
+          item.icon && /* @__PURE__ */ (0, import_jsx_runtime11.jsx)("span", { className: "sg-text__dropdown-icon", children: item.icon }),
           item.label
         ]
       },
@@ -2038,8 +2032,8 @@ var Toolbar = ({ features }) => {
       }
     )
   };
-  return /* @__PURE__ */ (0, import_jsx_runtime12.jsxs)("div", { className: "toolbar", children: [
-    /* @__PURE__ */ (0, import_jsx_runtime12.jsx)("div", { className: "toolbar-switch", children: /* @__PURE__ */ (0, import_jsx_runtime12.jsxs)("label", { children: [
+  return /* @__PURE__ */ (0, import_jsx_runtime12.jsxs)("div", { className: "sg-text__toolbar", children: [
+    /* @__PURE__ */ (0, import_jsx_runtime12.jsx)("div", { className: "sg-text__toolbar-switch", children: /* @__PURE__ */ (0, import_jsx_runtime12.jsxs)("label", { children: [
       /* @__PURE__ */ (0, import_jsx_runtime12.jsx)(
         "input",
         {
@@ -2074,7 +2068,7 @@ var Editor = ({ height = "300px" }) => {
       {
         ref: editorRef,
         contentEditable: true,
-        className: "editor-content",
+        className: "sg-text__editor-content",
         onFocus: () => placeCursorTextEnd(editorRef.current),
         style: {
           minHeight: height,
@@ -2083,7 +2077,7 @@ var Editor = ({ height = "300px" }) => {
         }
       }
     ),
-    /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("div", { className: "editor-footer", children: [
+    /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("div", { className: "sg-text__editor-footer", children: [
       /* @__PURE__ */ (0, import_jsx_runtime13.jsxs)("span", { children: [
         "Words: ",
         wordCount
@@ -2117,7 +2111,7 @@ var TextIgniterContent = (0, import_react18.forwardRef)(
     (0, import_react18.useEffect)(() => {
       html !== null && onChange && typeof onChange === "function" ? onChange(html) : void 0;
     }, [html, onChange]);
-    return /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "editor-container", children: [
+    return /* @__PURE__ */ (0, import_jsx_runtime14.jsxs)("div", { className: "sg-text__editor-container", children: [
       /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(Toolbar_default, { features }),
       /* @__PURE__ */ (0, import_jsx_runtime14.jsx)(Editor_default, { height })
     ] });

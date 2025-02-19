@@ -854,9 +854,11 @@ var useEditorFormatting = (editorRef) => {
         const fontWeight = computedStyle.fontWeight;
         const fontStyle = computedStyle.fontStyle;
         const textDecoration = computedStyle.textDecoration;
-        if (fontWeight === 700) styles.add("bold");
+        console.log(textDecoration);
+        if (fontWeight === "700") styles.add("bold");
         if (fontStyle === "italic") styles.add("italic");
-        if (textDecoration === "underline") styles.add("underline");
+        if (textDecoration.indexOf("underline") !== -1) styles.add("underline");
+        console.log(styles);
         let node = parentElement;
         while (node && node !== document) {
           if (node.tagName === "OL") {
@@ -1487,8 +1489,8 @@ import React6, { useState as useState7 } from "react";
 import React5 from "react";
 import { Fragment as Fragment3, jsx as jsx8, jsxs as jsxs5 } from "react/jsx-runtime";
 var Tooltip = ({ text, children }) => {
-  return text ? /* @__PURE__ */ jsxs5("div", { className: "tooltip-container", children: [
-    /* @__PURE__ */ jsx8("div", { className: "tooltip", children: text }),
+  return text ? /* @__PURE__ */ jsxs5("div", { className: "sg-text__tooltip-container", children: [
+    /* @__PURE__ */ jsx8("div", { className: "sg-text__tooltip", children: text }),
     children
   ] }) : /* @__PURE__ */ jsx8(Fragment3, {});
 };
@@ -1502,7 +1504,7 @@ var AppButton = ({
   onClick,
   disabled = false
 }) => {
-  const className = `button button-${type}`;
+  const className = `sg-text__button sg-text__button-${type}`;
   const handleClick = (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -1516,15 +1518,7 @@ var IconButton = ({ children, onClick, id, toolTip, isActive }) => {
     e.stopPropagation();
     onClick();
   };
-  return /* @__PURE__ */ jsxs6(ToolTip_default, { text: toolTip, children: [
-    /* @__PURE__ */ jsx9("style", { children: `
-          .toolbarBtnDiv.active {
-            background-color: #ddd; /* Highlighted background color */
-            border: 1px solid #333; /* Highlighted border */
-          }
-        ` }),
-    /* @__PURE__ */ jsx9("div", { className: `toolbarBtnDiv ${isActive ? "active" : ""}`, children: /* @__PURE__ */ jsx9("button", { className: "toolbarBtn", onClick: handleClick, id, children }) })
-  ] });
+  return /* @__PURE__ */ jsx9(ToolTip_default, { text: toolTip, children: /* @__PURE__ */ jsx9("div", { className: `sg-text__toolbarBtnDiv ${isActive ? "active" : ""}`, children: /* @__PURE__ */ jsx9("button", { className: "sg-text__toolbarBtn", onClick: handleClick, id, children }) }) });
 };
 
 // lib/text-module/component/src/components/ui/Dialog.jsx
@@ -1578,13 +1572,13 @@ var ImageUploadSelectionDialog = ({
     }
   };
   if (!isOpen) return null;
-  return /* @__PURE__ */ jsx10("div", { className: "dialog-overlay", children: /* @__PURE__ */ jsxs7("div", { className: "dialog-container", children: [
-    /* @__PURE__ */ jsxs7("div", { className: "dialog-header", children: [
+  return /* @__PURE__ */ jsx10("div", { className: "sg-text__dialog-overlay", children: /* @__PURE__ */ jsxs7("div", { className: "sg-text__dialog-container", children: [
+    /* @__PURE__ */ jsxs7("div", { className: "sg-text__dialog-header", children: [
       title,
       /* @__PURE__ */ jsx10(IconButton, { onClick: onClose, id: "dialogClose", children: /* @__PURE__ */ jsx10(CloseIcon, {}) })
     ] }),
-    /* @__PURE__ */ jsx10("div", { className: "dialog-body", children: /* @__PURE__ */ jsxs7("div", { className: "container", children: [
-      /* @__PURE__ */ jsx10("label", { htmlFor: "file-input", className: "custom-file-input", children: !file ? "Select file" : "Reselect file" }),
+    /* @__PURE__ */ jsx10("div", { className: "sg-text__dialog-body", children: /* @__PURE__ */ jsxs7("div", { className: "sg-text__container", children: [
+      /* @__PURE__ */ jsx10("label", { htmlFor: "file-input", className: "sg-text__custom-file-input", children: !file ? "Select file" : "Reselect file" }),
       /* @__PURE__ */ jsx10(
         "input",
         {
@@ -1594,7 +1588,7 @@ var ImageUploadSelectionDialog = ({
           onChange: handleFileChange
         }
       ),
-      file && /* @__PURE__ */ jsxs7("div", { className: "file-info", children: [
+      file && /* @__PURE__ */ jsxs7("div", { className: "sg-text__file-info", children: [
         /* @__PURE__ */ jsxs7("p", { children: [
           "Selected file: ",
           file.name,
@@ -1606,9 +1600,9 @@ var ImageUploadSelectionDialog = ({
           " KB"
         ] })
       ] }),
-      error && /* @__PURE__ */ jsx10("p", { className: "error", children: error })
+      error && /* @__PURE__ */ jsx10("p", { className: "sg-text__error", children: error })
     ] }) }),
-    /* @__PURE__ */ jsxs7("div", { className: "dialog-footer", children: [
+    /* @__PURE__ */ jsxs7("div", { className: "sg-text__dialog-footer", children: [
       /* @__PURE__ */ jsx10(AppButton, { type: "cancel", onClick: closeDialog, children: "Cancel" }),
       /* @__PURE__ */ jsx10(AppButton, { onClick: handleSubmit, children: "Submit" })
     ] })
@@ -1665,37 +1659,37 @@ var FileUrlDialog = ({
     }
   };
   if (!isOpen) return null;
-  return /* @__PURE__ */ jsx10("div", { className: "dialog-overlay", children: /* @__PURE__ */ jsxs7("div", { className: "dialog-container", children: [
-    /* @__PURE__ */ jsxs7("div", { className: "dialog-header", children: [
+  return /* @__PURE__ */ jsx10("div", { className: "sg-text__dialog-overlay", children: /* @__PURE__ */ jsxs7("div", { className: "sg-text__dialog-container", children: [
+    /* @__PURE__ */ jsxs7("div", { className: "sg-text__dialog-header", children: [
       "Enter Title",
       /* @__PURE__ */ jsx10(IconButton, { onClick: onClose, id: "dialogClose", children: /* @__PURE__ */ jsx10(CloseIcon, {}) })
     ] }),
-    /* @__PURE__ */ jsxs7("div", { className: "dialog-body", children: [
-      /* @__PURE__ */ jsx10("div", { className: "container", children: /* @__PURE__ */ jsx10(
+    /* @__PURE__ */ jsxs7("div", { className: "sg-text__dialog-body", children: [
+      /* @__PURE__ */ jsx10("div", { className: "sg-text__container", children: /* @__PURE__ */ jsx10(
         "input",
         {
           type: "text",
-          className: "image-url-input",
+          className: "sg-text__image-url-input",
           placeholder: "Texte du lien",
           value: text,
           onChange: handleLinkText
         }
       ) }),
-      /* @__PURE__ */ jsxs7("div", { className: "container", children: [
+      /* @__PURE__ */ jsxs7("div", { className: "sg-text__container", children: [
         /* @__PURE__ */ jsx10(
           "input",
           {
             type: "text",
-            className: "image-url-input",
+            className: "sg-text__image-url-input",
             placeholder: "URL du lien",
             value: url,
             onChange: handleLinkUrl
           }
         ),
-        error && /* @__PURE__ */ jsx10("p", { className: "error", children: error })
+        error && /* @__PURE__ */ jsx10("p", { className: "sg-text__error", children: error })
       ] })
     ] }),
-    /* @__PURE__ */ jsxs7("div", { className: "dialog-footer", children: [
+    /* @__PURE__ */ jsxs7("div", { className: "sg-text__dialog-footer", children: [
       /* @__PURE__ */ jsx10(AppButton, { type: "cancel", onClick: closeDialog, children: "Annuler" }),
       /* @__PURE__ */ jsx10(AppButton, { onClick: handleSubmit, children: "Valider" })
     ] })
@@ -1716,11 +1710,11 @@ var IconDropDown = ({ items, onChange, icon, id, openRight, toolTip }) => {
     onChange(value);
     setIsOpen(false);
   };
-  return /* @__PURE__ */ jsxs8("div", { className: `icon-dropdown ${openRight ? "open-right" : ""}`, children: [
+  return /* @__PURE__ */ jsxs8("div", { className: `sg-text__icon-dropdown ${openRight ? "open-right" : ""}`, children: [
     /* @__PURE__ */ jsx11(ToolTip_default, { text: toolTip, children: /* @__PURE__ */ jsx11(
       "button",
       {
-        className: "dropbtn",
+        className: "sg-text__dropbtn",
         id,
         onMouseDown: handleButtonClick,
         onClick: (e) => {
@@ -1730,13 +1724,13 @@ var IconDropDown = ({ items, onChange, icon, id, openRight, toolTip }) => {
         children: icon
       }
     ) }),
-    isOpen && /* @__PURE__ */ jsx11("div", { className: "icon-dropdown-content", children: items.map((item, index) => /* @__PURE__ */ jsxs8(
+    isOpen && /* @__PURE__ */ jsx11("div", { className: "sg-text__icon-dropdown-content", children: items.map((item, index) => /* @__PURE__ */ jsxs8(
       "div",
       {
-        className: "dropdown-item",
+        className: "sg-text__dropdown-item",
         onMouseDown: (e) => handleItemClick(item.value, e),
         children: [
-          item.icon && /* @__PURE__ */ jsx11("span", { className: "dropdown-icon", children: item.icon }),
+          item.icon && /* @__PURE__ */ jsx11("span", { className: "sg-text__dropdown-icon", children: item.icon }),
           item.label
         ]
       },
@@ -1999,8 +1993,8 @@ var Toolbar = ({ features }) => {
       }
     )
   };
-  return /* @__PURE__ */ jsxs9("div", { className: "toolbar", children: [
-    /* @__PURE__ */ jsx12("div", { className: "toolbar-switch", children: /* @__PURE__ */ jsxs9("label", { children: [
+  return /* @__PURE__ */ jsxs9("div", { className: "sg-text__toolbar", children: [
+    /* @__PURE__ */ jsx12("div", { className: "sg-text__toolbar-switch", children: /* @__PURE__ */ jsxs9("label", { children: [
       /* @__PURE__ */ jsx12(
         "input",
         {
@@ -2035,7 +2029,7 @@ var Editor = ({ height = "300px" }) => {
       {
         ref: editorRef,
         contentEditable: true,
-        className: "editor-content",
+        className: "sg-text__editor-content",
         onFocus: () => placeCursorTextEnd(editorRef.current),
         style: {
           minHeight: height,
@@ -2044,7 +2038,7 @@ var Editor = ({ height = "300px" }) => {
         }
       }
     ),
-    /* @__PURE__ */ jsxs10("div", { className: "editor-footer", children: [
+    /* @__PURE__ */ jsxs10("div", { className: "sg-text__editor-footer", children: [
       /* @__PURE__ */ jsxs10("span", { children: [
         "Words: ",
         wordCount
@@ -2078,7 +2072,7 @@ var TextIgniterContent = forwardRef2(
     useEffect7(() => {
       html !== null && onChange && typeof onChange === "function" ? onChange(html) : void 0;
     }, [html, onChange]);
-    return /* @__PURE__ */ jsxs11("div", { className: "editor-container", children: [
+    return /* @__PURE__ */ jsxs11("div", { className: "sg-text__editor-container", children: [
       /* @__PURE__ */ jsx14(Toolbar_default, { features }),
       /* @__PURE__ */ jsx14(Editor_default, { height })
     ] });
