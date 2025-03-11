@@ -141,6 +141,7 @@ type TextBlockType = BlockType<{
 declare const TextBlock: react__default.FC<{
     block: EditorParsedBlock<TextBlockType>;
     isActive?: boolean;
+    toolbarOptions?: object;
 }>;
 
 declare const _default: {

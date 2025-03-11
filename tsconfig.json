@@ -14,6 +14,6 @@
       "strict": true,
       "allowJs": true
     },
-    "include": ["src/**/*", "lib/text-module/component"],
+    "include": ["src/**/*"],
     "exclude": ["node_modules", "dist"]
   }

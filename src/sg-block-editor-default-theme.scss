@@ -271,36 +271,18 @@ body {
   }
 
   &__blockText {
-    position: relative;
     .sg-text__editor-container {
       .sg-text__toolbar {
-        display: none;
         position: absolute;
         top: -5px;
+        left: 0;
         transform: translateY(-100%);
         padding: 1rem;
         border: 1px solid var(--sg-block-primary-foreground-color, grey);
-        opacity: 0;
         z-index: 30;
-
-        .sg-text__toolbar-switch {
-          display: none;
-        }
       }
-      .sg-text__editor-footer {
-        display: none;
-      }
-    }
-
-    &--active {
-      .sg-text__editor-container {
-        .sg-text__toolbar {
-          display: flex;
-          animation: 0.2s fade-in ease-in-out both;
-        }
-        .sg-text__editor-footer {
-          display: block;
-        }
+      .public-DraftStyleDefault-ltr {
+        text-align: unset;
       }
     }
   }
