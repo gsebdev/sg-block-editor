@@ -75,15 +75,34 @@ export const BlocksEditorContextProvider = forwardRef<EditorRefObject, EditorPro
                 
                 //Render the HTML if render function is provided
                 let newRenderedHTML = '';
-                for (const b of blocksValue) {
-                    const { type, value } = b;
+                //recursive html render
+                const renderToHTML = async (b:EditorParsedBlock) => {
+                    const { type, value, children } = b;
                     const { render } = availableBlocks[type] ?? {};
                     if(render) {
-                        const next = await render(value);
-                        newRenderedHTML += next;
+                        let renderedChildren;
+                        if(children) {
+                            renderedChildren = [];
+                            for(const child of children) {
+                                const childBlock = blocks.get(child);
+                                if (childBlock) {
+                                    renderedChildren.push(await renderToHTML(childBlock));
+                                }
+                            }
+                        }
+                        const newValue = {
+                            ...value ?? {},
+                            children: renderedChildren
+                        }
+                        const html = await render(newValue);
+                        return html;
                     } else {
-                        newRenderedHTML += '<p>No render function provided</p>';
+                        return '<p>No render function provided</p>';
                     }
+                }
+
+                for (const b of blocksValue) {
+                    newRenderedHTML += await renderToHTML(b);
                 }
 
                 // Render the JSON

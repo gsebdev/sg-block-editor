@@ -161,18 +161,34 @@ var BlocksEditorContextProvider = (0, import_react.forwardRef)(({ children, data
         };
       };
       const updateValuesAsync = () => __async(void 0, null, function* () {
-        var _a;
         const blocksValue = Array.from(blocks.values());
         let newRenderedHTML = "";
-        for (const b of blocksValue) {
-          const { type, value } = b;
+        const renderToHTML = (b) => __async(void 0, null, function* () {
+          var _a;
+          const { type, value, children: children2 } = b;
           const { render } = (_a = availableBlocks[type]) != null ? _a : {};
           if (render) {
-            const next = yield render(value);
-            newRenderedHTML += next;
+            let renderedChildren;
+            if (children2) {
+              renderedChildren = [];
+              for (const child of children2) {
+                const childBlock = blocks.get(child);
+                if (childBlock) {
+                  renderedChildren.push(yield renderToHTML(childBlock));
+                }
+              }
+            }
+            const newValue = __spreadProps(__spreadValues({}, value != null ? value : {}), {
+              children: renderedChildren
+            });
+            const html = yield render(newValue);
+            return html;
           } else {
-            newRenderedHTML += "<p>No render function provided</p>";
+            return "<p>No render function provided</p>";
           }
+        });
+        for (const b of blocksValue) {
+          newRenderedHTML += yield renderToHTML(b);
         }
         const newRenderedJSON = blocksValue.filter((block) => !block.parentID).map((editorBlock) => renderBlocksToJSONRecursive(editorBlock));
         return {
