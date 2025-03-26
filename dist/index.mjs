@@ -148,10 +148,11 @@ var BlocksEditorContextProvider = forwardRef(({ children, data, onChange, availa
             return "<p>No render function provided</p>";
           }
         });
-        for (const b of blocksValue) {
+        const filteredBlocks = blocksValue.filter((block) => !block.parentID);
+        for (const b of filteredBlocks) {
           newRenderedHTML += yield renderToHTML(b);
         }
-        const newRenderedJSON = blocksValue.filter((block) => !block.parentID).map((editorBlock) => renderBlocksToJSONRecursive(editorBlock));
+        const newRenderedJSON = filteredBlocks.map((editorBlock) => renderBlocksToJSONRecursive(editorBlock));
         return {
           HTMLValue: newRenderedHTML,
           JSONValue: newRenderedJSON

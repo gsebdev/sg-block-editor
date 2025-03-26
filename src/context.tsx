@@ -101,12 +101,15 @@ export const BlocksEditorContextProvider = forwardRef<EditorRefObject, EditorPro
                     }
                 }
 
-                for (const b of blocksValue) {
+                const filteredBlocks = blocksValue.filter(block => !block.parentID);
+
+                // Render the HTML
+                for (const b of filteredBlocks) {
                     newRenderedHTML += await renderToHTML(b);
                 }
 
                 // Render the JSON
-                const newRenderedJSON = blocksValue.filter(block => !block.parentID).map(editorBlock => renderBlocksToJSONRecursive(editorBlock));
+                const newRenderedJSON = filteredBlocks.map(editorBlock => renderBlocksToJSONRecursive(editorBlock));
                 return {
                     HTMLValue: newRenderedHTML,
                     JSONValue: newRenderedJSON
