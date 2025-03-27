@@ -5,6 +5,7 @@ import { RxGroup } from "react-icons/rx";
 import TextBlock from "./blocks/TextBlock";
 import RowBlock from "./blocks/GroupBlock";
 import { EditorBlock } from "./definitions";
+import HtmlBlock from "./blocks/HtmlBlock";
 
 export default {
     text: {
@@ -49,5 +50,18 @@ export default {
             flow: 'horizontal'
         },
         hasSpacingOptions: true
+    },
+    html: {
+        name: 'HTML',
+        type: 'html',
+        icon: FaAlignJustify,
+        render: async value => value?.htmlContent ?? '',
+        editor: HtmlBlock,
+        acceptChildren: false,
+        isResizable: false,
+        defaultValue: {
+            htmlContent: '<div></div>'
+        },
+        hasSpacingOptions: false
     }
 } as { [key: string]: EditorBlock }

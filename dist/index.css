@@ -1266,6 +1266,10 @@ body[data-scroll-locked] {
   top: calc(50% - 1.5px);
   left: 0;
 }
+.sg-block__blockHtmlTextarea {
+  height: 250px;
+  width: 100%;
+}
 .sg-block__blockText .sg-text__editor-container .sg-text__toolbar {
   position: absolute;
   top: -5px;

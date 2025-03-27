@@ -90,7 +90,7 @@ __export(src_exports, {
 module.exports = __toCommonJS(src_exports);
 
 // src/BlockEditor.tsx
-var import_react8 = require("react");
+var import_react9 = require("react");
 
 // src/context.tsx
 var import_react = require("react");
@@ -1196,6 +1196,35 @@ var RowBlock = ({ block, isActive }) => {
 };
 var GroupBlock_default = RowBlock;
 
+// src/blocks/HtmlBlock.tsx
+var import_clsx4 = __toESM(require("clsx"));
+var import_react8 = require("react");
+var import_jsx_runtime8 = require("react/jsx-runtime");
+var HtmlBlock = ({ block, isActive }) => {
+  const { updateBlock } = useEditor();
+  const { blockID, value } = block;
+  const handleChange = (0, import_react8.useCallback)((value2) => {
+    updateBlock(blockID, {
+      value: {
+        htmlContent: value2
+      }
+    });
+  }, [blockID, updateBlock]);
+  return /* @__PURE__ */ (0, import_jsx_runtime8.jsx)("div", { className: (0, import_clsx4.default)(
+    "sg-block__blockHtml",
+    isActive && "sg-block__blockHtml--active"
+  ), children: /* @__PURE__ */ (0, import_jsx_runtime8.jsx)(
+    "textarea",
+    {
+      onChange: (e) => handleChange(e.target.value),
+      value: value == null ? void 0 : value.htmlContent,
+      className: "sg-block__blockHtmlTextarea",
+      rows: 10
+    }
+  ) });
+};
+var HtmlBlock_default = HtmlBlock;
+
 // src/default-blocks.tsx
 var default_blocks_default = {
   text: {
@@ -1242,41 +1271,57 @@ var default_blocks_default = {
       flow: "horizontal"
     },
     hasSpacingOptions: true
+  },
+  html: {
+    name: "HTML",
+    type: "html",
+    icon: import_fa65.FaAlignJustify,
+    render: (value) => __async(void 0, null, function* () {
+      var _a;
+      return (_a = value == null ? void 0 : value.htmlContent) != null ? _a : "";
+    }),
+    editor: HtmlBlock_default,
+    acceptChildren: false,
+    isResizable: false,
+    defaultValue: {
+      htmlContent: "<div></div>"
+    },
+    hasSpacingOptions: false
   }
 };
 
 // src/BlockEditor.tsx
 var import_fa66 = require("react-icons/fa6");
-var import_clsx4 = __toESM(require("clsx"));
-var import_jsx_runtime8 = require("react/jsx-runtime");
+var import_clsx5 = __toESM(require("clsx"));
+var import_jsx_runtime9 = require("react/jsx-runtime");
 var BlockEditorContent = () => {
   const { blocks, setActiveBlock } = useEditor();
-  const editorRef = (0, import_react8.useRef)(null);
-  const handleClickOutside = (0, import_react8.useCallback)((e) => {
+  const editorRef = (0, import_react9.useRef)(null);
+  const handleClickOutside = (0, import_react9.useCallback)((e) => {
     if (editorRef.current && !editorRef.current.contains(e.target)) {
       setActiveBlock(null);
     }
   }, [setActiveBlock]);
-  (0, import_react8.useEffect)(() => {
+  (0, import_react9.useEffect)(() => {
     document.body.addEventListener("click", handleClickOutside);
     return () => {
       document.body.removeEventListener("click", handleClickOutside);
     };
   }, [handleClickOutside]);
-  return /* @__PURE__ */ (0, import_jsx_runtime8.jsx)("div", { ref: editorRef, className: (0, import_clsx4.default)(
+  return /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("div", { ref: editorRef, className: (0, import_clsx5.default)(
     "sg-block__editor__content",
     blocks.size === 0 ? "sg-block__editor__content--empty" : ""
-  ), children: /* @__PURE__ */ (0, import_jsx_runtime8.jsxs)("div", { children: [
-    !!blocks && Array.from(blocks.values()).filter((block) => !block.parentID).map((block) => /* @__PURE__ */ (0, import_jsx_runtime8.jsx)(Block_default, { block }, block.blockID)),
-    blocks.size === 0 && /* @__PURE__ */ (0, import_jsx_runtime8.jsx)(AddBlockContextMenu, { children: /* @__PURE__ */ (0, import_jsx_runtime8.jsxs)("button", { className: "sg-block__btn", children: [
-      /* @__PURE__ */ (0, import_jsx_runtime8.jsx)(import_fa66.FaPlus, { style: { marginRight: 4 } }),
+  ), children: /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { children: [
+    !!blocks && Array.from(blocks.values()).filter((block) => !block.parentID).map((block) => /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(Block_default, { block }, block.blockID)),
+    blocks.size === 0 && /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(AddBlockContextMenu, { children: /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("button", { className: "sg-block__btn", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(import_fa66.FaPlus, { style: { marginRight: 4 } }),
       "Ajouter du contenu"
     ] }) })
   ] }) });
 };
-var BlockEditor_default = (0, import_react8.forwardRef)(function BlocksEditor({ data, onChange, extraBlocks }, ref) {
+var BlockEditor_default = (0, import_react9.forwardRef)(function BlocksEditor({ data, onChange, extraBlocks }, ref) {
   const blocks = __spreadValues(__spreadValues({}, default_blocks_default), extraBlocks);
-  return /* @__PURE__ */ (0, import_jsx_runtime8.jsx)(BlocksEditorContextProvider, { data, onChange, ref, availableBlocks: blocks, children: /* @__PURE__ */ (0, import_jsx_runtime8.jsx)(BlockEditorContent, {}) });
+  return /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(BlocksEditorContextProvider, { data, onChange, ref, availableBlocks: blocks, children: /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(BlockEditorContent, {}) });
 });
 
 // src/definitions.tsx

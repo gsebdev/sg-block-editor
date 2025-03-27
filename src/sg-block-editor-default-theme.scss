@@ -270,6 +270,13 @@ body {
     }
   }
 
+  &__blockHtml {
+    &Textarea {
+      height: 250px;
+      width: 100%;
+    }
+  }
+
   &__blockText {
     .sg-text__editor-container {
       .sg-text__toolbar {

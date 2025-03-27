@@ -51,7 +51,7 @@ var __async = (__this, __arguments, generator) => {
 };
 
 // src/BlockEditor.tsx
-import { forwardRef as forwardRef2, useCallback as useCallback5, useEffect as useEffect6, useRef as useRef7 } from "react";
+import { forwardRef as forwardRef2, useCallback as useCallback6, useEffect as useEffect6, useRef as useRef7 } from "react";
 
 // src/context.tsx
 import { createContext, forwardRef, useCallback, useContext, useEffect, useImperativeHandle, useRef, useState } from "react";
@@ -1157,6 +1157,35 @@ var RowBlock = ({ block, isActive }) => {
 };
 var GroupBlock_default = RowBlock;
 
+// src/blocks/HtmlBlock.tsx
+import clsx4 from "clsx";
+import { useCallback as useCallback5 } from "react";
+import { jsx as jsx8 } from "react/jsx-runtime";
+var HtmlBlock = ({ block, isActive }) => {
+  const { updateBlock } = useEditor();
+  const { blockID, value } = block;
+  const handleChange = useCallback5((value2) => {
+    updateBlock(blockID, {
+      value: {
+        htmlContent: value2
+      }
+    });
+  }, [blockID, updateBlock]);
+  return /* @__PURE__ */ jsx8("div", { className: clsx4(
+    "sg-block__blockHtml",
+    isActive && "sg-block__blockHtml--active"
+  ), children: /* @__PURE__ */ jsx8(
+    "textarea",
+    {
+      onChange: (e) => handleChange(e.target.value),
+      value: value == null ? void 0 : value.htmlContent,
+      className: "sg-block__blockHtmlTextarea",
+      rows: 10
+    }
+  ) });
+};
+var HtmlBlock_default = HtmlBlock;
+
 // src/default-blocks.tsx
 var default_blocks_default = {
   text: {
@@ -1203,17 +1232,33 @@ var default_blocks_default = {
       flow: "horizontal"
     },
     hasSpacingOptions: true
+  },
+  html: {
+    name: "HTML",
+    type: "html",
+    icon: FaAlignJustify,
+    render: (value) => __async(void 0, null, function* () {
+      var _a;
+      return (_a = value == null ? void 0 : value.htmlContent) != null ? _a : "";
+    }),
+    editor: HtmlBlock_default,
+    acceptChildren: false,
+    isResizable: false,
+    defaultValue: {
+      htmlContent: "<div></div>"
+    },
+    hasSpacingOptions: false
   }
 };
 
 // src/BlockEditor.tsx
 import { FaPlus as FaPlus3 } from "react-icons/fa6";
-import clsx4 from "clsx";
-import { jsx as jsx8, jsxs as jsxs5 } from "react/jsx-runtime";
+import clsx5 from "clsx";
+import { jsx as jsx9, jsxs as jsxs5 } from "react/jsx-runtime";
 var BlockEditorContent = () => {
   const { blocks, setActiveBlock } = useEditor();
   const editorRef = useRef7(null);
-  const handleClickOutside = useCallback5((e) => {
+  const handleClickOutside = useCallback6((e) => {
     if (editorRef.current && !editorRef.current.contains(e.target)) {
       setActiveBlock(null);
     }
@@ -1224,20 +1269,20 @@ var BlockEditorContent = () => {
       document.body.removeEventListener("click", handleClickOutside);
     };
   }, [handleClickOutside]);
-  return /* @__PURE__ */ jsx8("div", { ref: editorRef, className: clsx4(
+  return /* @__PURE__ */ jsx9("div", { ref: editorRef, className: clsx5(
     "sg-block__editor__content",
     blocks.size === 0 ? "sg-block__editor__content--empty" : ""
   ), children: /* @__PURE__ */ jsxs5("div", { children: [
-    !!blocks && Array.from(blocks.values()).filter((block) => !block.parentID).map((block) => /* @__PURE__ */ jsx8(Block_default, { block }, block.blockID)),
-    blocks.size === 0 && /* @__PURE__ */ jsx8(AddBlockContextMenu, { children: /* @__PURE__ */ jsxs5("button", { className: "sg-block__btn", children: [
-      /* @__PURE__ */ jsx8(FaPlus3, { style: { marginRight: 4 } }),
+    !!blocks && Array.from(blocks.values()).filter((block) => !block.parentID).map((block) => /* @__PURE__ */ jsx9(Block_default, { block }, block.blockID)),
+    blocks.size === 0 && /* @__PURE__ */ jsx9(AddBlockContextMenu, { children: /* @__PURE__ */ jsxs5("button", { className: "sg-block__btn", children: [
+      /* @__PURE__ */ jsx9(FaPlus3, { style: { marginRight: 4 } }),
       "Ajouter du contenu"
     ] }) })
   ] }) });
 };
 var BlockEditor_default = forwardRef2(function BlocksEditor({ data, onChange, extraBlocks }, ref) {
   const blocks = __spreadValues(__spreadValues({}, default_blocks_default), extraBlocks);
-  return /* @__PURE__ */ jsx8(BlocksEditorContextProvider, { data, onChange, ref, availableBlocks: blocks, children: /* @__PURE__ */ jsx8(BlockEditorContent, {}) });
+  return /* @__PURE__ */ jsx9(BlocksEditorContextProvider, { data, onChange, ref, availableBlocks: blocks, children: /* @__PURE__ */ jsx9(BlockEditorContent, {}) });
 });
 
 // src/definitions.tsx
